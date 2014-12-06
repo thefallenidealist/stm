@@ -1,0 +1,224 @@
+// created 141003
+uint8_t spi_send_read(uint8_t data);
+
+#include <stdint.h>
+#include "stm32f10x_spi.h"
+#include "stm32f10x_spi.c"
+
+#define SPI2_RCC	RCC_APB1Periph_SPI2
+#define SPI2_PORT	GPIOB
+#define SPI2_MOSI_PIN	GPIO_Pin_13
+#define SPI2_MISO_PIN	GPIO_Pin_14
+#define SPI2_SCK_PIN	GPIO_Pin_15
+#define SPI2_MOSI	GPIO_Pin_13
+#define SPI2_MISO	GPIO_Pin_14
+#define SPI2_SCK	GPIO_Pin_15
+
+#define SD_CS_RCC		RCC_APB2Periph_GPIOB
+#define SD_CS_PORT		GPIOB
+#define SD_CS_PIN		GPIO_Pin_5
+
+#define SD_DI_PORT		SPI2_PORT
+#define SD_DI_PIN		SPI2_MOSI_PIN
+#define SD_DO_PIN		SPI2_MISO_PIN
+
+inline static void sd_cs_low()
+{
+	GPIO_WriteBit(SD_CS_PORT, SD_CS_PIN, 0);
+}
+
+inline static void sd_cs_high()
+{
+	GPIO_WriteBit(SD_CS_PORT, SD_CS_PIN, 1);
+}
+
+inline static void sd_di_high()
+{
+	GPIO_WriteBit(SD_DI_PORT, SD_DI_PIN, 1);
+}
+
+inline static void sd_di_low()
+{
+	GPIO_WriteBit(SD_DI_PORT, SD_DI_PIN, 0);
+}
+
+
+void sd_io_init()
+{
+	GPIO_InitTypeDef GPIO_InitStructure;
+
+	GPIO_InitStructure.GPIO_Pin = SD_CS_PIN;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+	GPIO_Init(GPIOB, &GPIO_InitStructure);
+}
+
+void sd_spi_init()
+{
+	// GPIO zajednicki dio za SPI1 i SPI2
+	GPIO_InitTypeDef GPIO_InitStructure;
+	SPI_InitTypeDef SPI_InitStructure;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
+
+	// SPI zajednicki dio za SPI1 i SPI2
+	// the LCD requires the illustrated mode (commonly referred to as CPOL=0,CPHA=0).
+	// SD CPOL=0, CPHA=0
+	SPI_InitStructure.SPI_Direction = SPI_Direction_2Lines_FullDuplex;	// separate MOSI and MISO
+	SPI_InitStructure.SPI_Mode = SPI_Mode_Master;				// NSS pin has to be always high
+	SPI_InitStructure.SPI_DataSize = SPI_DataSize_8b;
+	//SPI_InitStructure.SPI_CPOL = SPI_CPOL_Low;				// clock polarity, clock is low when idle
+	SPI_InitStructure.SPI_CPHA = SPI_CPHA_1Edge;				// clock phase, data sampled at first edge		// SPI_CPHA_{1,2}Edge
+	SPI_InitStructure.SPI_NSS = SPI_NSS_Hard;
+	SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_128;	// SPI2 230 kHz
+	SPI_InitStructure.SPI_FirstBit = SPI_FirstBit_MSB;
+
+	// PB15,14,13
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2 | RCC_APB2Periph_AFIO, ENABLE);
+
+	GPIO_InitStructure.GPIO_Pin = SPI2_SCK | SPI2_MOSI;
+	GPIO_Init(SPI2_PORT, &GPIO_InitStructure);
+
+	SPI_Cmd(SPI2, ENABLE);
+	SPI_Init(SPI2, &SPI_InitStructure);
+}
+
+/*
+#define SD_CMD0		0x00000000	// software reset
+#define SD_CMD1		0x00000000	// start init process
+#define SD_ACMD41	0x40000000	// only SDC, start init process
+#define SD_CMD8		0x000001AA	// only SDCv2, check voltage range
+#define SD_CMD9				// read CSD reg		// TODO
+#define SD_CMD10			// read CID reg		TODO
+#define SD_CMD12			// stop to read		TODO
+#define SD_CMD16	0x00000200	// change RW block size
+#define SD_CMD17			// read a block		TODO
+#define SD_CMD17			// read multiple block		TODO
+// ...
+#define SD_CMD58	0x00000000
+*/
+
+uint8_t spi_send_read(uint8_t data)
+{
+	// SPI2
+	while (SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE) == RESET);
+	SPI_I2S_SendData(SPI2, data);
+	while (SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_RXNE) == RESET);
+	return SPI_I2S_ReceiveData(SPI2);
+}
+
+//uint8_t sd_read_reg(uint8_t reg)
+uint8_t sd_read_reg()
+{
+	//if(reg == 1)
+	{
+		// citamo R1
+		// 0 is gut
+		// R1: 0[7b]
+
+		uint8_t pokusaja = 100;
+		while(pokusaja--)
+		{
+			//printf("pokusaj: %d\n", pokusaja);
+			uint8_t r1 = spi_send_read(0xFF);
+			if((r1 & 0x80) == 0)	// 0x80 = 2^7
+				return r1;
+		}
+		return 0x10;	// doslo je do zajeba
+	}
+	
+	/*
+	if(reg == 2)
+	{
+		// R2 = R1 + 8b
+
+	}
+
+	if(reg == 3)
+	{
+		// citamo R3
+	}
+
+	return 22;
+	*/
+}
+
+uint8_t sd_read_r1()
+{
+	uint8_t r1 = sd_read_reg();
+	return r1;
+}
+
+void sd_cmd(uint8_t cmd, uint32_t arg)
+{
+	printf("sd_cmd()\n");
+
+	/*
+	   http://elm-chan.org/docs/mmc/gx1/cmd.png
+	paket:
+	8b  01index
+	32b argument
+	8b  [7bCRC]1
+		NCR		valjda moze bit proizvoljno dugacak
+				0-8b for SDC
+				1-8b for MMC
+	
+	R1		0 + 7b flags
+	*/
+
+	uint8_t data[4];
+	data[3] = arg >> 24;
+	data[2] = arg >> 16;
+	data[1] = arg >> 8;
+	data[0] = arg & 0xFF;
+
+	// posalji komandu
+	spi_send_read(0b01000000 && cmd);	// dodaj 01 na pocetak komande
+
+	// posalji argument
+	for(int i=0; i<4; i++)
+		spi_send_read(data[i]);
+
+	// posalji CRC
+	// bitno samo za CMD0, kasnije se mora rucno omogucit, ovo, ono
+	spi_send_read(0x95);	// hard kodani CRC za CMD0
+
+	// cekaj odziv sad
+}
+
+void sd_init()
+{
+	printf("sd_init()\n");
+	// In SPI mode, the data direction on the signal lines are fixed and the data is transferred in byte oriented serial communication. The command frame from host to card is a fixed length packet that shown below. The card is ready to receive a command frame when it drives DO high. After a command frame is sent to the card, a response to the command (R1, R2, R3 or R7) is sent back from the card. Because the data transfer is driven by serial clock generated by host controller, the host controller must continue to read data, send a 0xFF and get received byte, until a valid response is detected. The DI signal must be kept high during read transfer (send a 0xFF and get the received data). The response is sent back within command response time (NCR), 0 to 8 bytes for SDC, 1 to 8 bytes for MMC. The CS signal must be driven high to low prior to send a command frame and held it low during the transaction (command, response and data transfer if exist). The CRC feature is optional in SPI mode. CRC field in the command frame is not checked by the card.
+	// http://elm-chan.org/docs/mmc/gx1/sdinit.png
+	// http://elm-chan.org/docs/mmc/mmc_e.html
+	delay_ms(1);
+	sd_di_high();
+	sd_cs_high();
+	// 74 SCK pulsa, SPI2 f = 230 kHz, za t ovirjeme se salje 0xFF
+	for(int i=0; i<10; i++)	// proizvoljno TODO
+	{
+		spi_send_read(0xFF);
+	}
+
+	//printf("\t\t\t\t\t\t\t\t\tJos je ziv\n");
+
+	sd_cs_low();	// stize komanda
+
+	uint32_t reg;
+
+	sd_cmd(0, 0);
+	reg = sd_read_r1();
+	printf("r1: %lu\n", reg);
+
+
+
+		
+}
+
+
+void sd()
+{
+	printf("sd()\n");
+
+}
