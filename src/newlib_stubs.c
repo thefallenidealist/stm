@@ -174,6 +174,31 @@ caddr_t _sbrk(int incr)
 	return (caddr_t) prev_heap_end;
 }
 
+// novi sbrk
+// https://balau82.wordpress.com/2010/12/16/using-newlib-in-arm-bare-metal-programs/
+
+/*
+char *heap_end = 0;
+caddr_t _sbrk(int incr)
+{
+	extern char heap_low; // Defined by the linker
+	extern char heap_top; // Defined by the linker
+	char *prev_heap_end;
+
+	if (heap_end == 0)
+	{
+		heap_end = &heap_low;
+	}
+	prev_heap_end = heap_end;
+
+	if (heap_end + incr > &heap_top)
+	{
+	// Heap and stack collision 
+	return (caddr_t)0;
+	}
+}
+*/
+
 /*
  read
  Read a character to a file. `libc' subroutines will use this system routine for input from all files, including stdin
