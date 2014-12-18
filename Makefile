@@ -17,7 +17,7 @@ ARCH	= armv7-m
 CPU	= -mcpu=cortex-m3 
 DEFINES	= -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER 
 OPTS	= -O0 -g
-#OPTS	= -Os
+#OPTS	= -O2
 DIRS 	=  -Isrc \
 	   -Isrc/lib\
 	   -I.

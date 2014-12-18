@@ -1,5 +1,5 @@
 // jednostavni ADC
-#ifndef ADC1_H
+#ifndef ADC1_H		// pokusat adc1_h
 #define ADC1_H
 
 #include "stm32f10x_rcc.h"
