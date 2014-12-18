@@ -5,9 +5,9 @@
 #include "i2c.h"
 
 // wrong address from datasheet
-//#define OLED_ADDR_W	0b0111100
+//#define OLED_ADDR_W		0b0111100
 //#define OLED_ADDR_R	0b0111101
-#define OLED_ADDR_W	0x78
+#define OLED_ADDR_W	0x78 // 0b1111000
 
 void oled_io_init();
 uint32_t oled_init();
