@@ -7,8 +7,8 @@
 #include "stm32f10x_adc.h"
 #include "delay.h"
 
-void ADC_example();
-void ADC_init();
+void ADC_example(void);
+void ADC_init(void);
 uint16_t ADC_read(uint8_t channel);
 
 #endif

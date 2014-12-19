@@ -9,12 +9,12 @@ static volatile uint8_t time_m;
 static volatile uint8_t time_s;
 static volatile uint64_t uptime_var=0;
 
-uint32_t get_uptime()
+uint32_t get_uptime(void)
 {
 	return uptime_var;	// ms (netocna) ili s (ovisi o RTC prescaleru)
 }
 
-void RTC_init2()
+void RTC_init2(void)
 {
 	// RTC_Configuration iz primjera
 	// pravi init, od nule
@@ -46,7 +46,7 @@ void RTC_init2()
 	//PWR_BackupAccessCmd(DISABLE);
 }
 
-void time_vrati()
+void time_vrati(void)
 {
 	//procitaj vrijeme iz BCKP registra
 	RTC_WaitForSynchro();
@@ -59,7 +59,7 @@ void time_vrati()
 	time_s = (time_tmp -time_h*3600 - time_m*60);
 }
 
-void RTC_init()
+void RTC_init(void)
 {
 	//RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR | RCC_APB1Periph_BKP, ENABLE);
 	NVIC_InitTypeDef NVIC_InitStructure;
@@ -110,7 +110,7 @@ void RTC_init()
 	RCC_ClearFlag();
 }
 
-void RTC_update()
+void RTC_update(void)
 {
 	// RTC IRQ pozove ovo
 	time_s++;
@@ -133,23 +133,23 @@ void RTC_update()
 	uptime_var++;
 }
 
-void time_print()
+void time_print(void)
 {
 	//printf("time:\t\t%.2d:%.2d:%.2d\n", time_h, time_m, time_s);
 	printf("\t\t\t\t RTC: %.2d:%.2d:%.2d\n", time_h, time_m, time_s);
 }
 
-uint8_t RTC_get_h()
+uint8_t RTC_get_h(void)
 {
 	return time_h;
 }
 
-uint8_t RTC_get_m()
+uint8_t RTC_get_m(void)
 {
 	return time_m;
 }
 
-uint8_t RTC_get_s()
+uint8_t RTC_get_s(void)
 {
 	return time_s;
 }

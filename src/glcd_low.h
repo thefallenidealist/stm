@@ -45,33 +45,33 @@
 
 // *************************************** function prototypes ************************************
 
-void glcd_io_init();
-void glcd_spi_init();
+void glcd_io_init(void);
+void glcd_spi_init(void);
 uint8_t glcd_spi_send(uint8_t byte);
 uint16_t glcd_spi_send16(uint16_t HalfWord);
 /*
-inline static void glcd_cs_low();
-inline static void glcd_cs_high();
-inline static void glcd_dc_low();
-inline static void glcd_dc_high();
+inline static void glcd_cs_low(void);
+inline static void glcd_cs_high(void);
+inline static void glcd_dc_low(void);
+inline static void glcd_dc_high(void);
 */
 /*
-void glcd_cs_low();
-void glcd_cs_high();
-void glcd_dc_low();
-void glcd_dc_high();
-void glcd_led_off();
-void glcd_led_on();
-void glcd_rst_off();
-void glcd_rst_on();
+void glcd_cs_low(void);
+void glcd_cs_high(void);
+void glcd_dc_low(void);
+void glcd_dc_high(void);
+void glcd_led_off(void);
+void glcd_led_on(void);
+void glcd_rst_off(void);
+void glcd_rst_on(void);
 */
-#define glcd_dc_low()	GPIO_WriteBit(GLCD_DC_PORT, GLCD_DC_PIN, 0);
-#define glcd_dc_high()	GPIO_WriteBit(GLCD_DC_PORT, GLCD_DC_PIN, 1);
-#define glcd_cs_low()	GPIO_WriteBit(GLCD_CS_PORT, GLCD_CS_PIN, 0);
-#define glcd_cs_high()	GPIO_WriteBit(GLCD_CS_PORT, GLCD_CS_PIN, 1);
-#define glcd_led_off()	GPIO_WriteBit(GLCD_LED_PORT, GLCD_LED_PIN, 0);
-#define glcd_led_on()	GPIO_WriteBit(GLCD_LED_PORT, GLCD_LED_PIN, 1);
-#define glcd_rst_off()	GPIO_WriteBit(GLCD_RESET_PORT, GLCD_RESET_PIN, 1);
-#define glcd_rst_on()	GPIO_WriteBit(GLCD_RESET_PORT, GLCD_RESET_PIN, 0);
+#define glcd_dc_low(void)	GPIO_WriteBit(GLCD_DC_PORT, GLCD_DC_PIN, 0);
+#define glcd_dc_high(void)	GPIO_WriteBit(GLCD_DC_PORT, GLCD_DC_PIN, 1);
+#define glcd_cs_low(void)	GPIO_WriteBit(GLCD_CS_PORT, GLCD_CS_PIN, 0);
+#define glcd_cs_high(void)	GPIO_WriteBit(GLCD_CS_PORT, GLCD_CS_PIN, 1);
+#define glcd_led_off(void)	GPIO_WriteBit(GLCD_LED_PORT, GLCD_LED_PIN, 0);
+#define glcd_led_on(void)	GPIO_WriteBit(GLCD_LED_PORT, GLCD_LED_PIN, 1);
+#define glcd_rst_off(void)	GPIO_WriteBit(GLCD_RESET_PORT, GLCD_RESET_PIN, 1);
+#define glcd_rst_on(void)	GPIO_WriteBit(GLCD_RESET_PORT, GLCD_RESET_PIN, 0);
 
 #endif

@@ -10,6 +10,6 @@
 void glcd_sendCmd(uint8_t data);
 void glcd_sendData(uint8_t data);
 void glcd_sendData16(uint16_t data);
-void glcd_ili9341_init();
+void glcd_ili9341_init(void);
 
 #endif

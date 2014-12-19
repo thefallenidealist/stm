@@ -8,7 +8,7 @@
 // *************************************** variables **********************************************
 // *************************************** function prototypes ************************************
 
-void glcd_io_init()
+void glcd_io_init(void)
 {
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);	// TODO stavit *GPIOB kao varijablu
 
@@ -21,7 +21,7 @@ void glcd_io_init()
 	GPIO_Init(GPIOB, &GPIO_InitStructure);
 }
 
-void glcd_spi_init()
+void glcd_spi_init(void)
 {
 	// GPIO zajednicki dio za SPI1 i SPI2
 	GPIO_InitTypeDef GPIO_InitStructure;
@@ -126,42 +126,42 @@ uint16_t glcd_spi_send16(uint16_t HalfWord)
 }
 
 /*
-//inline static void glcd_cs_low()
-void glcd_cs_low()
+//inline static void glcd_cs_low(void)
+void glcd_cs_low(void)
 {
 	GPIO_WriteBit(GLCD_CS_PORT, GLCD_CS_PIN, 0);
 }
 
-//inline static void glcd_cs_high()
-void glcd_cs_high()
+//inline static void glcd_cs_high(void)
+void glcd_cs_high(void)
 {
 	GPIO_WriteBit(GLCD_CS_PORT, GLCD_CS_PIN, 1);
 }
 
-//inline static void glcd_dc_low()
-void glcd_dc_low()
+//inline static void glcd_dc_low(void)
+void glcd_dc_low(void)
 {
 	GPIO_WriteBit(GLCD_DC_PORT, GLCD_DC_PIN, 0);
 }
 
-//inline static void glcd_dc_high()
-void glcd_dc_high()
+//inline static void glcd_dc_high(void)
+void glcd_dc_high(void)
 {
 	GPIO_WriteBit(GLCD_DC_PORT, GLCD_DC_PIN, 1);
 }
-void glcd_led_off()
+void glcd_led_off(void)
 {
 	GPIO_WriteBit(GLCD_LED_PORT, GLCD_LED_PIN, 0);
 }
-void glcd_led_on()
+void glcd_led_on(void)
 {
 	GPIO_WriteBit(GLCD_LED_PORT, GLCD_LED_PIN, 1);
 }
-void glcd_rst_off()
+void glcd_rst_off(void)
 {
 	GPIO_WriteBit(GLCD_RESET_PORT, GLCD_RESET_PIN, 1);
 }
-void glcd_rst_on()
+void glcd_rst_on(void)
 {
 	GPIO_WriteBit(GLCD_RESET_PORT, GLCD_RESET_PIN, 0);
 }

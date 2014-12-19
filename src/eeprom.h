@@ -18,9 +18,9 @@
 #define I2C_TIMEOUT_MAX	0xFFFF
 // *************************************** variables **********************************************
 // *************************************** function prototypes ************************************
-void eeprom_init();
+void eeprom_init(void);
 uint8_t eeprom_write(uint16_t addr, uint8_t data);
 uint8_t eeprom_read(uint16_t addr);
-void eeprom_example();
+void eeprom_example(void);
 
 #endif

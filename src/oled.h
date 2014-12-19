@@ -9,7 +9,7 @@
 //#define OLED_ADDR_R	0b0111101
 #define OLED_ADDR_W	0x78 // 0b1111000
 
-void oled_io_init();
-uint32_t oled_init();
+void oled_io_init(void);
+uint32_t oled_init(void);
 
 #endif

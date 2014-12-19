@@ -2,7 +2,7 @@
 
 #include "i2c.h"
 
-uint8_t i2c_start()
+uint8_t i2c_start(void)
 {
 	uint32_t timeout = I2C_TIMEOUT_MAX;
 	// generiraj start signal
@@ -18,7 +18,7 @@ uint8_t i2c_start()
 	return 0;
 }
 
-void i2c_stop()
+void i2c_stop(void)
 {
 	I2C_GenerateSTOP(I2C1, ENABLE);
 	while(I2C_GetFlagStatus(I2C1, I2C_FLAG_BUSY));

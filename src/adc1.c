@@ -6,10 +6,10 @@
 // *************************************** function prototypes ************************************
 
 // *************************************** example ************************************************
-void ADC_example()
+void ADC_example(void)
 {
-	printf("ADC_example()\n");
-	ADC_init();
+	printf("ADC_example(void)\n");
+	ADC_init(void);
 	ADC_TempSensorVrefintCmd(ENABLE);	// enable internal temperature sensor
 
 	delay_ms(1);	// treba mu malo da nadodje
@@ -17,7 +17,7 @@ void ADC_example()
 	printf("ADC16: %d\n", tempraw);
 }
 
-void ADC_init()
+void ADC_init(void)
 {
 	ADC_InitTypeDef  ADC_InitStructureure;
 	// PCLK2 is the APB2 clock 

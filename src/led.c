@@ -8,7 +8,7 @@
 // *************************************** function prototypes ************************************
 
 /**************************************************************************************************
-*  					get_led_structure()					  *
+*  					get_led_structure(void)					  *
 **************************************************************************************************/
 led_structure get_led_structure(char led_port, int led_pin)
 {
@@ -105,7 +105,7 @@ led_structure get_led_structure(char led_port, int led_pin)
 }
 
 /**************************************************************************************************
-*  					led_init_structure()					  *
+*  					led_init_structure(void)					  *
 **************************************************************************************************/
 void led_init_structure(led_structure structure)
 {
@@ -132,19 +132,19 @@ void led_init_structure(led_structure structure)
 }
 
 /**************************************************************************************************
-*  					led_init()						  *
+*  					led_init(void)						  *
 **************************************************************************************************/
-void led_init(char* led)
+void led_init(char *led)
 {
 	char 	led_port = led[1];
-	char*	cled_pin = &led[2];
+	char	*cled_pin = &led[2];
 	uint8_t led_pin = atoi(cled_pin);
 
 	led_init_structure(get_led_structure(led_port, led_pin));
 }
 
 /**************************************************************************************************
-*  					led_set()						  *
+*  					led_set(void)						  *
 **************************************************************************************************/
 void led_set(led_structure structure, uint8_t status)
 {
@@ -166,14 +166,13 @@ void led_set(led_structure structure, uint8_t status)
 }
 
 /**************************************************************************************************
-*  					led_init()						  *
+*  					led_init(void)						  *
 **************************************************************************************************/
-//void led(char led_port, int led_pin, uint8_t led_state)
-void led(char* led, uint8_t led_state)
+void led(char *led, uint8_t led_state)
 {
 	// XXX moje parsiranje djeluje da uspori iako ni Sys ni RTC stoperice to ne potvrdjuju :-/
 	char 	led_port = led[1];
-	char*	cled_pin = &led[2];
+	char	*cled_pin = &led[2];
 	uint8_t led_pin = atoi(cled_pin);
 
 	if((led_state > 2) || (led_state < 0))

@@ -54,7 +54,7 @@ void  ssd1306_data(uint8_t cmd)
     i2c_stop();
 }
 
-void oled_io_init()
+void oled_io_init(void)
 {
 	printf("oled_io_init pocetak\n");
 	GPIO_InitTypeDef GPIO_InitStruct;
@@ -126,7 +126,7 @@ void ssd1306_fillRectangle(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, bool 
 	i2c_stop();
 }
 
-void crtaj_a()
+void crtaj_a(void)
 {
 	//uint8_t t = 
 }

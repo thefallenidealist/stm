@@ -34,9 +34,9 @@ int32_t  BMP180_T;
 int32_t  BMP180_p;
 
 /**************************************************************************************************
-*  					bmp180_init()						  *
+*  					bmp180_init(void)						  *
 **************************************************************************************************/
-void bmp180_init()
+void bmp180_init(void)
 {
 	GPIO_InitTypeDef GPIO_InitStruct;
 	I2C_InitTypeDef I2C_InitStruct;
@@ -61,7 +61,7 @@ void bmp180_init()
 }
 
 /**************************************************************************************************
-*  					bmp180_write()						  *
+*  					bmp180_write(void)						  *
 **************************************************************************************************/
 uint16_t bmp180_write(uint8_t reg, uint8_t data)
 {
@@ -110,7 +110,7 @@ uint16_t bmp180_write(uint8_t reg, uint8_t data)
 }
 
 /**************************************************************************************************
-*  					bmp180_read()						  *
+*  					bmp180_read(void)						  *
 **************************************************************************************************/
 //uint16_t bmp180_read(uint8_t reg)
 int16_t bmp180_read(uint8_t reg)
@@ -198,9 +198,9 @@ int16_t bmp180_read(uint8_t reg)
 }
 
 /**************************************************************************************************
-*  					bmp180_calibration()					  *
+*  					bmp180_calibration(void)					  *
 **************************************************************************************************/
-void bmp180_calibration()
+void bmp180_calibration(void)
 {
 	BMP180_AC1 = bmp180_read(0xAA);
 	BMP180_AC2 = bmp180_read(0xAC);
@@ -230,9 +230,9 @@ void bmp180_calibration()
 }
 
 /**************************************************************************************************
-*  					bmp180_temperature()					  *
+*  					bmp180_temperature(void)					  *
 **************************************************************************************************/
-uint16_t bmp180_temperature()
+uint16_t bmp180_temperature(void)
 {
 	bmp180_write(0xF4, 0x2E);		// reci mu da naracuna temperaturu
 	delay_ms(5);
@@ -250,9 +250,9 @@ uint16_t bmp180_temperature()
 }
 
 /**************************************************************************************************
-*  					bmp180_pressure()					  *
+*  					bmp180_pressure(void)					  *
 **************************************************************************************************/
-uint32_t bmp180_pressure()
+uint32_t bmp180_pressure(void)
 {
 	uint8_t OSS = 3;	// oversampling OSS = 0..3
 	bmp180_write(0xF4, 0x34 + (OSS << 6));	// pressure
@@ -308,7 +308,7 @@ uint32_t bmp180_pressure()
 	return BMP180_p;
 }
 
-void bmp180_print()
+void bmp180_print(void)
 {		
 	uint16_t temperature = bmp180_temperature();
 	uint32_t pressure = bmp180_pressure();
@@ -322,7 +322,7 @@ void bmp180_print()
 	printf("BMP180:\t\t%d.%d °C\t%u.%u hPa\t%.1f m\n", temperature/10, temperature%10, pressure/100, (pressure%100)/10, altitude);
 }
 
-void bmp180_example()
+void bmp180_example(void)
 {
 	bmp180_init();
 	bmp180_calibration();

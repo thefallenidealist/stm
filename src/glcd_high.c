@@ -167,7 +167,6 @@ void glcd_setY(uint16_t y0, uint16_t y1)
 }
 
 void glcd_setXY(uint16_t x0, uint16_t x1, uint16_t y0, uint16_t y1)
-//void glcd_setXY(uint16_t x0, uint16_t x1, uint16_t y0, uint16_t y1)		// XXX magija: mora bit barem jedan unsigned int (uint32_t)
 {
 	// kao set page u koji ces pisat
 	if(glcd_orientation == P1)
@@ -216,7 +215,6 @@ void glcd_hline(uint16_t x0, uint16_t y0, uint16_t length, uint16_t color)
 }
 
 		// ne toliko koristena funkcija
-//void glcd_vline(unsigned int x0, unsigned int y0, unsigned int length, unsigned int color)
 void glcd_vline(uint16_t x0, uint16_t y0, uint16_t length, uint16_t color)
 {
 	if((glcd_orientation == P1) || (glcd_orientation == P2))

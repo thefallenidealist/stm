@@ -1,6 +1,7 @@
 #include <stdio.h>
 //#include <stdlib.h> 	// malloc
-#include "usart1.h"
+#include <string.h>
+#include "usart.h"
 #include "led.h"
 #include "delay.h"
 //#include "adc1.h"
@@ -9,26 +10,13 @@
 //#include "eeprom.h" 	// TODO provjerit
 //#include "glcd_high.h"
 //#include "oled.h"
-#include "usart1.h"
-#include "usart2.h"
+#include "clang_patch.h"
 
-//volatile uint16_t cnt = 0;
-#define MAX_STRLEN	100
-volatile char received_string[MAX_STRLEN];
-
-typedef enum
-{
-	RX_IN_PROGRESS,		// 0
-	RX_DONE,		// 1
-	RX_PRINTED		// 2
-} rx_event_t;
-
-rx_event_t usart1_rx_event = RX_PRINTED;
-
-
-int main()
+void main(void)
 {
 	USART1_init(115200);
+	//USART2_init(115200);
+	USART2_init(9600);
 
 	printf("\033c");	// clear
 	printf("\t\t\t\tSTM32 pocetak\n");
@@ -91,47 +79,19 @@ int main()
 
 		if (usart1_rx_event == RX_DONE)
 		{
-			printf("USART1 received: %s\n", received_string);
+			printf("USART1 received: %s\n", usart1_rx_string_arr);
+			//usart1_parse();
+			//printf("USART1 to prosljedjuje USART2\n");
+			//usart2_puts(usart1_rx_string_arr);
+			//printf("USART1 gotov\n");
 			usart1_rx_event = RX_PRINTED;
 		}
-
-		/*
-		printf("\t\t\tuptime: %u\n", get_uptime());
-		printf("time_h: %d\n", RTC_get_h());
-		printf("time_m: %d\n", RTC_get_m());
-		printf("time_s: %d\n", RTC_get_s());
-		*/
-
-	}
-	//return 0;
-}
-
-
-//void USART1_IRQHandler()
-void USART1_IRQHandler(void)
-{
-	if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
-	{
-		//g_rx_done=0;
-		usart1_rx_event = RX_IN_PROGRESS;
-		
-		static uint8_t cnt = 0; // this counter is used to determine the string length
-		char rx_char = USART_ReceiveData(USART1);
-
-		if( (t != '\n') && (cnt < MAX_STRLEN) )
+		if (usart2_rx_event == RX_DONE)
 		{
-			received_string[cnt] = rx_char;
-			cnt++;
+			printf("USART2 received: %s\n", usart2_rx_string_arr);
+			usart2_rx_event = RX_PRINTED;
 		}
-		else
-		{
-			cnt = 0;
-			usart1_rx_event = RX_DONE;
-		}
-	}
-	// if esle USART_IT_TXE
-	else
-	{
-		//USART_ClearFlag(USART3, USART_FLAG_CTS);
+		//usart2_puts("abcd");
+		//USART2->DR = 'a';
 	}
 }

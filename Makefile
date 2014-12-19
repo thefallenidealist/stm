@@ -22,7 +22,8 @@ DIRS 	=  -Isrc \
 	   -Isrc/lib\
 	   -I.
 COMMON_FLAGS 	 = $(TARGET) $(CPU) $(OPTS) -nostdlib -mfloat-abi=soft -Wall
-CCFLAGS 	 = $(COMMON_FLAGS) $(DEFINES) $(DIRS) -fno-short-enums -Wall
+CCFLAGS 	 = $(COMMON_FLAGS) $(DEFINES) $(DIRS) -fno-short-enums \
+		   -ffreestanding	# void main(void)
 ASFLAGS 	 = $(COMMON_FLAGS) 
 
 LD_DIRS		 = -L$(DIR_TOOLS)/lib/gcc/arm-none-eabi/4.8.4/armv7-m	#libgcc

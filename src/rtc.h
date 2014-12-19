@@ -13,15 +13,15 @@
 #include "stm32f10x_bkp.h" 	// treba za RTC, battery backuped registers
 #include "stm32f10x_pwr.h" 	// treba za bkp
 
-uint32_t get_uptime();
-void RTC_init2();
-void time_zapisi();
-void RTC_init();
-void RTC_update();
-void time_print();
-uint8_t RTC_get_h();
-uint8_t RTC_get_m();
-uint8_t RTC_get_s();
+uint32_t get_uptime(void);
+void RTC_init2(void);
+void time_zapisi(void);
+void RTC_init(void);
+void RTC_update(void);
+void time_print(void);
+uint8_t RTC_get_h(void);
+uint8_t RTC_get_m(void);
+uint8_t RTC_get_s(void);
 void RTC_IRQHandler(void);
 
 #endif
