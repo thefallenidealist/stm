@@ -4,31 +4,8 @@
  *  Created on: 2 Nov 2010
  *      Author: nanoage.co.uk
  */
-#include <stdio.h>
-#include <errno.h>
-#include <sys/stat.h>
-#include <sys/times.h>
-#include <unistd.h> 	// STDIN_FILENO
-#include "stm32f10x_usart.h"
-//#include "errno.h"
-//#include "usart1_put.c"
-extern int __io_getchar(void);
-extern char usart_char;
 
-#ifndef STDOUT_USART
-  #define STDOUT_USART 1
-#endif
-
-#ifndef STDERR_USART
-  #define STDERR_USART 1
-#endif
-
-#ifndef STDIN_USART
-  #define STDIN_USART 1
-#endif
-
-#undef errno
-extern int errno;
+#include "newlib_stubs.h"
 
 /*
  environ
@@ -174,31 +151,6 @@ caddr_t _sbrk(int incr)
 	return (caddr_t) prev_heap_end;
 }
 
-// novi sbrk
-// https://balau82.wordpress.com/2010/12/16/using-newlib-in-arm-bare-metal-programs/
-
-/*
-char *heap_end = 0;
-caddr_t _sbrk(int incr)
-{
-	extern char heap_low; // Defined by the linker
-	extern char heap_top; // Defined by the linker
-	char *prev_heap_end;
-
-	if (heap_end == 0)
-	{
-		heap_end = &heap_low;
-	}
-	prev_heap_end = heap_end;
-
-	if (heap_end + incr > &heap_top)
-	{
-	// Heap and stack collision 
-	return (caddr_t)0;
-	}
-}
-*/
-
 /*
  read
  Read a character to a file. `libc' subroutines will use this system routine for input from all files, including stdin
@@ -213,16 +165,18 @@ int _read(int file, char *ptr, int len)
 		case STDIN_FILENO:
 			for (n = 0; n < len; n++)
 			{
-				/*
-#if   STDIN_USART == 1
-				while ((USART1->SR & USART_FLAG_RXNE) == (uint16_t)RESET) {}
-				char c = (char)(USART1->DR & (uint16_t)0x01FF);
+#if STDIN_USART == 1
+				//while ((USART1->SR & USART_FLAG_RXNE) == (uint16_t)RESET);
+				while ((USART1->SR & USART_FLAG_RXNE) == (uint16_t)RESET);
+				char received = (char)(USART1->DR & (uint16_t)0x01FF);		// USART_ReceiveData
+#elif STDIN_USART == 2
+				while ((USART2->SR & USART_FLAG_RXNE) == (uint16_t)RESET);
+				char received = (char)(USART2->DR & (uint16_t)0x01FF);		// USART_ReceiveData
+#elif STDIN_USART == 3
+				while ((USART3->SR & USART_FLAG_RXNE) == (uint16_t)RESET);
+				char received = (char)(USART3->DR & (uint16_t)0x01FF);		// USART_ReceiveData
 #endif
-				*ptr++ = c;
-*/
-				//*ptr++ = __io_getchar();
-				// XXX
-				//*ptr++ = usart_char;	// interrupt se pobrine
+				*ptr++ = received;
 				num++;
 			}
 			break;
@@ -281,29 +235,42 @@ int _wait(int *status)
 int _write(int file, char *ptr, int len)
 {
 	int n;
-	switch (file) {
-	case STDOUT_FILENO: //stdout
-		for (n = 0; n < len; n++)
-		{
+	switch (file)
+	{
+		case STDOUT_FILENO: //stdout
+			for (n = 0; n < len; n++)
+			{
 #if STDOUT_USART == 1
-			while ((USART1->SR & USART_FLAG_TC) == (uint16_t)RESET) {}
-			USART1->DR = (*ptr++ & (uint16_t)0x01FF);
+				while ((USART1->SR & USART_FLAG_TC) == (uint16_t)RESET) {}
+				USART1->DR = (*ptr++ & (uint16_t)0x01FF);
+#elif STDOUT_USART == 2
+				while ((USART2->SR & USART_FLAG_TC) == (uint16_t)RESET) {}
+				USART2->DR = (*ptr++ & (uint16_t)0x01FF);
+#elif STDOUT_USART == 3
+				while ((USART3->SR & USART_FLAG_TC) == (uint16_t)RESET) {}
+				USART3->DR = (*ptr++ & (uint16_t)0x01FF);
 #endif
-		}
+			}
 
-		break;
-	case STDERR_FILENO: // stderr
-		for (n = 0; n < len; n++)
-		{
+			break;
+		case STDERR_FILENO: // stderr
+			for (n = 0; n < len; n++)
+			{
 #if STDERR_USART == 1
-			while ((USART1->SR & USART_FLAG_TC) == (uint16_t)RESET) {}
-			USART1->DR = (*ptr++ & (uint16_t)0x01FF);
+				while ((USART1->SR & USART_FLAG_TC) == (uint16_t)RESET) {}
+				USART1->DR = (*ptr++ & (uint16_t)0x01FF);
+#elif STDERR_USART == 2
+				while ((USART2->SR & USART_FLAG_TC) == (uint16_t)RESET) {}
+				USART2->DR = (*ptr++ & (uint16_t)0x01FF);
+#elif STDERR_USART == 3
+				while ((USART3->SR & USART_FLAG_TC) == (uint16_t)RESET) {}
+				USART3->DR = (*ptr++ & (uint16_t)0x01FF);
 #endif
-		}
-		break;
-	default:
-	errno = EBADF;
-	return -1;
+			}
+			break;
+		default:
+		errno = EBADF;
+		return -1;
 	}
 	return len;
 }

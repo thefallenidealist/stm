@@ -15,9 +15,10 @@ DIR_BIN = ./bin
 TARGET	= -target thumb-unknown-eabi		# clang
 ARCH	= armv7-m
 CPU	= -mcpu=cortex-m3 
+#DEFINES	= -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER 
 DEFINES	= -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER 
-OPTS	= -O0 -g
-#OPTS	= -O2
+OPTS	= -O0 -g -fno-omit-frame-pointer
+OPTS	= -O3
 DIRS 	=  -Isrc \
 	   -Isrc/lib\
 	   -I.
@@ -52,7 +53,7 @@ DEPEND_C = $(shell ./skriptica.sh)
 
 SRC_S = $(wildcard src/lib/*.s)
 #SRC_C = $(DEPEND_C:.x=.c) 	# ne smije ovo bit, inace duplicira OBJ
-SRC_C += src/newlib_stubs.c
+#SRC_C += src/newlib_stubs.c
 
 # makni foldere, dodaj prefix, preimenuj .x u .o
 OBJS = $(addprefix $(DIR_OBJ)/, $(notdir $(DEPEND_C:.x=.o)))

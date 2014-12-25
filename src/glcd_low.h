@@ -40,7 +40,7 @@
 #define GLCD_RESET_PORT GPIOB
 #define GLCD_RESET_PIN	GPIO_Pin_2	// PB2
 #define GLCD_CS_PORT	GPIOB
-#define GLCD_CS_PIN	GPIO_Pin_10	// PB10
+#define GLCD_CS_PIN	GPIO_Pin_13	// PB10
 // *************************************** variables **********************************************
 
 // *************************************** function prototypes ************************************

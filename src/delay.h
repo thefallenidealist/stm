@@ -14,7 +14,13 @@
 void delay_init(void);
 void delay_us(uint32_t us);
 void delay_ms(uint32_t ms);
-uint32_t get_us(void);
+void delay_s(uint32_t s);
+uint32_t get_uptime_us(void);
+uint32_t get_uptime_ms(void);
+uint32_t get_uptime_s(void);
+//uint32_t get_uptime(void);
+const char *get_uptime(void);
+//char *get_uptime(void);
 void SysTick_Handler(void);
 
 #endif
