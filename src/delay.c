@@ -8,10 +8,11 @@
 #include "delay.h"
 #include <string.h>
 // *************************************** variables **********************************************
+// private
 volatile static uint32_t SysTick_var;	// timer is 24b countdown
 volatile static uint32_t uptime_us=0;	
-//volatile uint64_t uptime_us=0;	// uint64_t now working
 static char uptime_str[35] = {};	// 34 je maksimalno za 170 godina
+// nije volatile da se ne budi kompajler (kasnije treba bit const)
 
 /**************************************************************************************************
 *  					delay_init(void)						  *
@@ -19,11 +20,13 @@ static char uptime_str[35] = {};	// 34 je maksimalno za 170 godina
 void delay_init(void)
 {
 	if(SysTick_Config(SystemCoreClock / 1000000) !=0)	// tick is 1 us
+	{
 		while(1);	// error
+	}
 }
 
 /**************************************************************************************************
-*  					delay_us(void)						  *
+*  					delay_us()						  *
 **************************************************************************************************/
 void delay_us(uint32_t us)
 {
@@ -32,7 +35,7 @@ void delay_us(uint32_t us)
 }
 
 /**************************************************************************************************
-*  					delay_ms(void)						  *
+*  					delay_ms()						  *
 **************************************************************************************************/
 void delay_ms(uint32_t ms)
 {
@@ -40,7 +43,7 @@ void delay_ms(uint32_t ms)
 }
 
 /**************************************************************************************************
-*  					delay_ms(void)						  *
+*  					delay_ms()						  *
 **************************************************************************************************/
 void delay_s(uint32_t s)
 {
@@ -48,7 +51,7 @@ void delay_s(uint32_t s)
 }
 
 /**************************************************************************************************
-*  					get_uptime_us(void)					  *
+*  					get_uptime_us()					  *
 **************************************************************************************************/
 uint32_t get_uptime_us(void)
 {
@@ -74,9 +77,7 @@ uint32_t get_uptime_s(void)
 /**************************************************************************************************
 *  					get_uptime(void)					  *
 **************************************************************************************************/
-//uint32_t get_uptime(void)
 const char *get_uptime(void)		// const znaci da ce se return value samo citati izvan funkcije, valjda
-//char *get_uptime(void)
 {
 	uint16_t uptime_ms = 0;
 	uint8_t  uptime_s  = 0;
@@ -103,14 +104,8 @@ const char *get_uptime(void)		// const znaci da ce se return value samo citati i
 		uptime_d++;
 	}
 
-	sprintf(uptime_str, "uptime: %d days, %.2d:%.2d:%.2d.%.3d", uptime_d, uptime_h, uptime_m, uptime_s, uptime_ms);
-
-	/*
-	printf("uptime: %d days, %.2d:%.2d:%.2d.%.3d\n", uptime_d, uptime_h, uptime_m, uptime_s, uptime_ms);
-
-	printf("duzina: %lu\n", strlen(uptime_str));	// nema zu
-	printf("\t\t\t\t string uptime: %s\n", uptime_str);
-	*/
+	//sprintf(uptime_str, "uptime: %d days, %.2d:%.2d:%.2d.%.3d", uptime_d, uptime_h, uptime_m, uptime_s, uptime_ms);
+	sprintf(uptime_str, "uptime: %d days, %.2d:%.2d:%.2d", uptime_d, uptime_h, uptime_m, uptime_s);
 
 	return uptime_str;
 }
@@ -123,7 +118,7 @@ void SysTick_Handler(void)
 	// IRQ every 1 us
 	if(SysTick_var != 0)
 	{
-		SysTick_var--;
-		uptime_us++;
+		SysTick_var--;	// za delay, korisnik je moze mijenjat
+		uptime_us++;	// za uptime, korisnik je ne mijenja
 	}
 }

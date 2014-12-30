@@ -1,7 +1,12 @@
 # created 141129
 NAME	= main
 
+# promijenit i dolje COMMON_FLAGS
 CC  	= clang35
+#CC	= arm-none-eabi-gcc
+# ne moze se if koristit izvan recepta
+UNAME := $(shell uname -m)	# varijabla iz shella
+
 #DIR_TOOLS	= /usr/local/gcc-arm-embedded-*/
 # linker ne voli * nit tabovi nit komentare u bilo cemu sto ima varijablu za njega. Linker je pizda.
 DIR_TOOLS	= /usr/local/gcc-arm-embedded-4_8-2014q3-20140805
@@ -12,29 +17,37 @@ SIZE	= $(DIR_TOOLS)/bin/arm-none-eabi-size
 DIR_OBJ = ./obj
 DIR_BIN = ./bin
 
-TARGET	= -target thumb-unknown-eabi		# clang
+TARGET	= -target thumb-unknown-eabi
 ARCH	= armv7-m
 CPU	= -mcpu=cortex-m3 
-#DEFINES	= -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER 
 DEFINES	= -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER 
 OPTS	= -O0 -g -fno-omit-frame-pointer
-OPTS	= -O3
+#OPTS	= -Os
 DIRS 	=  -Isrc \
 	   -Isrc/lib\
 	   -I.
-COMMON_FLAGS 	 = $(TARGET) $(CPU) $(OPTS) -nostdlib -mfloat-abi=soft -Wall
+
+# clang
+#COMMON_FLAGS 	 = $(TARGET) $(CPU) $(OPTS) -nostdlib -mfloat-abi=soft -Wall
+CLANG_FLAGS	 = $(TARGET)
+GCC_FLAGS 	 = -std=c99 -mthumb -mno-thumb-interwork -fno-common -fno-strict-aliasing -fmessage-length=0 -fno-builtin -Wp,-w 
+COMMON_FLAGS 	 = $(CPU) $(OPTS) -nostdlib -mfloat-abi=soft -Wall $(CLANG_FLAGS)
+#COMMON_FLAGS 	 = $(CPU) $(OPTS) -nostdlib -mfloat-abi=soft -Wall $(GCC_FLAGS)
 CCFLAGS 	 = $(COMMON_FLAGS) $(DEFINES) $(DIRS) -fno-short-enums \
 		   -ffreestanding	# void main(void)
 ASFLAGS 	 = $(COMMON_FLAGS) 
 
 LD_DIRS		 = -L$(DIR_TOOLS)/lib/gcc/arm-none-eabi/4.8.4/armv7-m	#libgcc
 LD_DIRS		+= -L$(DIR_TOOLS)/arm-none-eabi/lib/armv7-m 		# libc, libm
-LINKER_FILE = $(wildcard src/lib/*.ld)
-LD_FLAGS = -nostartfiles -nostdlib -nostartupfiles --gc-sections  \
-	   --no-enum-size-warning \
-	   -Map $(DIR_BIN)/$(NAME).elf.map  -T $(LINKER_FILE)  \
-	   $(LD_DIRS) $(OBJS) \
-	   --start-group -lgcc -lc -lm --end-group 
+LINKER_FILE 	 = $(wildcard src/lib/*.ld)
+
+# --gc-sections ne smije bit za GCC
+#LD_FLAGS 	 = -nostartfiles -nostdlib -nostartupfiles --gc-sections 
+LD_FLAGS 	 = -nostartfiles -nostdlib -nostartupfiles \
+		   --no-enum-size-warning \
+		   -Map $(DIR_BIN)/$(NAME).elf.map  -T $(LINKER_FILE)  \
+		   $(LD_DIRS) $(OBJS) \
+		   --start-group -lgcc -lc -lm --end-group 
 
 # mora bit izvan recepata
 # mora bit :=, valjda onda samo jednom pokrene i ne razjebe sve ostalo
@@ -62,8 +75,8 @@ OBJS += $(addprefix $(DIR_OBJ)/, $(notdir  $(SRC_C:.c=.o)))	# newlib fajl nije n
 
 #@$(CC) -MM $(CCFLAGS) $< > $(DIR_OBJ)/$*.d
 
-
 $(NAME).elf: $(OBJS)
+	@printf "\t\t kompajler: $(CC)\n"
 	@printf "\t\t Linking to ELF\n"
 	@$(LD) $(LD_FLAGS) -o $(DIR_BIN)/$(NAME).elf
 	@printf "\t\t size:\n"
@@ -72,7 +85,6 @@ $(NAME).elf: $(OBJS)
 	@$(OBJCOPY) -O binary $(DIR_BIN)/$(NAME).elf $(DIR_BIN)/$(NAME).bin
 
 # compile and generate dependency info
-#obj/%.o: src/%.c
 $(DIR_OBJ)/%.o: src/%.c
 	@printf "\t\t Kuvam src $<\n"
 	@$(CC) $(CCFLAGS) -c -o $@ $<
@@ -86,6 +98,8 @@ $(DIR_OBJ)/%.o: src/lib/%.s
 	@$(CC) $(ASFLAGS) -o $@ -c $<
 
 env:
+	@echo UNAME:
+	@echo $(UNAME)
 	@echo SRC_C:
 	@echo $(SRC_C)
 	@echo ""
@@ -109,9 +123,6 @@ env:
 	@echo ""
 	@echo $(PWD)
 
-print-depend:
-	@echo $(DEPEND_C)
-	
 clean:
 	@printf "\t\t Cleaning\n"
 	@rm -f $(DIR_OBJ)/*.o $(DIR_BIN)/$(NAME)* $(DIR_OBJ)/*.d

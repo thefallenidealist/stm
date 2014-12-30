@@ -12,14 +12,17 @@
 **************************************************************************************************/
 led_structure get_led_structure(char led_port, int led_pin)
 {
+
+	// dobije char, npr PA	i int, npr 2
+
 	led_structure ledOut = {};
 
-	if((led_port == 'A') || (led_port == 'a'))
+	if ((led_port == 'A') || (led_port == 'a'))
 	{
 		ledOut.rcc = RCCA;
 		ledOut.port = PORTA;
 	}
-	else if((led_port == 'B') || (led_port == 'b'))
+	else if ((led_port == 'B') || (led_port == 'b'))
 	{
 		ledOut.rcc = RCCB;
 		ledOut.port = PORTB;
@@ -115,8 +118,8 @@ void led_init_structure(led_structure structure)
 	// tada GLCD-ov prvi _bg ima bijelih crta na crnoj pozadini iako novi _bg to rijesi
 	// kocka zna iscrtat po liniju debljine 1px na mjesto gdje ne treba (i to u vrijeme kad kocka miruje)
 
-	//if( (structure.rcc != NULL) && (structure.port != NULL) && (structure.pin != NULL) )
-	if( (structure.rcc != (int)NULL) && (structure.port != NULL) && (structure.pin != (int)NULL) )
+	//if ( (structure.rcc != NULL) && (structure.port != NULL) && (structure.pin != NULL) )
+	if ( (structure.rcc != (int)NULL) && (structure.port != NULL) && (structure.pin != (int)NULL) )
 	{
 		RCC_APB2PeriphClockCmd(structure.rcc, ENABLE);
 
@@ -136,9 +139,13 @@ void led_init_structure(led_structure structure)
 **************************************************************************************************/
 void led_init(char *led)
 {
+	// TODO razne provjere
+
 	char 	led_port = led[1];
-	char	*cled_pin = &led[2];
-	uint8_t led_pin = atoi(cled_pin);
+	//char	*cled_pin = &led[2];
+	//uint8_t led_pin = atoi(cled_pin);
+	char	cled_pin = led[2];
+	uint8_t led_pin = atoi(&cled_pin);
 
 	led_init_structure(get_led_structure(led_port, led_pin));
 }
@@ -149,13 +156,13 @@ void led_init(char *led)
 void led_set(led_structure structure, uint8_t status)
 {
 	//if( (structure.rcc != NULL) && (structure.port != NULL) && (structure.pin != NULL) )
-	if( (structure.rcc != (int)NULL) && (structure.port != NULL) && (structure.pin != (int)NULL) )
+	if ( (structure.rcc != (int)NULL) && (structure.port != NULL) && (structure.pin != (int)NULL) )
 	{
-		if((status == 1) || (status == 0))
+		if ((status == 1) || (status == 0))
 			GPIO_WriteBit(structure.port, structure.pin, status);
-		else if(status == 2)	// toggle
+		else if (status == 2)	// toggle
 		{
-			if(GPIO_ReadInputDataBit(structure.port, structure.pin) == 0)
+			if (GPIO_ReadInputDataBit(structure.port, structure.pin) == 0)
 				GPIO_WriteBit(structure.port, structure.pin, 1);
 			else
 				GPIO_WriteBit(structure.port, structure.pin, 0);
@@ -166,16 +173,17 @@ void led_set(led_structure structure, uint8_t status)
 }
 
 /**************************************************************************************************
-*  					led_init(void)						  *
+*  					led()							  *
 **************************************************************************************************/
 void led(char *led, uint8_t led_state)
 {
 	// XXX moje parsiranje djeluje da uspori iako ni Sys ni RTC stoperice to ne potvrdjuju :-/
+	// TODO razne provjere
 	char 	led_port = led[1];
 	char	*cled_pin = &led[2];
 	uint8_t led_pin = atoi(cled_pin);
 
-	if((led_state > 2) || (led_state < 0))
+	if ((led_state > 2) || (led_state < 0))
 	{
 		printf("led(): wrong state\n");
 		// return kurac;
