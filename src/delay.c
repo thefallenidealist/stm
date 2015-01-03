@@ -15,11 +15,12 @@ static char uptime_str[35] = {};	// 34 je maksimalno za 170 godina
 // nije volatile da se ne budi kompajler (kasnije treba bit const)
 
 /**************************************************************************************************
-*  					delay_init(void)						  *
+*  					delay_init(void)					  *
 **************************************************************************************************/
 void delay_init(void)
 {
-	if(SysTick_Config(SystemCoreClock / 1000000) !=0)	// tick is 1 us
+	if(SysTick_Config(SystemCoreClock / 1000000) !=0)	// 1000000 Hz 1000 kHz	1Mhz	1us
+								// mislim da ne ticka bas svaku us
 	{
 		while(1);	// error
 	}
@@ -79,15 +80,26 @@ uint32_t get_uptime_s(void)
 **************************************************************************************************/
 const char *get_uptime(void)		// const znaci da ce se return value samo citati izvan funkcije, valjda
 {
-	uint16_t uptime_ms = 0;
-	uint8_t  uptime_s  = 0;
-	uint8_t  uptime_m  = 0;
-	uint8_t  uptime_h  = 0;
-	uint16_t uptime_d  = 0;	// 170 godina
+	volatile static uint16_t uptime_ms = 0;
+	volatile static uint8_t  uptime_s  = 0;
+	volatile static uint8_t  uptime_m  = 0;
+	volatile static uint8_t  uptime_h  = 0;
+	volatile static uint16_t uptime_d  = 0;	// 170 godina
 
-	uptime_ms = uptime_us/1000;
+	//uptime_ms = uptime_us/1000;
+	//uptime_ms = get_uptime_us()/1000;
 	uptime_s  = uptime_ms/1000;
 
+	printf("DEBUG: h:%d m:%d s:%d ms:%d us:%d\n", uptime_h, uptime_m, uptime_s, uptime_ms, uptime_us);
+
+	// XXX sekunde idu do 64 pa onda ide 3-4x 0 sekundi pa krene isponova od 00
+	// XXX ms je 16b (64k) i tek nakon sto se prelije dodje u nulu
+
+	if (uptime_ms >= 1000)
+	{
+		uptime_ms = 0;
+		uptime_s++;
+	}
 	if (uptime_s >= 60)
 	{
 		uptime_s = 0;

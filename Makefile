@@ -21,8 +21,8 @@ TARGET	= -target thumb-unknown-eabi
 ARCH	= armv7-m
 CPU	= -mcpu=cortex-m3 
 DEFINES	= -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER 
-OPTS	= -O0 -g -fno-omit-frame-pointer
-#OPTS	= -Os
+#OPTS	= -O0 -g 
+OPTS	= -O3
 DIRS 	=  -Isrc \
 	   -Isrc/lib\
 	   -I.
@@ -41,6 +41,8 @@ LD_DIRS		 = -L$(DIR_TOOLS)/lib/gcc/arm-none-eabi/4.8.4/armv7-m	#libgcc
 LD_DIRS		+= -L$(DIR_TOOLS)/arm-none-eabi/lib/armv7-m 		# libc, libm
 LINKER_FILE 	 = $(wildcard src/lib/*.ld)
 
+
+# -nostartupfiles	ne linka crt*.o objektne fajlove
 # --gc-sections ne smije bit za GCC
 #LD_FLAGS 	 = -nostartfiles -nostdlib -nostartupfiles --gc-sections 
 LD_FLAGS 	 = -nostartfiles -nostdlib -nostartupfiles \

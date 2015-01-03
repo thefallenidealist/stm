@@ -6,7 +6,7 @@ _stack_end = 0x20005000;
 
 /* Generate a link error if heap and stack don't fit into RAM */
 _Min_Heap_Size = 0;		/* required amount of heap  */
-_Min_Stack_Size = 0x2000;	/* required amount of stack 0x100 orig*/
+_Min_Stack_Size = 0x200;	/* required amount of stack 0x100 orig*/
 	/* 2000 = 8 kB */
 
 /* Specify the memory areas */
