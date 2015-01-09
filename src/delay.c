@@ -86,11 +86,11 @@ const char *get_uptime(void)		// const znaci da ce se return value samo citati i
 	volatile static uint8_t  uptime_h  = 0;
 	volatile static uint16_t uptime_d  = 0;	// 170 godina
 
-	//uptime_ms = uptime_us/1000;
+	uptime_ms = uptime_us/1000;
 	//uptime_ms = get_uptime_us()/1000;
 	uptime_s  = uptime_ms/1000;
 
-	printf("DEBUG: h:%d m:%d s:%d ms:%d us:%d\n", uptime_h, uptime_m, uptime_s, uptime_ms, uptime_us);
+	//printf("DEBUG: h:%d m:%d s:%d ms:%d us:%d\n", uptime_h, uptime_m, uptime_s, uptime_ms, uptime_us);
 
 	// XXX sekunde idu do 64 pa onda ide 3-4x 0 sekundi pa krene isponova od 00
 	// XXX ms je 16b (64k) i tek nakon sto se prelije dodje u nulu
