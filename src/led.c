@@ -179,8 +179,8 @@ void led(char *led, uint8_t led_state)
 {
 	// XXX moje parsiranje djeluje da uspori iako ni Sys ni RTC stoperice to ne potvrdjuju :-/
 	// TODO razne provjere
-	char 	led_port = led[1];
-	char	*cled_pin = &led[2];
+	char led_port	= led[1];
+	char *cled_pin	= &led[2];
 	uint8_t led_pin = atoi(cled_pin);
 
 	if ((led_state > 2) || (led_state < 0))

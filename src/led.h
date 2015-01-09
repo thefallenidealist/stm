@@ -9,9 +9,11 @@
 #include "stm32f10x_rcc.h"
 #include "stm32f10x_gpio.h"
 // *************************************** defines ************************************************
+/*
 #define LEDx_RCC	RCC_APB2Periph_GPIOB
 #define LEDx_PORT	GPIOB
 #define LEDx_PIN	GPIO_Pin_0
+*/
 
 #define LED0_PIN	GPIO_Pin_0
 #define LED1_PIN	GPIO_Pin_1
@@ -41,9 +43,10 @@ typedef struct
 {
 	uint32_t rcc;
 	// compiler specific
-	__typeof__ (LEDx_PORT) port;
+	//__typeof__ (LEDx_PORT) port;
 	//uint32_t port;
 	//struct GPIO_TypeDef *port;		// note: expected 'struct GPIO_TypeDef *' but argument is of type 'struct GPIO_TypeDef *'
+	GPIO_TypeDef *port;
 	uint16_t pin;
 } led_structure;
 
