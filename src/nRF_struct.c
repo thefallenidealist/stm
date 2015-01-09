@@ -20,7 +20,7 @@
 #define PIN15	GPIO_Pin_15
 */
 
-void spi_init(uint8_t spi_number)
+static void spi_init(uint8_t spi_number)
 {
 	GPIO_InitTypeDef	GPIO_InitStructure;
 	SPI_InitTypeDef		SPI_InitStructure;
@@ -56,7 +56,7 @@ void spi_init(uint8_t spi_number)
 	}
 }
 
-int parse_spi(const char *arg)
+static int parse_spi(const char *arg)
 //int parse_spi(nRF_t *arg)
 {
 	int ret = -9;	// defaultna, pogresna vrijednost
@@ -97,7 +97,7 @@ int parse_spi(const char *arg)
 }
 
 //void gpio_init(char port, uint8_t pin, bool direction)
-uint8_t gpio_init(char port, uint8_t pin, direction_t direction)
+static uint8_t gpio_init(char port, uint8_t pin, direction_t direction)
 {
 
 	//printf("gpio_init dobio: port: %c, pin: %d, direction: %d\n", port, pin, direction);
@@ -244,7 +244,7 @@ uint8_t gpio_init(char port, uint8_t pin, direction_t direction)
 
 // ocekuje da ce dobit nesto poput "CS", PA2
 //int parse_gpio(const char *name, const char *arg)
-int parse_gpio(const char *name, const char *arg, direction_t direction)
+static int parse_gpio(const char *name, const char *arg, direction_t direction)
 {
 	// u ovo ce zapisat samo ako je dobiven ispravni port i pin
 	char port;
@@ -291,7 +291,7 @@ int parse_gpio(const char *name, const char *arg, direction_t direction)
 	return EXIT_SUCCESS;
 }
 
-int nRF_init(nRF_t *self)
+static int nRF_init(nRF_t *self)
 {
 	int ret;
 	ret = parse_spi(self->spi);
@@ -329,7 +329,7 @@ int nRF_init(nRF_t *self)
 	return EXIT_SUCCESS;
 }
 
-void nRF_constructor(nRF_t *self)
+static void nRF_constructor(nRF_t *self)
 {
 	// kao konstruktor, popuni neispravnim defaultnim vrijednostima
 	// koje ce se kasnije provjeravat
@@ -337,36 +337,9 @@ void nRF_constructor(nRF_t *self)
 	self->cs  = "X0";
 	self->ce  = "X0";
 	self->irq = "X0";
-	/*
-	   // tesko implementirat, ovaj, khm, nema potrebe za ovim
-	self->pins.spi_number = 0;
-	self->pins.cs_port    = 'X';
-	self->pins.ce_port    = 'X';
-	self->pins.irq_port   = 'X';
-	*/
 }
 
-/*
-int nRF_main()
-{
-	nRF_t nRF_tx;
-	nRF_constructor(&nRF_tx);	// popuni nulama
-
-	nRF_tx.spi = "SPI1";
-	nRF_tx.cs  = "PB5";	// prvi PB5
-	//nRF_tx.cs  = "PB16";	// error testis
-	//nRF_tx.cs  = "PC3";	// error testis
-	nRF_tx.ce  = "PB6";	// prvi PB6
-	nRF_tx.irq = "PB8";	// prvi PB8
-
-	int r = nRF_init(&nRF_tx);
-	printf("nRF_init() vratio: %d\n", r);
-
-	return 0;
-}
-*/
-
-void nRF_print(nRF_t *self)
+static void nRF_print(nRF_t *self)
 {
 	printf("nRF_print():\n");
 	printf("\time: %s\n", self->name);
@@ -376,11 +349,19 @@ void nRF_print(nRF_t *self)
 	printf("\tIRQ: %s\n", self->irq);
 }
 
+//nRF_t gobj[10];
+nRF_t obj_array[10];
+//int globalna = 2;
+
 // javno
 // kreiraj novi objekt i inicijaliziraj ga
-nRF_t nRF_new(const char *name)
+nRF_t *nRF_new(const char *name)
 {
-	static uint8_t obj_counter = 0;
+	// TODO
+	// kako napravit npr int var`echo $name`;
+	//printf("_new: %p\n", &gobj);
+
+	static uint8_t counter = 0;
 
 	//printf("odje nRF_new()\n");
 	//printf("argument: %s\n", name);
@@ -389,12 +370,50 @@ nRF_t nRF_new(const char *name)
 	nRF_constructor(&obj1);		// zapuni defaultnim vrijednostima
 	obj1.name = (char *)name;	// XXX zasto ga imam kao const ako ga moram pretvorit :-/
 
+	/*
+	nRF_t gobj[counter];
+	printf("addr obj[counter]: %p\n", &gobj[counter]);
+	//nRF_constructor(&obj[counter]);		// zapuni defaultnim vrijednostima
+	//nRF_constructor(&gobj[counter]);		// zapuni defaultnim vrijednostima
+	gobj[counter].name = (char *)name;	// XXX zasto ga imam kao const ako ga moram pretvorit :-/
+	*/
+
 	//printf("napravili smo objekt imena: %s\n", obj1.name);
 
 	obj1.init = nRF_init;
 	obj1.print = nRF_print;
+	/*
+	gobj[counter].init = nRF_init;
+	gobj[counter].print = nRF_print;
+	*/
 
+	// XXX
+	// napravit ovo da moze napravit vise objekata
+	// mozda array?
+	// XXX
 
+	//counter++;
 	// vrati adresu objekta
-	return obj1;
+
+	void *pointer = obj_array;
+	printf("void pointer: %p\n", pointer);
+	//printf("napisi sta oces %p\n", obj_array);
+	printf("napisi sta oces %p\n", &obj_array[counter]);
+
+	memcpy(&obj_array[counter], &obj1, sizeof(obj1));
+	printf("obj_array[counter] addr: %p\n", &obj_array[counter]);
+
+	printf("obj.spi: %s\n", obj1.spi);
+	printf("obj.cnt: %s\n", obj_array[counter].spi);
+
+	if (counter >= 10)
+	{
+		counter = 0;
+		printf("maksimalan broj nRF objekata pregazen, counter vracen u 0\n");
+	}
+
+	//return obj1;
+	return &obj_array[counter++];
+	//printf("adresa koju ce vratit %p\n", &gobj[counter]);
+	//return &gobj[counter++];
 }

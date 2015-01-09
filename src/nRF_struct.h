@@ -58,6 +58,7 @@ struct nRF_t
 	pfunc	init;
 	//pfunc	print;
 	pfunc_print print;
+	
 //} nRF_t;
 };
 
@@ -74,12 +75,14 @@ enum
 //} NRF_EXIT_CODES;
 };
 
-void spi_init(uint8_t spi_number);
-int parse_spi(const char *arg);
-int parse_gpio(const char *name, const char *arg, direction_t direction);
-int nRF_init(nRF_t *self);
-void nRF_constructor(nRF_t *self);
-int nRF_main();
+//void spi_init(uint8_t spi_number);
+//int parse_spi(const char *arg);
+//int parse_gpio(const char *name, const char *arg, direction_t direction);
+//void nRF_constructor(nRF_t *self);
+//int nRF_main();
 
-nRF_t nRF_new(const char *name);
-void nRF_print(nRF_t *self);
+// javne, izvana dostupne funkcije
+//int nRF_init(nRF_t *self);
+nRF_t *nRF_new(const char *name);
+//nRF_t *nRF_new(const char *name);
+//void nRF_print(nRF_t *self);

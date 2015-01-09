@@ -163,7 +163,9 @@ void led_set(led_structure structure, uint8_t status)
 		else if (status == 2)	// toggle
 		{
 			if (GPIO_ReadInputDataBit(structure.port, structure.pin) == 0)
+			{
 				GPIO_WriteBit(structure.port, structure.pin, 1);
+			}
 			else
 				GPIO_WriteBit(structure.port, structure.pin, 0);
 		}
@@ -175,6 +177,7 @@ void led_set(led_structure structure, uint8_t status)
 /**************************************************************************************************
 *  					led()							  *
 **************************************************************************************************/
+// led("PA2", 1)
 void led(char *led, uint8_t led_state)
 {
 	// XXX moje parsiranje djeluje da uspori iako ni Sys ni RTC stoperice to ne potvrdjuju :-/

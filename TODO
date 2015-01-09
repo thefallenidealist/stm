@@ -1,0 +1,159 @@
+#####
+# HAL
+DigitalOut
+AnalogOut
+DigitalIn
+AnalogIn
+#####
+# folder layou
+hal
+	arm
+		i2c
+		spi
+	avr
+		i2c
+		spi
+drivers
+	lcd
+		glcd_*
+	rom
+		eeprom
+		flash
+#####
+NTP	vrijeme preko neta, mozda i preko GPS-a
+#####
+
+# http://embeddedgurus.com/state-space/2014/02/are-we-shooting-ourselves-in-the-foot-with-stack-overflow/
+# A Smarter Way
+At this point, I hope it makes sense to suggest that you consider pointing the stack in a safe direction. For a CPU with the stack growing “down” this means that you should place the stack at the start of RAM, below all the data sections. As illustrated in the Figure below, that way you will make sure that a stack overflow can’t corrupt anything.
+
+On a side note, I’d like to warn you against coding any exception handler as an endless loop, which is another beaten path approach taken in most startup code examples provided by microcontroller vendors. Such code locks up the machine, which might be useful during debugging, but is almost never what you want in the production code. Unfortunately, all too often I see developers shooting themselves in the foot yet again by leaving this dangerous code in the final product.
+###################################################################################################
+      free(pointer);
+       pointer = NULL;
+Assigning NULL to the pointer is not compulsory, but is good practice, as it will cause an error to be generated if the pointer is erroneous utilized after the memory has been de-allocated.
+###################################################################################################
+         *(pointer+3) = 99;
+           pointer[3] = 99;
+###################################################################################################
+Shutting interrupts down does increase system latency, reducing its ability to respond to external events in a timely manner. A kinder, gentler approach is to use a mutex (also known as binary semaphore) to indicate when a resource is busy. Mutexes are simple on-off state indicators whose processing is inherently atomic. These are often used as "in-use" flags to have tasks idle when a shared resource is not available.
+###################################################################################################
+UINT1 * ptr = (UINT1 *) 0x1234;
+	// Wait for register to become non-zero.
+	while (*ptr == 0);
+	// Do something else.
+
+This will almost certainly fail as soon as you turn the optimizer on, since the compiler will generate assembly language that looks something like this:
+	mov    ptr, #0x1234     
+	mov    a, @ptr 
+	loop     bz    loop
+
+The rationale of the optimizer is quite simple: having already read the variable's value into the accumulator (on the second line), there is no need to reread it, since the value will always be the same. Thus, in the third line, we end up with an infinite loop. To force the compiler to do what we want, we modify the declaration to:
+	UINT1 volatile * ptr = (UINT1 volatile *) 0x1234;
+
+The assembly language now looks like this:
+	mov     ptr, #0x1234
+	loop    mov    a, @ptr        
+	bz    loop
+###################################################################################################
+	For example, a serial port interrupt may test each received character to see if it is an ETX character (presumably signifying the end of a message). If the character is an ETX, the ISR might set a global flag. 
+
+volatile int etx_rcvd = FALSE;
+
+void main()
+{
+    ...
+    while (!ext_rcvd)
+    {
+        // Wait
+    }
+    ...
+}
+
+interrupt void rx_isr(void)
+{
+    ...
+    if (ETX == rx_char)
+    {
+        etx_rcvd = TRUE;
+    }
+    ...
+}
+###################################################################################################
+# STM32 USART
+Also, on this platform at least, watch out for sticky UART error flags.
+This is what I was missing to get the interrupt to re-trigger, but I ended up using USART_ClearFlag.
+###################################################################################################
+# scheduler
+Research on priority inversion has yielded two solutions. The first is called priority inheritance. This technique mandates that a lower-priority task inherit the priority of any higher-priority task pending on a resource they share. This priority change should take place as soon as the high-priority task begins to pend; it should end when the resource is released. This requires help from the operating system.
+
+Many commercial RTOSes include support for either priority inheritance or priority ceilings. Just make sure you enable one.
+###################################################################################################
+scheduler moj:
+krece se izvrsavat novi task, startaj timer
+timer zavrsio, napravio interrupt, zaustavi trenutni proces, snimi stanje, pozovi novi proces
+###################################################################################################
+When tasks share resources such as global variables, data structures, or peripheral control and status registers, an operating system primitive called a mutex must be used to prevent race conditions
+###################################################################################################
+# DMA
+ In single-cycle mode, the DMA controller gives up the bus after each transfer. This minimizes the amount of time that the DMA controller keeps the processor off of the memory bus, but it requires that the bus request/acknowledge sequence be performed for every transfer. This overhead can result in a drop in overall system throughput if a lot of data needs to be transferred.
+###################################################################################################
+ long atomic_read_counter(long *counter){
+    do{
+        long counter_old = *counter; // alas, not an atomic operation when the timer is connected to the CPU over an 8-bit bus.
+        long counter_new = *counter;
+    }while( counter_old != counter_new );
+    return counter_new;
+}
+
+
+# or
+// "optimized" routine hard-wired to read a 16-bit Counter1:
+// the entire routine takes 3 machine instruction on the 8051 -- see Craig Steiner, Abhishek Yadav, etc.
+inline
+int atomic_read_counter1(){
+    do{
+        byte upper = Counter1H;
+        byte lower = Counter1L;
+    }while( upper != Counter1H );
+    return( (upper << 8) | lower );
+}
+###################################################################################################
+unsigned char data a;
+Here, the unsigned char declaration is like a normal C declaration. We just added the data keyword, which tells the microcontroller to store the unsigned char a in the internal data memory.
+
+bdata: The bdata keyword lets you store a declared variable in the bit addressable memory. Take a look at this example:
+unsigned char bdata a;
+###################################################################################################
+NVIC_DisableIRQ(device_IRQn); // Disable interrupt
+__ISB();
+
+if it is necessary to ensure an interrupt will not be triggered after disabling it in the NVIC, add an ISB instruction.
+###################################################################################################
+# interrupts
+The preempt priority level defines whether an interrupt can be serviced when the processor is already running another interrupt handler. In other words, preempt priority determines if one interrupt can preempt another.
+The subpriority level value is used only when two exceptions with the same preempt priority level are pending (because interrupts are disabled, for example). When the interrupts are re-enabled, the exception with the lower subpriority (higher urgency) will be handled first.
+
+In most applications, I would highly recommended to assign all the interrupt priority bits to the preempt priority group, leaving no priority bits as subpriority bits, which is the default setting out of reset. Any other configuration complicates the otherwise direct relationship between the interrupt priority number and interrupt urgency.
+
+# NOTE
+Some third-party code libraries (e.g., the STM32 driver library) change the priority grouping configuration to non-standard. Therefore, it is highly recommended to explicitly re-set the priority grouping to the default by calling the CMSIS function NVIC_SetPriorityGrouping(0U) after initializing such external libraries.
+###################################################################################################
+	while (I2C_GetFlagStatus(I2C_PORT,I2C_FLAG_BUSY)); // Wait until I2C free
+###################################################################################################
+Remember, though, that access to global variables shared by tasks or with an ISR must always also be protected via a mutex or interrupt disable, respectively.)
+###################################################################################################
+Sometimes you will run across a read-only hardware register. In addition to enforcing compile-time checking so that the software doesn't try to overwrite the memory location, you also need to be sure that each and every requested read actually occurs. By declaring your variable IS A (constant) pointer TO A constant and volatile memory location you request all of the appropriate protections, as in:
+	uint8_t const volatile * const p_latch_reg = (uint8_t *) 0x10000000;
+###################################################################################################
+# i2c while
+while (I2C_GetFlagStatus(I2C1, I2C_FLAG_BUSY));
+while (I2C_GetFlagStatus(I2C1, ...
+
+Having unbounded while() loops is about the most fatal thing you can do, and provides no avenue for error detection or recovery. I know ST does this in the examples, but for production code you need to be more careful.
+
+You don't want to be doing this I2C code under interrupt. If you want to use interrupts, use a state machine and event drive it.
+###################################################################################################
+###################################################################################################
+###################################################################################################
+###################################################################################################

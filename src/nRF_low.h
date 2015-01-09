@@ -1,56 +1,12 @@
 // created 121228
 // TODO prebacit poneki #define u enum, radi ljepseg debuggiranja
+// TODO svi ovi silni registri bi trebali bit privatni
+
 #include <stdio.h>
 #include <stdbool.h>
 #include "spi.h"
 #include "delay.h"
-
-#define NRF1_SCK_RCC	RCC_APB2Periph_GPIOA
-#define NRF1_SCK_PORT	GPIOA
-#define NRF1_SCK_PIN	GPIO_Pin_5
-#define NRF1_MISO_RCC	RCC_APB2Periph_GPIOA
-#define NRF1_MISO_PORT	GPIOA
-#define NRF1_MISO_PIN	GPIO_Pin_6
-#define NRF1_MOSI_RCC	RCC_APB2Periph_GPIOA
-#define NRF1_MOSI_PORT	GPIOA
-#define NRF1_MOSI_PIN	GPIO_Pin_7
-
-#define	NRF1_CSN_RCC	RCC_APB2Periph_GPIOB
-#define	NRF1_CSN_PORT	GPIOB
-#define	NRF1_CSN_PIN	GPIO_Pin_5	// PB5
-#define NRF1_CE_RCC	RCC_APB2Periph_GPIOB
-#define NRF1_CE_PORT	GPIOB
-#define NRF1_CE_PIN	GPIO_Pin_6	// PB6
-
-/*
-#define NRF1_IRQ_RCC	RCC_APB2Periph_GPIOB
-#define NRF1_IRQ_PORT	GPIOB
-#define NRF1_IRQ_PIN	GPIO_Pin_8	// PB8	// active low
-*/
-
-
-/*
-// drugi
-//#define NRF1_SCK_RCC	RCC_APB2Periph_GPIOB
-//#define NRF1_SCK_RCC	RCC_APB1Periph_GPIOB
-#define NRF1_SCK_PORT	GPIOB
-#define NRF1_SCK_PIN	GPIO_Pin_13
-//#define NRF1_MISO_RCC	RCC_APB1Periph_GPIOB
-#define NRF1_MISO_PORT	GPIOB
-#define NRF1_MISO_PIN	GPIO_Pin_14
-//#define NRF1_MOSI_RCC	RCC_APB1Periph_GPIOB
-#define NRF1_MOSI_PORT	GPIOB
-#define NRF1_MOSI_PIN	GPIO_Pin_15
-
-#define	NRF1_CSN_RCC	RCC_APB2Periph_GPIOB
-#define	NRF1_CSN_PORT	GPIOB
-//#define	NRF1_CSN_PIN	GPIO_Pin_11	// PB11
-#define	NRF1_CSN_PIN	GPIO_Pin_10	// PB11
-#define NRF1_CE_RCC	RCC_APB2Periph_GPIOB
-#define NRF1_CE_PORT	GPIOB
-//#define NRF1_CE_PIN	GPIO_Pin_12	// PB12
-#define NRF1_CE_PIN	GPIO_Pin_2	// PB12
-*/
+#include "nRF_struct.h"
 
 /**********************************************************************/
 //			 CMD	page 46
@@ -142,7 +98,7 @@
 	principle. Write payload: 1– 32 bytes. A write 
 	operation always starts at byte 0.
 */
-#define CMD_W_TX_PAYLOAD_NO ACK	0b1011000
+#define CMD_W_TX_PAYLOAD_NO_ACK	0b1011000
 //	Used in TX mode. Disables AUTOACK on this specific packet.
 
 #define CMD_NOP			0b11111111
@@ -155,6 +111,7 @@
 /****************************************************************************/
 // defaultne vrijednosti su 0, osim ako nije spomenito drugacije
 // defaultne vrijednosti RW, osim ako nije napisano drugacije
+
 #define	REG_CONFIG	0x00
 #define	MASK_RX_DR	6	// Mask interrupt caused by RX_DR
 				// 1: Interrupt not reflected on the IRQ pin
