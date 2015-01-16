@@ -57,5 +57,9 @@ void glcd_char(unsigned char ascii, unsigned int x, unsigned int y, unsigned int
 void glcd_string(char *string, unsigned int x, unsigned int y, unsigned int size, unsigned int fgcolor);
 //uint8_t glcd_number(unsigned int long_num,unsigned int x0, unsigned int y0,unsigned int size,unsigned int fgcolor);
 uint8_t glcd_number(int32_t long_num, uint16_t x0, uint16_t y0, uint8_t size, uint16_t fgcolor);
+void glcd_set_bgcolor(uint16_t color);
+uint16_t glcd_get_bgcolor(void);
+void glcd_test();
+void glcd_speedtest();
 
 #endif

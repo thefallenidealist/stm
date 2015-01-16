@@ -11,5 +11,7 @@
 
 void oled_io_init(void);
 uint32_t oled_init(void);
+void oled_kocka(void);
+void oled_example(void);
 
 #endif

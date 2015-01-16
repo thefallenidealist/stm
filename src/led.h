@@ -6,15 +6,16 @@
 // *************************************** sys includes *******************************************
 #include <stdio.h>
 #include <stdlib.h> 		// NULL
-#include "stm32f10x_rcc.h"
-#include "stm32f10x_gpio.h"
+#ifdef STM32F10X_MD
+	#include "stm32f10x_rcc.h"
+	#include "stm32f10x_gpio.h"
+#endif
+#ifdef STM32F4XX
+	#include "stm32f4xx_rcc.h"
+	#include "stm32f4xx_gpio.h"
+#endif
 // *************************************** defines ************************************************
 /*
-#define LEDx_RCC	RCC_APB2Periph_GPIOB
-#define LEDx_PORT	GPIOB
-#define LEDx_PIN	GPIO_Pin_0
-*/
-
 #define LED0_PIN	GPIO_Pin_0
 #define LED1_PIN	GPIO_Pin_1
 #define LED2_PIN	GPIO_Pin_2
@@ -31,11 +32,23 @@
 #define LED13_PIN	GPIO_Pin_13
 #define LED14_PIN	GPIO_Pin_14
 #define LED15_PIN	GPIO_Pin_15
+*/
 
-#define RCCA		RCC_APB2Periph_GPIOA
-#define RCCB		RCC_APB2Periph_GPIOB
 #define PORTA		GPIOA
 #define PORTB		GPIOB
+#define PORTC		GPIOC
+#define PORTD		GPIOD
+
+#ifdef STM32F10X_MD
+	#define RCCA		RCC_APB2Periph_GPIOA
+	#define RCCB		RCC_APB2Periph_GPIOB
+#endif
+#ifdef STM32F4XX
+	#define RCCA		RCC_AHB1Periph_GPIOA
+	#define RCCB		RCC_AHB1Periph_GPIOB
+	#define RCCC		RCC_AHB1Periph_GPIOC
+	#define RCCD		RCC_AHB1Periph_GPIOD
+#endif
 
 // *************************************** variables **********************************************
 // mora bit ovdje zbog prototipa funkcija
@@ -54,6 +67,7 @@ led_structure get_led_structure(char led_port, int led_pin);
 void led_init_structure(led_structure structure);
 void led_init(char* led);
 void led_set(led_structure structure, uint8_t status);
-void led(char* led, uint8_t led_state);
+//void led(char* led, uint8_t led_state);
+void led(const char* led, uint8_t led_state);
 
 #endif

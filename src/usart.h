@@ -6,12 +6,25 @@
 #include <stdint.h>
 #include <string.h>
 
+#include "delay.h"
+
 // *************************************** local includes *****************************************
-#include "stm32f10x_rcc.h"
-#include "stm32f10x_gpio.h"
-#include "stm32f10x_usart.h"
+#ifdef STM32F10X_MD
+	#include "stm32f10x_rcc.h"
+	#include "stm32f10x_gpio.h"
+	#include "stm32f10x_usart.h"
+#endif
+
+#ifdef STM32F4XX
+	#include "stm32f4xx_rcc.h"
+	#include "stm32f4xx_gpio.h"
+	#include "stm32f4xx_usart.h"
+	#include "misc.h" 		// NVIC_Init()
+#endif
 
 // *************************************** defines ************************************************
+#ifdef STM32F10X_MD
+// STM32F103C8T6
 // USART1
 #define USART1_GPIO_RCC		RCC_APB2Periph_GPIOA
 #define USART1_RCC		RCC_APB2Periph_USART1
@@ -30,6 +43,20 @@
 #define USART3_GPIO		GPIOB
 #define USART3_TX_Pin		GPIO_Pin_10	// PB10
 #define USART3_RX_Pin		GPIO_Pin_11	// PB11
+#endif
+
+#ifdef STM32F4XX
+	// STM32F407VGT6
+	// USART1
+	#define USART1_GPIO_RCC		RCC_AHB1Periph_GPIOA
+	#define USART1_RCC		RCC_APB2Periph_USART1
+	#define USART1_GPIO		GPIOA
+	//#define USART1_TX_Pin		GPIO_Pin_9	// PA9	// XXX navodno ne radi zbog kondenzatora na tom pinu
+	//#define USART1_RX_Pin		GPIO_Pin_10	// PA10
+	//#define USART1_TX_Pin		GPIO_Pin_9	// PA9	// XXX navodno ne radi zbog kondenzatora na tom pinu
+	//#define USART1_RX_Pin		GPIO_Pin_10	// PA10
+#endif
+
 // 
 #define USART_MAX_LENGTH	100
 

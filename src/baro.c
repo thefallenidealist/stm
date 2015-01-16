@@ -38,14 +38,29 @@ int32_t  BMP180_p;
 **************************************************************************************************/
 void bmp180_init(void)
 {
+	//i2c_init(100000);	// TODO isprobat
+	/*
+	// vise-manje isti init kao za eeprom
 	GPIO_InitTypeDef GPIO_InitStruct;
 	I2C_InitTypeDef I2C_InitStruct;
-	RCC_APB1PeriphClockCmd(RCC_APB1Periph_I2C1, ENABLE);
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
 
-	GPIO_InitStruct.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_7; // SCL, SDA
+	//RCC_APB1PeriphClockCmd(RCC_APB1Periph_I2C1, ENABLE);	// F1
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_I2C2, ENABLE);	// F4
+
+	//RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);	// F1
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);	// F4
+
+	// F4
+	GPIO_PinAFConfig(GPIOB, GPIO_PinSource10, GPIO_AF_I2C2);
+	GPIO_PinAFConfig(GPIOB, GPIO_PinSource11, GPIO_AF_I2C2);
+
+	//GPIO_InitStruct.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_7; // SCL, SDA
+	GPIO_InitStruct.GPIO_Pin = GPIO_Pin_10 | GPIO_Pin_11; // SCL, SDA		// F4
 	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_AF_OD;
+	//GPIO_InitStruct.GPIO_Mode = GPIO_Mode_AF_OD;	// F1
+	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_AF;	// F4
+	GPIO_InitStruct.GPIO_OType = GPIO_OType_OD;	// F4
+	//GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_NOPULL;	// TODO
 
 	GPIO_Init(GPIOB, &GPIO_InitStruct);
 
@@ -56,8 +71,11 @@ void bmp180_init(void)
 	I2C_InitStruct.I2C_AcknowledgedAddress = I2C_AcknowledgedAddress_7bit;
 	I2C_InitStruct.I2C_ClockSpeed = 100000;
 	//I2C_InitStruct.I2C_ClockSpeed = 400000;
-	I2C_Cmd(I2C1, ENABLE);
-	I2C_Init(I2C1,&I2C_InitStruct);
+	//I2C_Cmd(I2C1, ENABLE);		// F1
+	//I2C_Init(I2C1,&I2C_InitStruct);	// F1
+	I2C_Cmd(I2C2, ENABLE);
+	I2C_Init(I2C2,&I2C_InitStruct);
+	*/
 }
 
 /**************************************************************************************************
@@ -257,7 +275,7 @@ uint32_t bmp180_pressure(void)
 	uint8_t OSS = 3;	// oversampling OSS = 0..3
 	bmp180_write(0xF4, 0x34 + (OSS << 6));	// pressure
 						// shiftanje jer OSS ide u b7, b6 u registru
-	switch(OSS)
+	switch (OSS)
 	{
 		case 0:
 			delay_ms(5);
@@ -311,7 +329,7 @@ uint32_t bmp180_pressure(void)
 void bmp180_print(void)
 {		
 	uint16_t temperature = bmp180_temperature();
-	uint32_t pressure = bmp180_pressure();
+	uint32_t pressure    = bmp180_pressure();
 
 	// altitude = 44330 * ( 1 - (p/p0)^(1/5.255))
 	float exponent = 1/5.255;

@@ -1,4 +1,5 @@
 #include "glcd_high.h"
+#include <string.h>
 
 /*
 
@@ -129,7 +130,7 @@ void glcd_setOrientation(char orientation)
 {
 	glcd_orientation = orientation;
 
-	if((glcd_orientation == PORTRAIT) || (glcd_orientation == P1) || (glcd_orientation == P2))
+	if ((glcd_orientation == PORTRAIT) || (glcd_orientation == P1) || (glcd_orientation == P2))
 	{
 		/*
 		max_x = 239;
@@ -138,7 +139,7 @@ void glcd_setOrientation(char orientation)
 		max_x = 240;
 		max_y = 320;
 	}
-	else if((glcd_orientation == LANDSCAPE) || (glcd_orientation == L1) || (glcd_orientation == L2))
+	else if ((glcd_orientation == LANDSCAPE) || (glcd_orientation == L1) || (glcd_orientation == L2))
 	{
 		/*
 		max_x = 319;
@@ -208,8 +209,8 @@ void glcd_hline(uint16_t x0, uint16_t y0, uint16_t length, uint16_t color)
         glcd_cs_low();
 	for(int i=0; i<length; i++)
 	{
-		glcd_spi_send(color >> 8);
-		glcd_spi_send(color & 0xFF);
+		spi_rw(color >> 8);
+		spi_rw(color & 0xFF);
 	}
         glcd_cs_high();
 }
@@ -233,8 +234,8 @@ void glcd_vline(uint16_t x0, uint16_t y0, uint16_t length, uint16_t color)
 	for(int i=0; i<length; i++)
 	{
 		//glcd_sendData16(color);
-		glcd_spi_send(color >> 8);
-		glcd_spi_send(color & 0xFF);
+		spi_rw(color >> 8);
+		spi_rw(color & 0xFF);
 	}
         glcd_cs_high();
 }
@@ -364,4 +365,47 @@ uint8_t glcd_number(int32_t number, uint16_t x0, uint16_t y0, uint8_t size, uint
 			x0 += (CHAR_X+CHAR_SPACE)*size;
 	}
 	return digits_count;
+}
+
+void glcd_set_bgcolor(uint16_t color)
+{
+	bgcolor = color;
+}
+
+uint16_t glcd_get_bgcolor()
+{
+	return bgcolor;
+}
+
+void glcd_test()
+{
+	// TODO provjera jel pozvat init prije poziva ostalih funkcija
+	glcd_io_init();
+	glcd_spi_init();
+	glcd_led_on();
+	glcd_ili9341_init();
+	glcd_setOrientation(P2);
+	glcd_set_bgcolor(black);
+	uint16_t bgcolor = glcd_get_bgcolor();
+	glcd_bg(bgcolor);
+
+	glcd_setOrientation(L2);
+	glcd_string("Fuck you world", 0, 0, 2, blue);
+	glcd_setOrientation(L1);
+	glcd_string("Fuck you world", 0, 0, 2, yellow);
+	glcd_setOrientation(P1);
+	glcd_string("Fuck you world", 0, 0, 2, green);
+	glcd_setOrientation(P2);
+	glcd_string("Fuck you world", 0, 0, 2, red);
+}
+
+void glcd_speedtest()
+{
+	glcd_setOrientation(P2);
+	uint16_t t1 = get_uptime_ms();
+	glcd_bg(black);
+	uint16_t t2 = get_uptime_ms();
+
+	printf("glcd_speedtest trajao: %lu ms\n", t2-t1);
+	glcd_number(t2-t1, 50, 50, 3, red);
 }

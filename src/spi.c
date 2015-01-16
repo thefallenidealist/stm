@@ -1,35 +1,21 @@
 #include "spi.h"
 
-uint8_t glcd_spi_send(uint8_t data8)
+uint8_t spi_rw(uint8_t data8)
 {
-	/*
-	while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_TXE) == RESET);
-	SPI_I2S_SendData(SPI1, byte);
-	while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_RXNE) == RESET);
-	//return SPI_I2S_ReceiveData(SPI1);
-	return 0;
-	*/
-	spi1_send_receive(data8);
-	return 0;
+	SPI1->DR = data8;
+	while (!(SPI1->SR & SPI_I2S_FLAG_TXE));		// wait for TX
+	while (!(SPI1->SR & SPI_I2S_FLAG_RXNE));	// wait for RX
+	while (SPI1->SR & SPI_I2S_FLAG_BSY);		// wait until SPI is avaible
+
+	return SPI1->DR;
 }
 
-uint16_t glcd_spi_send16(uint16_t data16)
+uint16_t spi_rw16(uint16_t data16)
 {
-	/*
-	while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_TXE) == RESET);
-	SPI_I2S_SendData(SPI1, HalfWord);
-	while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_RXNE) == RESET);
-	//return SPI_I2S_ReceiveData(SPI1);
-	return 0;
-	*/
-	spi1_send_receive(data16);
-	return 0;
-}
+	SPI1->DR = data16;
+	while (!(SPI1->SR & SPI_I2S_FLAG_TXE));		// wait for TX
+	while (!(SPI1->SR & SPI_I2S_FLAG_RXNE));	// wait for RX
+	while (SPI1->SR & SPI_I2S_FLAG_BSY);		// wait until SPI is avaible
 
-uint8_t spi1_send_receive(uint8_t data8)
-{
-	while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_TXE) == RESET);
-	SPI_I2S_SendData(SPI1, data8);
-	while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_RXNE) == RESET);
-	return SPI_I2S_ReceiveData(SPI1);
+	return SPI1->DR;
 }

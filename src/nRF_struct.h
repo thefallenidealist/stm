@@ -45,6 +45,13 @@ typedef	struct nRF_t nRF_t;		// prototip structa nRF_t
 typedef	int (*pfunc)(nRF_t *self);	// pointer na funkciju
 typedef void (*pfunc_print)(nRF_t *self);
 
+typedef struct 
+{
+	//uint32_t	port;
+	GPIO_TypeDef 	*port;
+	uint16_t	pin;
+} gpio_pin;
+
 //typedef struct
 // nema typedefa jer ga ima gore, kasnije u kodu se moze pozivat bez "struct" (typedef applied)
 struct nRF_t

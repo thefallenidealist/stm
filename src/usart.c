@@ -1,5 +1,4 @@
 #include "usart.h"
-#include "delay.h"
 
 // *************************************** variables **********************************************
 volatile rx_event_t usart1_rx_event = RX_PRINTED;
@@ -11,7 +10,7 @@ volatile char usart3_rx_string_arr[USART_MAX_LENGTH] = {};
 
 char testbuffer[] = "Ovo je testni buffer za USART TX IRQ\n";
 
-extern void usart_cmd(char *cmd, char *arg);
+//extern void usart_cmd(char *cmd, char *arg);
 
 
 
@@ -25,37 +24,41 @@ void USART1_init(uint32_t speed)
 	NVIC_InitTypeDef	NVIC_InitStructure;
 
 	// 1 RCC init
-	RCC_APB2PeriphClockCmd(USART1_GPIO_RCC, ENABLE);
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
-	RCC_APB2PeriphClockCmd(USART1_RCC, ENABLE);
-	//RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);	// DMA clock
-	//RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);		// moguce da i ne treba
+	//RCC_APB2PeriphClockCmd(USART1_GPIO_RCC, ENABLE);	// F1	F4
 
 
-
+	// GPIO clock
+	//RCC_APB2PeriphClockCmd(USART1_RCC, ENABLE);	// F1
+	//RCC_AHB1PeriphClockCmd(USART1_RCC, ENABLE);	// F4	
+	//RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);
 
 	// 3 GPIO
-	// Configure USART1 Tx (PA9) as alternate function push-pull
-	GPIO_InitStructure.GPIO_Pin = USART1_TX_Pin;
-	//GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
-	GPIO_Init(USART1_GPIO, &GPIO_InitStructure);
-	// Configure USART1 Rx (PA10) as input floating
-	GPIO_InitStructure.GPIO_Pin = USART1_RX_Pin;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;	// moze i IPD/IPU
-	GPIO_Init(USART1_GPIO, &GPIO_InitStructure);
+
+	GPIO_PinAFConfig(GPIOB, GPIO_PinSource6, GPIO_AF_USART1);
+	GPIO_PinAFConfig(GPIOB, GPIO_PinSource7, GPIO_AF_USART1);
+	//GPIO_PinAFConfig(GPIOA, GPIO_PinSource9, GPIO_AF_USART1);
+	//GPIO_PinAFConfig(GPIOA, GPIO_PinSource10, GPIO_AF_USART1);
+
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_7; // Pins 6 (TX) and 7 (RX) are used
+	//GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9 | GPIO_Pin_10;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	//GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;	// F1
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;		// F4
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
+	//GPIO_Init(USART1_GPIO, &GPIO_InitStructure);
+	//GPIO_Init(GPIOA, &GPIO_InitStructure);
+	GPIO_Init(GPIOB, &GPIO_InitStructure);
+
+	//GPIO_InitStructure.GPIO_Pin = USART1_RX_Pin;
+	//GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;	// moze i IPD/IPU		// F1
+	////GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;						// F4
+	//GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;		// F4
+	//GPIO_Init(USART1_GPIO, &GPIO_InitStructure);
 
 
-	// 2 NVIC
-	// Enable the USART1 Interrupt
-	NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQn;
-	//NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
-	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-	NVIC_Init(&NVIC_InitStructure);
-
-
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);
 
 	USART_InitStructure.USART_BaudRate = speed;
 	USART_InitStructure.USART_WordLength = USART_WordLength_8b;
@@ -64,10 +67,20 @@ void USART1_init(uint32_t speed)
 	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
 	USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;		// CTS and RTS are not used
 	USART_Init(USART1, &USART_InitStructure);
-	USART_Cmd(USART1, ENABLE);				// Enable USART1
+	//USART_Cmd(USART1, ENABLE);				// Enable USART1
 
 	USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
 	//USART_ITConfig(USART1, USART_IT_TXE, ENABLE);	// mora bit ispod USART1 ENABLE
+
+	// 2 NVIC
+	// Enable the USART1 Interrupt
+	NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_Init(&NVIC_InitStructure);
+
+	USART_Cmd(USART1, ENABLE);				// Enable USART1
 }
 
 /************************************************************************************************
@@ -123,6 +136,7 @@ void USART2_init(uint32_t speed)
 /************************************************************************************************
 *  				USART3_init()							*
 *************************************************************************************************/
+/*
 void USART3_init(uint32_t speed)
 {
 	GPIO_InitTypeDef	GPIO_InitStructure;
@@ -162,6 +176,7 @@ void USART3_init(uint32_t speed)
 	USART_Init(USART3, &USART_InitStructure);
 	USART_Cmd(USART3, ENABLE);
 }
+*/
 
 /************************************************************************************************
 *  				USART1_IRQHandler()						*
@@ -250,6 +265,7 @@ void USART1_IRQHandler(void)
 /************************************************************************************************
 *  				USART3_IRQHandler()						*
 *************************************************************************************************/
+/*
 void USART3_IRQHandler(void)
 {
 	//if (USART_GetITStatus(USART3, USART_IT_RXNE) != RESET)
@@ -264,14 +280,6 @@ void USART3_IRQHandler(void)
 			// nikad ne dodje ovamo iako datašit kaze:
 			// When a break character is received, the USART handles it as a framing error.
 		}
-		/*
-		if (USART_GetFlagStatus(USART3, USART_FLAG_IDLE) == SET)
-		{
-			USART_ClearFlag(USART3, USART_FLAG_IDLE);
-			printf("IDLE\n");
-			// obicno nakon 2 chara ide IDLE
-		}
-		*/
 		if (USART_GetFlagStatus(USART3, USART_FLAG_ORE) == SET)
 		{
 			//static int ore_counter = 0;
@@ -296,7 +304,7 @@ void USART3_IRQHandler(void)
 		// samo zapisi u buffer, bez obzira sta je
 		//usart3_rx_string_arr[cnt++] = rx_char;
 
-		/*
+		// komentar
 		if ( ( (rx_char != '\n') && (rx_char != '\r') ) && (cnt < USART_MAX_LENGTH-1) )
 		//if (cnt < USART_MAX_LENGTH-1)
 		{
@@ -316,13 +324,15 @@ void USART3_IRQHandler(void)
 			cnt = 0;
 			usart3_rx_event = RX_DONE;
 		}
-		*/
+		//komentar
 	}
 }
+*/
 
 /************************************************************************************************
 *  				usart1_parse()							*
 *************************************************************************************************/
+/*
 void usart1_parse(void)
 {
 	// ono sto dobije razbije na dva komada. 
@@ -360,10 +370,12 @@ void usart1_parse(void)
 	}
 
 }
+*/
 
 /************************************************************************************************
 *  				usart_puts()							*
 *************************************************************************************************/
+/*
 void usart_puts(uint8_t usart, char *string)
 {
 	//printf("usart_puts(): string: %s\n", string);
@@ -394,3 +406,4 @@ void usart_puts(uint8_t usart, char *string)
 	// usart_puts treba poslat \n na kraju da novi serijski zna da je dosao do kraja
 	} while (*string != '\0');
 }
+*/

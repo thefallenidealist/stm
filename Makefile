@@ -20,11 +20,16 @@ DIR_BIN = ./bin
 TARGET	= -target thumb-unknown-eabi
 ARCH	= armv7-m
 CPU	= -mcpu=cortex-m3 
-DEFINES	= -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER 
-#OPTS	= -O0 -g 
-OPTS	= -O3
+	# STM32F1
+	#DEFINES	= -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER 
+# STM32F4
+DEFINES	= -DSTM32F4XX -DUSE_STDPERIPH_DRIVER 
+OPTS	= -O0 -g	# XXX ne radi
+OPTS	= -O1 -g 
+OPTS	= -O2 -g 
+#OPTS	= -O3
 DIRS 	=  -Isrc \
-	   -Isrc/lib\
+	   -Isrc/lib/f4\
 	   -I.
 
 # clang
@@ -40,13 +45,18 @@ ASFLAGS 	 = $(COMMON_FLAGS)
 
 LD_DIRS		 = -L$(DIR_TOOLS)/lib/gcc/arm-none-eabi/4.8.4/armv7-m	#libgcc
 LD_DIRS		+= -L$(DIR_TOOLS)/arm-none-eabi/lib/armv7-m 		# libc, libm
-LINKER_FILE 	 = $(wildcard src/lib/*.ld)
+#LINKER_FILE 	 = $(wildcard src/lib/*.ld)
+	# STM32F1
+	#LINKER_FILE 	 = $(wildcard src/lib/f1/*.ld)
+# STM32F4
+LINKER_FILE 	 = $(wildcard src/lib/f4/*.ld)
 
 
 # -nostartupfiles	ne linka crt*.o objektne fajlove
 # --gc-sections ne smije bit za GCC
 #LD_FLAGS 	 = -nostartfiles -nostdlib -nostartupfiles --gc-sections 
-LD_FLAGS 	 = -nostartfiles -nostdlib -nostartupfiles \
+#LD_FLAGS 	 = -nostartfiles -nostdlib -nostartupfiles 
+LD_FLAGS 	 = -nostdlib \
 		   --no-enum-size-warning \
 		   -Map $(DIR_BIN)/$(NAME).elf.map  -T $(LINKER_FILE)  \
 		   $(LD_DIRS) $(OBJS) \
@@ -67,7 +77,11 @@ DEPEND_C = $(shell ./skriptica.sh)
 #DEPEND_C = $(shell for i in $DEPENDCIES; do n=`echo $i | sed 's/\.h/\.c/g'` ; if [ -f $n ]; then echo $n | sed 's/\.c/\.x/g'; fi; done )
 #DEPEND_C = $(shell NAME=$(NAME) for VAR in $(DEPENDCIES); do echo $(NAME); done )	# XXX nece uopce ispisat $(VAR), al oce konstantu
 
-SRC_S = $(wildcard src/lib/*.s)
+#SRC_S = $(wildcard src/lib/*.s)
+	# STM32F1
+	#SRC_S = $(wildcard src/lib/f1/*.s)
+# STM32F4
+SRC_S = $(wildcard src/lib/f4/*.s)
 #SRC_C = $(DEPEND_C:.x=.c) 	# ne smije ovo bit, inace duplicira OBJ
 #SRC_C += src/newlib_stubs.c
 
@@ -92,11 +106,12 @@ $(DIR_OBJ)/%.o: src/%.c
 	@printf "\t\t Kuvam src $<\n"
 	@$(CC) $(CCFLAGS) -c -o $@ $<
 
-$(DIR_OBJ)/%.o: src/lib/%.c
+$(DIR_OBJ)/%.o: src/lib/f4/%.c
 	@printf "\t\t Kuvam lib $<\n"
 	@$(CC) $(CCFLAGS) -c -o $@ $<
 
-$(DIR_OBJ)/%.o: src/lib/%.s
+# STM32F4
+$(DIR_OBJ)/%.o: src/lib/f4/%.s
 	@printf "\t\t Kuvam ass $<\n"
 	@$(CC) $(ASFLAGS) -o $@ -c $<
 

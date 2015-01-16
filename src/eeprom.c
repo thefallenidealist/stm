@@ -1,177 +1,129 @@
 // created 140918
 // *************************************** description ********************************************
 // Atmel 24C256 I2C EEPROM driver
-// *************************************** sys includes *******************************************
-// *************************************** local includes *****************************************
 #include "eeprom.h"
-// *************************************** defines ************************************************
-// *************************************** variables **********************************************
-// *************************************** function prototypes ************************************
+
+// moj je AT24C256	256K (32,768 x 8)
+
+// TODO
+// provjere sto su vratile i2c_*
+// provjeravanje adrese, da ne pokusa zapisat izvan adresnog prostora ROMa
+
 /**************************************************************************************************
-*  					eeprom_init(void)						  *
+*  					eeprom_init(void)					  *
 **************************************************************************************************/
 void eeprom_init(void)
 {
-	// TODO isti init kao i za barometar
-	GPIO_InitTypeDef GPIO_InitStruct;
-	I2C_InitTypeDef I2C_InitStruct;
-	RCC_APB1PeriphClockCmd(RCC_APB1Periph_I2C1, ENABLE);
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
+	/* datasheet kaze
+	   100 kHz - 1.8V
+	   400 kHz - 3.3V
+	   1 MHz   - 5V
+	 */
+	//i2c_init(2, 400000);	// ne ide brze
 
-	GPIO_InitStruct.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_7; // SCL, SDA
-	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_AF_OD;
+	// XXX cudno radi na 400 kHz, nekad procita dobro, nekad ne
+	i2c_init(2, 100000);
+}
 
-	GPIO_Init(GPIOB, &GPIO_InitStruct);
+bool eeprom_addr_check(uint16_t addr)
+{
+	// najveca adresa je 32 768 = 0x8000
+	// 2^16 je 64k
 
-	I2C_InitStruct.I2C_Mode = I2C_Mode_I2C;
-	I2C_InitStruct.I2C_DutyCycle = I2C_DutyCycle_2;
-	//I2C_InitStruct.I2C_OwnAddress1 = 0x00;
-	I2C_InitStruct.I2C_Ack = I2C_Ack_Enable;
-	I2C_InitStruct.I2C_AcknowledgedAddress = I2C_AcknowledgedAddress_7bit;
-	I2C_InitStruct.I2C_ClockSpeed = 100000;
-	//I2C_InitStruct.I2C_ClockSpeed = 400000;
-	I2C_Cmd(I2C1, ENABLE);
-	I2C_Init(I2C1,&I2C_InitStruct);
+	if ((addr > 32768) || (addr < 0))
+	{
+		return -1;
+	}
+	else
+	{
+		return 0;
+	}
 }
 
 /**************************************************************************************************
-*  					eeprom_write(void)						  *
+*  					eeprom_write(void)					  *
 **************************************************************************************************/
+// zapisuje 8b data na 16b addr
+// TODO uint -> int
 uint8_t eeprom_write(uint16_t addr, uint8_t data)
 {
-	// zapisuje 8b na addr
-	// TODO ujedinit bmp180_write i ovo, razlike opisane dolje
-	uint32_t timeout = I2C_TIMEOUT_MAX;
+	//printf("eeprom_write: addr %d 0x%X check: %d\n", addr, addr, eeprom_addr_check(addr));
+
+	if (eeprom_addr_check(addr))
+	{
+		return -1;
+	}
 
 	uint8_t addrH = addr >> 8;
 	uint8_t addrL = addr * 0x00FF;
 
-	// generiraj start signal
-	while(I2C_GetFlagStatus(I2C1, I2C_FLAG_BUSY));
-	I2C_GenerateSTART(I2C1, ENABLE);
-	timeout = I2C_TIMEOUT_MAX;
-	while(!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_MODE_SELECT))
-	{
-		if ((timeout--) == 0)
-		       return 10;
-	}
+	i2c_start(2);
 
-	// posalji adresu slavea sa kojim treba komunicirat
-	I2C_Send7bitAddress(I2C1, EEPROM_ADDR_W, I2C_Direction_Transmitter);		// samo promijenio ADDR
-	timeout = I2C_TIMEOUT_MAX;
-	while(!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED))
-	{
-		if ((timeout--) == 0)
-		       return 11;
-	}
+	i2c_sendAddr_tx(2, EEPROM_ADDR_W);	// posalji adresu slavea sa kojim treba komunicirat
+	i2c_write(2, addrH);	// posalji adresu registra u koji cemo pisat
+	i2c_write(2, addrL);
+	i2c_write(2, data);	// posalji podatak u registar
 
-	// posalji adresu registra koji treba stimat
-	I2C_SendData(I2C1, addrH);	// 8b						// mijenjano
-	while(!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_BYTE_TRANSMITTED))
-	{
-		if ((timeout--) == 0)
-		       return 12;
-	}
-	I2C_SendData(I2C1, addrL);	// 8b						// mijenjano
-	while(!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_BYTE_TRANSMITTED))
-	{
-		if ((timeout--) == 0)
-		       return 12;		// TODO promijenit 
-	}
+	i2c_stop(2);	// gotovi smo zasad, generiraj stop
 
-	// EEPROM sad ocekuje podatak za zapisan na odabranu adresu
-	I2C_SendData(I2C1, data);	// 8b
-	while(!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_BYTE_TRANSMITTED))
-	{
-		if ((timeout--) == 0)
-		       return 13;
-	}
+	//delay_ms(2);	// treba mu mali delay
+			// prebaceno prije _read(), izgleda da ovdje nije potrebno
 
-	// gotovi smo zasad, generiraj stop
-	I2C_GenerateSTOP(I2C1, ENABLE);
-	while(I2C_GetFlagStatus(I2C1, I2C_FLAG_BUSY));
-
+	delay_ms(5);
 	return 0;
 }
 
 /**************************************************************************************************
-*  					eeprom_read(void)						  *
+*  					eeprom_read(void)					  *
 **************************************************************************************************/
 uint8_t eeprom_read(uint16_t addr)
 {
-	uint32_t timeout = I2C_TIMEOUT_MAX;
+	if (eeprom_addr_check(addr))
+	{
+		return -1;
+	}
+
+	delay_ms(5);	// magic solver :)
+			/*
+			ako se ispod u main ispod _example() odmah pozove clock_print() i sve je 
+			kompajlirano sa -O2 razjebe se, obicno samo ispise ispravno prvi puta nakon 
+			reflasha, nakon reseta ili hw reseta vrati 161
+
+			ne moze bit unutar _write() jer ne pomaze
+			*/
+
 	uint8_t addrH = addr >> 8;
 	uint8_t addrL = addr * 0x00FF;
 	uint8_t data = 0;
 
-	// start
-	// wait until I2C1 is not busy any more
-	while(I2C_GetFlagStatus(I2C1, I2C_FLAG_BUSY));
-	I2C_GenerateSTART(I2C1, ENABLE);
-	timeout = I2C_TIMEOUT_MAX;
-	while(!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_MODE_SELECT))
-	{
-		if ((timeout--) == 0)
-		       return 10;
-	}
+	i2c_start(2);
 
-	// w addr
-	I2C_Send7bitAddress(I2C1, EEPROM_ADDR_W, I2C_Direction_Transmitter);		// promijenjena dev adresa
-	timeout = I2C_TIMEOUT_MAX;
-	while(!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED))
-	{
-		if ((timeout--) == 0)
-		       return 11;
-	}
-
-	
-	// w reg
-	I2C_SendData(I2C1, addrH);	// 8b						// mijenjano
-	timeout = I2C_TIMEOUT_MAX;
-	while(!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_BYTE_TRANSMITTED))
-	{
-		if ((timeout--) == 0)
-		       return 12;
-	}
-	I2C_SendData(I2C1, addrL);	// 8b						// mijenjano
-	timeout = I2C_TIMEOUT_MAX;
-	while(!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_BYTE_TRANSMITTED))
-	{
-		if ((timeout--) == 0)
-		       return 12;	// TODO
-	}
-
+	i2c_sendAddr_tx(2, EEPROM_ADDR_W);	// w addr
+	i2c_write(2, addrH);	// w reg
+	i2c_write(2, addrL);
 
 	// ponovo start
-	I2C_GenerateSTART(I2C1, ENABLE);
-	timeout = I2C_TIMEOUT_MAX;
-	while(!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_MODE_SELECT))
+	//i2c_start(2);	// patchirani _start()
+	// patchirani: Sjebano radi kad je "patchiran" a ovaj ovdje ispod ne smije imat while() ponovo prije 
+	// generate start jer je I2C zauzet
+
+	// TODO doradit ovo dolje 
+	uint8_t timeout = 0xFF;
+	I2C_GenerateSTART(I2C2, ENABLE);
+	while(!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_MODE_SELECT))
 	{
 		if ((timeout--) == 0)
-		       return 100;
-	}
-	// w addr
-	I2C_Send7bitAddress(I2C1, EEPROM_ADDR_R, I2C_Direction_Receiver);		// promijenjena dev adresa
-	timeout = I2C_TIMEOUT_MAX;
-	while(!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_RECEIVER_MODE_SELECTED))
-	{
-		if ((timeout--) == 0)
-		       return 101;
+		{
+		       return 10;
+		}
 	}
 
-	// procitaj data 
-	I2C_AcknowledgeConfig(I2C1, DISABLE);	// NACK, ide prije reada
-	timeout = I2C_TIMEOUT_MAX;
-	while(!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_BYTE_RECEIVED))
-	{
-		if ((timeout--) == 0)
-		       return 102;
-	}
-	data = I2C_ReceiveData(I2C1);
+	i2c_sendAddr_rx(2, EEPROM_ADDR_R);	// w addr
+	i2c_nack(2);	// NACK, ide prije reada
+	//i2c_read(2);			// XXX ne radi iako samo pozove funkciju ispod, ima dovoljno stacka
+	data = I2C_ReceiveData(I2C2);	// XXX
 
-	I2C_GenerateSTOP(I2C1, ENABLE);
-	while(I2C_GetFlagStatus(I2C1, I2C_FLAG_BUSY));
+	i2c_stop(2);
 
 	return data;
 }
@@ -181,9 +133,18 @@ uint8_t eeprom_read(uint16_t addr)
 **************************************************************************************************/
 void eeprom_example(void)
 {
-	uint8_t status = eeprom_write(0x1234, 123);
-	printf("EEPROM write status: %d\n", status);
-	delay_ms(2);	// XXX treba
-	uint8_t read = eeprom_read(0x1234);
+	eeprom_init();
+
+	uint8_t read;
+
+	//uint8_t status = eeprom_write(0x1234, 123);
+	//eeprom_write(0x1235, 222);
+	//eeprom_write(0x1234, 111);
+	//uint8_t status = eeprom_write(0x1234, 111);
+	//printf("EEPROM write status: %d\n", status);
+	//delay_ms(5);
+	read = eeprom_read(0x1234);
+	printf("EEPROM read: %d\n", read);
+	read = eeprom_read(0x1235);
 	printf("EEPROM read: %d\n", read);
 }

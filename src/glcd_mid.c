@@ -9,23 +9,25 @@
 
    */
 
+// preimenovat sendCmd u writeCmd i sl
+
 #include "glcd_mid.h"
 
-//void glcd_sendCmd(unsigned char data)
+	//printf("\t\t\tDEBUG\n");
+
 void glcd_sendCmd(uint8_t data)
 {
 	glcd_dc_low();
 	glcd_cs_low();
-	glcd_spi_send(data);
+	spi_rw(data);
 	glcd_cs_high();
 }
 
-//void glcd_sendData(unsigned char data)
 void glcd_sendData(uint8_t data)
 {
 	glcd_dc_high();
 	glcd_cs_low();
-	glcd_spi_send(data);
+	spi_rw(data);
 	glcd_cs_high();
 }
 
@@ -35,8 +37,8 @@ void glcd_sendData16(uint16_t data)
 	unsigned char dataL = data & 0xFF;
 	glcd_dc_high();
 	glcd_cs_low();
-	glcd_spi_send(dataH);
-	glcd_spi_send(dataL);
+	spi_rw(dataH);
+	spi_rw(dataL);
 	glcd_cs_high();
 }
 
@@ -161,5 +163,5 @@ void glcd_ili9341_init(void)
 
 	glcd_sendCmd(ILI9341_CMD_DISPLAY_ON);
 	glcd_sendCmd(ILI9341_CMD_MEMORY_WRITE);
-	//glcd_bg(bgcolor);
+	//glcd_bg(bgcolor);	// ovo je high layer
 }

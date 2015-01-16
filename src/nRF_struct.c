@@ -1,25 +1,5 @@
 #include "nRF_struct.h"
 
-/*
-// local defines
-#define PIN0	GPIO_Pin_0
-#define PIN1	GPIO_Pin_1
-#define PIN2	GPIO_Pin_2
-#define PIN3	GPIO_Pin_3
-#define PIN4	GPIO_Pin_4
-#define PIN5	GPIO_Pin_5
-#define PIN6	GPIO_Pin_6
-#define PIN7	GPIO_Pin_7
-#define PIN8	GPIO_Pin_8
-#define PIN9	GPIO_Pin_9
-#define PIN10	GPIO_Pin_10
-#define PIN11	GPIO_Pin_11
-#define PIN12	GPIO_Pin_12
-#define PIN13	GPIO_Pin_13
-#define PIN14	GPIO_Pin_14
-#define PIN15	GPIO_Pin_15
-*/
-
 static void spi_init(uint8_t spi_number)
 {
 	GPIO_InitTypeDef	GPIO_InitStructure;
@@ -149,67 +129,51 @@ static uint8_t gpio_init(char port, uint8_t pin, direction_t direction)
 	switch (pin)
 	{
 		case 0:
-			//GPIO_InitStructure.GPIO_Pin	= PIN0;
 			GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
 			break;
 		case 1:
-			//GPIO_InitStructure.GPIO_Pin	= PIN1;
 			GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1;
 			break;
 		case 2:
-			//GPIO_InitStructure.GPIO_Pin	= PIN2;
 			GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2;
 			break;
 		case 3:
-			//GPIO_InitStructure.GPIO_Pin	= PIN3;
 			GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3;
 			break;
 		case 4:
-			//GPIO_InitStructure.GPIO_Pin	= PIN4;
 			GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4;
 			break;
 		case 5:
-			//GPIO_InitStructure.GPIO_Pin	= PIN5;
 			GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;
 			break;
 		case 6:
-			//GPIO_InitStructure.GPIO_Pin	= PIN6;
 			GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6;
 			break;
 		case 7:
-			//GPIO_InitStructure.GPIO_Pin	= PIN7;
 			GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7;
 			break;
 		case 8:
-			//GPIO_InitStructure.GPIO_Pin	= PIN8;
 			GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8;
 			break;
 		case 9:
-			//GPIO_InitStructure.GPIO_Pin	= PIN9;
 			GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9;
 			break;
 		case 10:
-			//GPIO_InitStructure.GPIO_Pin	= PIN10;
 			GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
 			break;
 		case 11:
-			//GPIO_InitStructure.GPIO_Pin	= PIN11;
 			GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11;
 			break;
 		case 12:
-			//GPIO_InitStructure.GPIO_Pin	= PIN12;
 			GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12;
 			break;
 		case 13:
-			//GPIO_InitStructure.GPIO_Pin	= PIN13;
 			GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13;
 			break;
 		case 14:
-			//GPIO_InitStructure.GPIO_Pin	= PIN14;
 			GPIO_InitStructure.GPIO_Pin = GPIO_Pin_14;
 			break;
 		case 15:
-			//GPIO_InitStructure.GPIO_Pin	= PIN15;
 			GPIO_InitStructure.GPIO_Pin = GPIO_Pin_15;
 			break;
 		default:
@@ -253,7 +217,7 @@ static int parse_gpio(const char *name, const char *arg, direction_t direction)
 	char arg_port = arg[1];
 	int arg_pin = atoi(&arg[2]);	// radi i za dvoznamenkaste brojeve
 
-	if ((arg_port == 'A') ||
+	if (	(arg_port == 'A') ||
 		(arg_port == 'a') ||
 		(arg_port == 'B') ||
 		(arg_port == 'b') ||
@@ -387,13 +351,7 @@ nRF_t *nRF_new(const char *name)
 	gobj[counter].print = nRF_print;
 	*/
 
-	// XXX
-	// napravit ovo da moze napravit vise objekata
-	// mozda array?
-	// XXX
-
 	//counter++;
-	// vrati adresu objekta
 
 	void *pointer = obj_array;
 	printf("void pointer: %p\n", pointer);

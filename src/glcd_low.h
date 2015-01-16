@@ -4,9 +4,17 @@
 // GLCD uC specifican dio
 
 // *************************************** sys includes *******************************************
-#include "stm32f10x_rcc.h"
-#include "stm32f10x_gpio.h"
-#include "stm32f10x_spi.h"
+#ifdef STM32F10X_MD
+	#include "stm32f10x_rcc.h"
+	#include "stm32f10x_gpio.h"
+	#include "stm32f10x_spi.h"
+#endif
+#ifdef STM32F4XX
+	//#include "stm32f4xx_rcc.h"
+	//#include "stm32f4xx_gpio.h"
+	#include "stm32f4xx_spi.h"
+#endif
+#include "spi.h"
 // *************************************** local includes *****************************************
 //#include "glcd.c"
 // *************************************** defines ************************************************
@@ -33,6 +41,7 @@
 */
 
 // zajednicko za SPI1 i SPI2
+/*
 #define GLCD_LED_PORT	GPIOB
 #define GLCD_LED_PIN	GPIO_Pin_0	// PB0
 #define GLCD_DC_PORT	GPIOB
@@ -41,6 +50,16 @@
 #define GLCD_RESET_PIN	GPIO_Pin_2	// PB2
 #define GLCD_CS_PORT	GPIOB
 #define GLCD_CS_PIN	GPIO_Pin_13	// PB10
+*/
+// STM32F4
+#define GLCD_LED_PORT	GPIOD
+#define GLCD_LED_PIN	GPIO_Pin_0	// PD0
+#define GLCD_DC_PORT	GPIOD
+#define GLCD_DC_PIN	GPIO_Pin_1	// PD1
+#define GLCD_RESET_PORT GPIOD
+#define GLCD_RESET_PIN	GPIO_Pin_2	// PD2
+#define GLCD_CS_PORT	GPIOD
+#define GLCD_CS_PIN	GPIO_Pin_3	// PD3
 // *************************************** variables **********************************************
 
 // *************************************** function prototypes ************************************

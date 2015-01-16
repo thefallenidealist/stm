@@ -11,7 +11,8 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
-#include "stm32f10x.h" 		// includa core_cm3 koji treba za SystemCoreClock, ima i system_stm32f10x.h
+//#include "stm32f10x.h" 		// includa core_cm3 koji treba za SystemCoreClock, ima i system_stm32f10x.h
+#include "stm32f4xx.h"
 void delay_init(void);
 void delay_us(uint32_t us);
 void delay_ms(uint32_t ms);
@@ -21,5 +22,9 @@ uint32_t get_uptime_ms(void);
 uint32_t get_uptime_s(void);
 const char *get_uptime(void);
 void SysTick_Handler(void);
+
+//extern uint32_t tmp_up;
+//extern uptime_us;
+
 
 #endif

@@ -27,11 +27,13 @@ static inline void ce_toggle()
 /****************************************************************************/
 /****************************************************************************/
 static uint8_t write_reg(uint8_t reg, uint8_t arg)
+//static uint8_t write_reg(nRF_t nRF, uint8_t reg, uint8_t arg)
 {
 	printf("write reg: reg: 0x%X, value: %d\n", reg, arg);
 
 	uint8_t status;
 	cs(0);
+	//cs(nRF, 0);
 	status = spi1_send_receive(reg + CMD_W_REGISTER);
 	spi1_send_receive(arg);
 	cs(1);
