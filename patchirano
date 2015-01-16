@@ -1,0 +1,8 @@
+http://www.cesareriva.com/fix-registers-may-not-be-the-same-error/
+core_cm3.c
+# 736 linija
+- __ASM volatile ("strexb %0, %2, [%1]" : "=r" (result) : "r" (addr), "r" (value) );
++ __ASM volatile ("strexb %0, %2, [%1]" : "=&r" (result) : "r" (addr), "r" (value) );
+# 754 linija
+   __ASM volatile ("strexh %0, %2, [%1]" : "=&r" (result) : "r" (addr), "r" (value) );
+

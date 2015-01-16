@@ -1,0 +1,11 @@
+#
+nrf_t ime = nrf_new("ime objekta")
+
+ime.cs = "PD2"
+ime.ce = "PD3"
+ime.irq = "PD4"
+
+nrf_init(ime);
+# sad imamo
+ime.name = "ime objekta";
+# pokrenit gpio init za pinove i nastimat ih kao I ili O

@@ -1,0 +1,25 @@
+# standardno
+init
+reset init
+halt
+flash write_image erase bin/main.bin 0x08000000
+reset run
+
+
+# flash, moze i bez reseta
+flash probe 0
+flash banks
+
+# read image
+dump_image image.bin 0x08000000 0x100000
+
+#
+reset halt
+> flash probe 0
+> flash banks
+> flash list
+> flash erase_check 0
+
+# write image
+reset halt
+flash write_image erase image.bin 0x08000000
