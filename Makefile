@@ -24,8 +24,8 @@ CPU	= -mcpu=cortex-m3
 	#DEFINES	= -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER 
 # STM32F4
 DEFINES	= -DSTM32F4XX -DUSE_STDPERIPH_DRIVER 
-OPTS	= -O0 -g	# XXX ne radi
-OPTS	= -O1 -g 
+#OPTS	= -O0 -g	# XXX ne radi
+#OPTS	= -O1 -g 
 OPTS	= -O2 -g 
 #OPTS	= -O3
 DIRS 	=  -Isrc \

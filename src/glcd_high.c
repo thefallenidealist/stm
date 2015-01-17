@@ -1,29 +1,22 @@
 #include "glcd_high.h"
-#include <string.h>
 
-/*
+// 150116	vraceno na "sporije" verzije, ali se postuje layerizacija
+//		"brze" verzije dobiju max 1 ms na -O2 ili -O3 (jednako brzo radi);
 
-   smece od ekrana jako osjetljivo na vanjska sranja pa se ni ne upali
+static unsigned int max_x, max_y;
+static unsigned int bgcolor = black;
+static unsigned char glcd_orientation;
 
+// XXX font mora bit ovdje, a ne u svom .h fajlu
 
-
-   */
-
-unsigned int max_x, max_y;
-unsigned int bgcolor = black;
-unsigned char glcd_orientation;
-//const unsigned char simpleFont[][8];
-//volatile char tmpOrientation[2] = {};
-//char *glcd_orientation = tmpOrientation;
-
-
+//#ifndef GLCD_FONT_H
+//#define GLCD_FONT_H
 
 /*
   2012 Copyright (c) Seeed Technology Inc.
 */
 
 //#include <avr/pgmspace.h>
-
 //const unsigned char simpleFont[][8] PROGMEM=
 const unsigned char simpleFont[][8] =
 {	
@@ -126,7 +119,10 @@ const unsigned char simpleFont[][8] =
   {0x00,0xFF,0xFF,0xFF,0xFF,0xFF,0x00,0x00}	// puna kocka
 };
 
-void glcd_setOrientation(char orientation)
+//#endif
+
+//void glcd_setOrientation(char orientation)
+void glcd_setOrientation(uint8_t orientation)
 {
 	glcd_orientation = orientation;
 
@@ -150,67 +146,89 @@ void glcd_setOrientation(char orientation)
 	}
 }
 
-// get Orientation TODO
-
-void glcd_setX(uint16_t x0, uint16_t x1)
+//static void glcd_setX(uint16_t x0, uint16_t x1)
+static void glcd_setX(volatile uint16_t x0, volatile uint16_t x1)
 {
-	glcd_sendCmd(ILI9341_CMD_COLUMN_ADDRESS_SET);
+	glcd_writeCmd(ILI9341_CMD_COLUMN_ADDRESS_SET);
 
-	glcd_sendData16(x0);
-	glcd_sendData16(x1);
+	glcd_writeData16(x0);
+	glcd_writeData16(x1);
 }
 
-void glcd_setY(uint16_t y0, uint16_t y1)
+//static void glcd_setY(uint16_t y0, uint16_t y1)
+static void glcd_setY(volatile uint16_t y0, volatile uint16_t y1)
 {
-	glcd_sendCmd(ILI9341_CMD_PAGE_ADDRESS_SET);
-	glcd_sendData16(y0);
-	glcd_sendData16(y1);
+	glcd_writeCmd(ILI9341_CMD_PAGE_ADDRESS_SET);
+	glcd_writeData16(y0);
+	glcd_writeData16(y1);
 }
 
-void glcd_setXY(uint16_t x0, uint16_t x1, uint16_t y0, uint16_t y1)
+static void glcd_setXY(volatile uint16_t x0, volatile uint16_t x1, volatile uint16_t y0, volatile uint16_t y1)
 {
 	// kao set page u koji ces pisat
-	if(glcd_orientation == P1)
+	if (glcd_orientation == P1)
 	{
 		glcd_setX(x0, x1);
 		glcd_setY(y0, y1);
 	}
-	else if(glcd_orientation == P2)
+	else if (glcd_orientation == P2)
 	{
 		glcd_setX(max_x-x1, max_x-x0);
 		glcd_setY(max_y-y1, max_y-y0-1);	// da ne omasi za 1 pixel
 	}
-	else if(glcd_orientation == L1)
+	else if (glcd_orientation == L1)
 	{
 		glcd_setX(y1, y0);
 		glcd_setY(max_x-x1, max_x-x0);
 	}
-	else if(glcd_orientation == L2)
+	else if (glcd_orientation == L2)
 	{
 		glcd_setX(max_y-y0, max_y-y1-1);	// da ne omasi za 1 pixel
 		glcd_setY(x0, x1);
 	}
 	// nakon svakog setXY treba ovo
-	glcd_sendCmd(ILI9341_CMD_MEMORY_WRITE);	
+	glcd_writeCmd(ILI9341_CMD_MEMORY_WRITE);	
 }
 
-void glcd_pixel(vuint16_t x0, vuint16_t y0, vuint16_t color)
+
+// javne funkcije
+
+//void glcd_pixel(vuint16_t x0, vuint16_t y0, vuint16_t color)
+void glcd_pixel(volatile uint16_t x0, volatile uint16_t y0, volatile uint16_t color)
 {
 	glcd_setXY(x0,x0,y0,y0);
-	glcd_sendData16(color);
+	glcd_writeData16(color);
 }
 
-void glcd_hline(uint16_t x0, uint16_t y0, uint16_t length, uint16_t color)
+//void glcd_hline(uint16_t x0, uint16_t y0, uint16_t length, uint16_t color)
+void glcd_hline(volatile uint16_t x0, uint16_t y0, uint16_t length, uint16_t color)
 {
 	glcd_setXY(x0,x0+length,y0,y0);
 
+	// sporija verzija
+	// 79 ms
+	/*
+	for (int i=0; i<length; i++)
+	{
+		glcd_writeData16(color);
+	}
+	*/
+
+	// brza verzija
 	// ustedi na CS signalu
+	// 53 ms
         glcd_dc_high();
         glcd_cs_low();
-	for(int i=0; i<length; i++)
+	for (int i=0; i<length; i++)
 	{
-		spi_rw(color >> 8);
-		spi_rw(color & 0xFF);
+		/*
+		   // 53 ms
+		spi_write(color >> 8);
+		spi_write(color & 0xFF);
+		*/
+		// 51 ms
+		//spi_write16(color);	// XXX povreda layera radi brzine
+		spi_write16_fast(color);	// XXX povreda layera radi brzine
 	}
         glcd_cs_high();
 }
@@ -218,33 +236,38 @@ void glcd_hline(uint16_t x0, uint16_t y0, uint16_t length, uint16_t color)
 		// ne toliko koristena funkcija
 void glcd_vline(uint16_t x0, uint16_t y0, uint16_t length, uint16_t color)
 {
-	if((glcd_orientation == P1) || (glcd_orientation == P2))
+	if ((glcd_orientation == P1) || (glcd_orientation == P2))
 	{
 		glcd_setXY(x0,x0,y0,y0+length);
 	}
-	if((glcd_orientation == L1) || (glcd_orientation == L2))
+	if ((glcd_orientation == L1) || (glcd_orientation == L2))
 	{
 		glcd_setXY(x0,x0,y0+length,y0);
 	}
-	//glcd_sendCmd(ILI9341_CMD_MEMORY_WRITE);
+	//glcd_writeCmd(ILI9341_CMD_MEMORY_WRITE);
 
 	// ustedi na CS signalu
-        glcd_dc_high();
-        glcd_cs_low();
-	for(int i=0; i<length; i++)
+        //glcd_dc_high();
+        //glcd_cs_low();
+	for (int i=0; i<length; i++)
 	{
-		//glcd_sendData16(color);
+		glcd_writeData16(color);
+		//spi_write16(color);
+		//spi_write16_fast(color);
+		/*
 		spi_rw(color >> 8);
 		spi_rw(color & 0xFF);
+		*/
 	}
         glcd_cs_high();
 }
 
-void glcd_fillRectangle(vuint16_t x0, vuint16_t y0, vuint16_t length, vuint16_t width, vuint16_t color)
+//void glcd_fillRectangle(vuint16_t x0, vuint16_t y0, vuint16_t length, vuint16_t width, vuint16_t color)
+void glcd_fillRectangle(volatile uint16_t x0, volatile uint16_t y0, volatile uint16_t length, volatile uint16_t width, volatile uint16_t color)
 {
 	// TODO
 	// dosta funkcija poziva ovo, probat ga ubrzat
-	for(int i=0;i<width;i++)
+	for (int i=0;i<width;i++)
 	{
 		glcd_hline(x0,y0+i,length,color);
 	}
@@ -257,16 +280,16 @@ void glcd_bg(int color)
 
 void glcd_char(unsigned char ascii, unsigned int x, unsigned int y, unsigned int size, unsigned int fgcolor)	
 {
-	if( (ascii >= 32) || (ascii >= 126) )
+	if ( (ascii >= 32) || (ascii >= 126) )
 	{
 		for (int i=0; i<CHAR_X; i++)
 		{
 			//unsigned char temp = pgm_read_byte(&simpleFont[ascii-32][i]);	// because font.c starts at 0, not 32
 			unsigned char temp = simpleFont[ascii-32][i];	// ARM
 
-			for(int j=0; j<8; j++)
+			for (int j=0; j<8; j++)
 			{
-				if((temp >> j) & 1)	// ako bit na trenutacnoj pozici = 1
+				if ((temp >> j) & 1)	// ako bit na trenutacnoj pozici = 1
 				{
 					// onda ga ispisi, pixel po pixel
 					glcd_fillRectangle(x+i*size, y+j*size, size, size, fgcolor);
@@ -279,7 +302,7 @@ void glcd_char(unsigned char ascii, unsigned int x, unsigned int y, unsigned int
 			}
 		}
 	}
-	else if((ascii != '\n') && (ascii != '\r'))
+	else if ((ascii != '\n') && (ascii != '\r'))
 	{
 		printf("Zajeb, glcd_char() dobio neprintabilni znak: (int) %d\n", ascii);
 		// If not printable write red kocka
@@ -287,9 +310,10 @@ void glcd_char(unsigned char ascii, unsigned int x, unsigned int y, unsigned int
 	}
 }
 
-void glcd_string(char *string, unsigned int x, unsigned int y, unsigned int size, unsigned int fgcolor)
+//void glcd_string(char *string, unsigned int x, unsigned int y, unsigned int size, unsigned int fgcolor)
+void glcd_string(char *string, volatile uint16_t x, volatile uint16_t y, uint8_t size, uint16_t fgcolor)
 {
-	while(*string)
+	while (*string)
 	{
 		// TODO
 		// provjere da ne ispisuje prazno mjesto na pocetku linije
@@ -297,9 +321,9 @@ void glcd_string(char *string, unsigned int x, unsigned int y, unsigned int size
 		// Da ne razlomi rijec na sred nego citavu prebaci u novi red (vjerojatno ce znatno usporit)
 
 
-		//if(x < max_x)
+		//if (x < max_x)
 		{
-			if((*string == '\n') || (*string == '\r'))
+			if ((*string == '\n') || (*string == '\r'))
 			{
 				// samo idi u novi red, bez ispisa
 				x = 0;
@@ -309,7 +333,7 @@ void glcd_string(char *string, unsigned int x, unsigned int y, unsigned int size
 			//else
 			{
 
-				if(x < max_x)
+				if (x < max_x)
 				{
 					glcd_char(*string, x, y, size, fgcolor);
 					string++;
@@ -339,14 +363,14 @@ uint8_t glcd_number(int32_t number, uint16_t x0, uint16_t y0, uint8_t size, uint
 		digits_count = 1;
 		glcd_char('-',x0, y0, size, fgcolor);
 		number = -number;
-		if(x0 < max_x)
+		if (x0 < max_x)
 			x0 += (CHAR_X+CHAR_SPACE)*size;
 	}
 	else if (number == 0)
 	{
 		digits_count = 1;
 		glcd_char('0',x0, y0, size, fgcolor);
-		if(x0 < max_x)
+		if (x0 < max_x)
 			x0 += (CHAR_X+CHAR_SPACE)*size;
 		return digits_count;
 	}
@@ -358,10 +382,10 @@ uint8_t glcd_number(int32_t number, uint16_t x0, uint16_t y0, uint8_t size, uint
 	}
 
 	digits_count += i;
-	for(; i > 0; i--)
+	for (; i > 0; i--)
 	{
 		glcd_char('0'+ char_buffer[i - 1],x0, y0, size, fgcolor);
-		if(x0 < max_x)
+		if (x0 < max_x)
 			x0 += (CHAR_X+CHAR_SPACE)*size;
 	}
 	return digits_count;
@@ -384,7 +408,8 @@ void glcd_test()
 	glcd_spi_init();
 	glcd_led_on();
 	glcd_ili9341_init();
-	glcd_setOrientation(P2);
+	//glcd_setOrientation(P1);
+	glcd_setOrientation(L2);
 	glcd_set_bgcolor(black);
 	uint16_t bgcolor = glcd_get_bgcolor();
 	glcd_bg(bgcolor);

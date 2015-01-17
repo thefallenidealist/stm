@@ -115,17 +115,17 @@ void RTC_update(void)
 	// RTC IRQ pozove ovo
 	time_s++;
 
-	if(time_s > 59)
+	if (time_s > 59)
 	{
 		time_s = 0;
 		time_m++;
 	}
-	if(time_m > 59)
+	if (time_m > 59)
 	{
 		time_m = 0;
 		time_h++;
 	}
-	if(time_h > 23)
+	if (time_h > 23)
 	{
 		time_h = 0;
 	}

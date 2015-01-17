@@ -1,3 +1,6 @@
+#ifndef NRF_LOW_H
+#define NRF_LOW_H
+
 // created 121228
 // TODO prebacit poneki #define u enum, radi ljepseg debuggiranja
 // TODO svi ovi silni registri bi trebali bit privatni
@@ -357,3 +360,5 @@
 #define EN_DYN_ACK	0	// Enables the W_TX_PAYLOAD_NOACK command
 
 void nRF1_main(void);
+
+#endif

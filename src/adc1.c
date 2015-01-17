@@ -49,11 +49,11 @@ void ADC_init(void)
 	// Enable ADC1 reset calibaration register 
 	ADC_ResetCalibration(ADC1);
 	// Check the end of ADC1 reset calibration register 
-	while(ADC_GetResetCalibrationStatus(ADC1));
+	while (ADC_GetResetCalibrationStatus(ADC1));
 	// Start ADC1 calibaration 
 	ADC_StartCalibration(ADC1);
 	// Check the end of ADC1 calibration 
-	while(ADC_GetCalibrationStatus(ADC1));
+	while (ADC_GetCalibrationStatus(ADC1));
 }
 
 uint16_t ADC_read(uint8_t channel)
@@ -62,7 +62,7 @@ uint16_t ADC_read(uint8_t channel)
 	// Start the conversion
 	ADC_SoftwareStartConvCmd(ADC1, ENABLE);
 	// Wait until conversion completion
-	while(ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC) == RESET);
+	while (ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC) == RESET);
 	// Get the conversion value
 	return ADC_GetConversionValue(ADC1);
 }

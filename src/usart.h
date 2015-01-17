@@ -1,5 +1,5 @@
-#ifndef USART_H
-#define USART_H
+//#ifndef USART_H
+//#define USART_H
 
 // *************************************** sys includes *******************************************
 #include <stdio.h>
@@ -14,13 +14,15 @@
 	#include "stm32f10x_gpio.h"
 	#include "stm32f10x_usart.h"
 #endif
-
 #ifdef STM32F4XX
+// XXX odjednom je ovo prestalo radit iako radi u drugim fajlovima
 	#include "stm32f4xx_rcc.h"
 	#include "stm32f4xx_gpio.h"
 	#include "stm32f4xx_usart.h"
 	#include "misc.h" 		// NVIC_Init()
 #endif
+	#include "stm32f4xx_usart.h"
+	#include "misc.h" 		// NVIC_Init()
 
 // *************************************** defines ************************************************
 #ifdef STM32F10X_MD
@@ -82,4 +84,4 @@ extern volatile char usart1_rx_string_arr[USART_MAX_LENGTH];
 extern volatile char usart2_rx_string_arr[USART_MAX_LENGTH];
 extern volatile char usart3_rx_string_arr[USART_MAX_LENGTH];
 
-#endif
+//#endif

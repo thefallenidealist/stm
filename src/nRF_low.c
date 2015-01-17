@@ -58,7 +58,7 @@ static void print_reg(uint8_t reg)
 {
 	uint8_t status = read_reg(reg);
 	printf("reading reg: 0x%X: %d\n", reg, status);	
-	for(int i=0; i<8; i++)
+	for (int i=0; i<8; i++)
 	{
 		printf("reg bit %d: %d\n", i, ((status >> i) & 1));
 	}

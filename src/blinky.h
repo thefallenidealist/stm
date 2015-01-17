@@ -1,4 +1,7 @@
 // created 150112
+#ifndef	BLINKY_H
+#define BLINKY_H
+
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
@@ -18,5 +21,9 @@ static const char	LED_GREEN[] = "PD12";
 //static const char	*pLEDg = LED_GREEN;
 //static char	*LEDG = LED_GREEN;
 
-void blinky_blinky_setup(void);
+//void blinky_blinky_setup(void);
+//void blinky_blinky_setup(bool arg);
+void blinky_blinky_init(bool arg);
 void blinky_blinky(uint8_t arg);
+
+#endif

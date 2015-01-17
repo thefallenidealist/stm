@@ -13,17 +13,13 @@
 //#include "baro.h" 	// XXX ne radi, mozda zbog amputiranih otpornika
 //#include "oled.h"
 #include "clock_print.h"
-//#include "glcd_low.h"
-#include "glcd_high.h"
+#include "glcd.h"
 
 void main(void)
 {
 
 	delay_init();
-	//led_init("PA0");
-	//led_init("PA1");
-
-	blinky_blinky_setup();
+	blinky_blinky_init(1);
 
 	USART1_init(115200);
 
@@ -40,7 +36,6 @@ void main(void)
 
 	//bmp180_init();
 	//bmp180_calibration();
-
 
 	glcd_test();
 	glcd_speedtest();

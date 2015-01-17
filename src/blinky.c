@@ -6,6 +6,7 @@
 uint8_t delay = 0;
 uint8_t delay_max = 0;
 bool delay_postavljen = 0;
+bool variable_delay = 0;
 
 typedef enum
 {
@@ -36,8 +37,10 @@ static void delay_op()
 }
 
 // javne funkcije ispod
-void blinky_blinky_setup()
+//void blinky_blinky_setup(bool arg)
+void blinky_blinky_init(bool arg)
 {
+	variable_delay = arg;
 	led_init("PD13");
 	led_init("PD14");
 	led_init("PD15");
@@ -67,7 +70,10 @@ void blinky_blinky(uint8_t arg)
 	led("PD15", 2);
 	delay_ms(delay);
 	led("PD15", 2);
-	delay_op();
+	if (variable_delay == 1)
+	{
+		delay_op();
+	}
 
 	//printf("blinky blinky delay: %d delay_flag: %d\n", delay, delay_flag);
 }

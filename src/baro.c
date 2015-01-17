@@ -86,10 +86,10 @@ uint16_t bmp180_write(uint8_t reg, uint8_t data)
 	uint32_t timeout = I2C_TIMEOUT_MAX;
 
 	// generiraj start signal
-	while(I2C_GetFlagStatus(I2C1, I2C_FLAG_BUSY));
+	while (I2C_GetFlagStatus(I2C1, I2C_FLAG_BUSY));
 	I2C_GenerateSTART(I2C1, ENABLE);
 	timeout = I2C_TIMEOUT_MAX;
-	while(!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_MODE_SELECT))
+	while (!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_MODE_SELECT))
 	{
 		if ((timeout--) == 0)
 		       return 10;
@@ -98,7 +98,7 @@ uint16_t bmp180_write(uint8_t reg, uint8_t data)
 	// posalji adresu slavea sa kojim treba komunicirat
 	I2C_Send7bitAddress(I2C1, BMP_ADDR_W, I2C_Direction_Transmitter);
 	timeout = I2C_TIMEOUT_MAX;
-	while(!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED))
+	while (!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED))
 	{
 		if ((timeout--) == 0)
 		       return 11;
@@ -106,7 +106,7 @@ uint16_t bmp180_write(uint8_t reg, uint8_t data)
 
 	// posalji adresu registra koji treba stimat
 	I2C_SendData(I2C1, reg);	// 8b
-	while(!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_BYTE_TRANSMITTED))
+	while (!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_BYTE_TRANSMITTED))
 	{
 		if ((timeout--) == 0)
 		       return 12;
@@ -114,7 +114,7 @@ uint16_t bmp180_write(uint8_t reg, uint8_t data)
 
 	// posalji podatke u taj registar
 	I2C_SendData(I2C1, data);	// 8b
-	while(!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_BYTE_TRANSMITTED))
+	while (!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_BYTE_TRANSMITTED))
 	{
 		if ((timeout--) == 0)
 		       return 13;
@@ -122,7 +122,7 @@ uint16_t bmp180_write(uint8_t reg, uint8_t data)
 
 	// gotovi smo zasad, generiraj stop
 	I2C_GenerateSTOP(I2C1, ENABLE);
-	while(I2C_GetFlagStatus(I2C1, I2C_FLAG_BUSY));
+	while (I2C_GetFlagStatus(I2C1, I2C_FLAG_BUSY));
 
 	return 0;	// alles gut
 }
@@ -141,10 +141,10 @@ int16_t bmp180_read(uint8_t reg)
 
 	// start
 	// wait until I2C1 is not busy any more
-	while(I2C_GetFlagStatus(I2C1, I2C_FLAG_BUSY));
+	while (I2C_GetFlagStatus(I2C1, I2C_FLAG_BUSY));
 	I2C_GenerateSTART(I2C1, ENABLE);
 	timeout = I2C_TIMEOUT_MAX;
-	while(!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_MODE_SELECT))
+	while (!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_MODE_SELECT))
 	{
 		if ((timeout--) == 0)
 		       return 10;
@@ -153,7 +153,7 @@ int16_t bmp180_read(uint8_t reg)
 	// w addr
 	I2C_Send7bitAddress(I2C1, BMP_ADDR_W, I2C_Direction_Transmitter);
 	timeout = I2C_TIMEOUT_MAX;
-	while(!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED))
+	while (!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED))
 	{
 		if ((timeout--) == 0)
 		       return 11;
@@ -162,7 +162,7 @@ int16_t bmp180_read(uint8_t reg)
 	// w reg
 	I2C_SendData(I2C1, reg);	// 8b
 	timeout = I2C_TIMEOUT_MAX;
-	while(!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_BYTE_TRANSMITTED))
+	while (!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_BYTE_TRANSMITTED))
 	{
 		if ((timeout--) == 0)
 		       return 12;
@@ -172,7 +172,7 @@ int16_t bmp180_read(uint8_t reg)
 	// restart
 	I2C_GenerateSTART(I2C1, ENABLE);
 	timeout = I2C_TIMEOUT_MAX;
-	while(!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_MODE_SELECT))
+	while (!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_MODE_SELECT))
 	{
 		if ((timeout--) == 0)
 		       return 100;
@@ -180,7 +180,7 @@ int16_t bmp180_read(uint8_t reg)
 	// w addr
 	I2C_Send7bitAddress(I2C1, BMP_ADDR_R, I2C_Direction_Receiver);
 	timeout = I2C_TIMEOUT_MAX;
-	while(!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_RECEIVER_MODE_SELECTED))
+	while (!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_RECEIVER_MODE_SELECTED))
 	{
 		if ((timeout--) == 0)
 		       return 101;
@@ -190,7 +190,7 @@ int16_t bmp180_read(uint8_t reg)
 		// prvo ide ACK/NACK, pa onda citanje sa I2C
 	I2C_AcknowledgeConfig(I2C1, ENABLE);	// ACK
 	timeout = I2C_TIMEOUT_MAX;
-	while(!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_BYTE_RECEIVED))
+	while (!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_BYTE_RECEIVED))
 	{
 		if ((timeout--) == 0)
 		       return 102;
@@ -200,7 +200,7 @@ int16_t bmp180_read(uint8_t reg)
 	// ADC low
 	I2C_AcknowledgeConfig(I2C1, DISABLE);	// NACK
 	timeout = I2C_TIMEOUT_MAX;
-	while(!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_BYTE_RECEIVED))
+	while (!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_BYTE_RECEIVED))
 	{
 		if ((timeout--) == 0)
 		       return 103;
@@ -208,7 +208,7 @@ int16_t bmp180_read(uint8_t reg)
 	receivedL = I2C_ReceiveData(I2C1);
 
 	I2C_GenerateSTOP(I2C1, ENABLE);
-	while(I2C_GetFlagStatus(I2C1, I2C_FLAG_BUSY));
+	while (I2C_GetFlagStatus(I2C1, I2C_FLAG_BUSY));
 
 	received = (receivedH << 8) + receivedL;
 

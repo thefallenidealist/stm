@@ -1,3 +1,6 @@
+#ifndef NRF_STRUCT_H
+#define NRF_STRUCT_H
+
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
@@ -93,3 +96,5 @@ enum
 nRF_t *nRF_new(const char *name);
 //nRF_t *nRF_new(const char *name);
 //void nRF_print(nRF_t *self);
+
+#endif

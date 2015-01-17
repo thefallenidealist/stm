@@ -193,7 +193,7 @@ void USART1_IRQHandler(void)
 	printf("USART1 PE: %d\n",USART_GetITStatus(USART1, USART_IT_PE));
 	*/
 
-	if(USART_GetITStatus(USART1, USART_IT_RXNE) == SET)
+	if (USART_GetITStatus(USART1, USART_IT_RXNE) == SET)
 	{
 		/*
 		   // samo proslijedi
@@ -242,7 +242,7 @@ void USART1_IRQHandler(void)
 
 	static int counter=0;
 	// interrupt treba testirat da zna jel RX ili TX u pitanju
-	if(USART_GetITStatus(USART1, USART_IT_TXE) == SET)
+	if (USART_GetITStatus(USART1, USART_IT_TXE) == SET)
 	{
 		// stalno zaglavi ovdje
 		//printf("USART1 TX IRQ\n");	// stalno salje
@@ -251,7 +251,7 @@ void USART1_IRQHandler(void)
 		USART_SendData(USART1, testbuffer[counter++]);
 
 		//printf("counter: %d\n", counter);
-		if(counter >= (sizeof(testbuffer)-1))
+		if (counter >= (sizeof(testbuffer)-1))
 		{
 			counter = 0;
 			USART_ITConfig(USART1, USART_IT_TXE, DISABLE);

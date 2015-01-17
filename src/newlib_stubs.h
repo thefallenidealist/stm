@@ -1,3 +1,6 @@
+#ifndef NEWLIB_STUBS_H
+#define NEWLIB_STUBS_H
+
 #include <stdio.h>
 #include <errno.h>
 #include <sys/stat.h>
@@ -30,3 +33,5 @@
 
 #undef errno
 extern int errno;
+
+#endif

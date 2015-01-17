@@ -31,10 +31,10 @@ void set_tmp_up(uint32_t arg)
 **************************************************************************************************/
 void delay_init(void)
 {
-	if(SysTick_Config(SystemCoreClock / 1000000) !=0)	// 1000000 Hz 1000 kHz	1Mhz	1us
+	if (SysTick_Config(SystemCoreClock / 1000000) !=0)	// 1000000 Hz 1000 kHz	1Mhz	1us
 								// ticka bas svaku us, oh yes, ticka
 	{
-		while(1);	// error
+		while (1);	// error
 	}
 }
 
@@ -44,7 +44,7 @@ void delay_init(void)
 void delay_us(uint32_t us)
 {
 	delay_var = us;
-	while(delay_var != 0);
+	while (delay_var != 0);
 }
 
 /**************************************************************************************************

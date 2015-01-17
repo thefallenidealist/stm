@@ -7,9 +7,9 @@
 
 #define DELAY120 120
 
-void glcd_sendCmd(uint8_t data);
-void glcd_sendData(uint8_t data);
-void glcd_sendData16(uint16_t data);
+void glcd_writeCmd(uint8_t data);
+void glcd_writeData(uint8_t data);
+void glcd_writeData16(uint16_t data);
 void glcd_ili9341_init(void);
 
 #endif

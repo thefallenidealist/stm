@@ -21,7 +21,7 @@ void rtc_main()
 
 	// prvo omoguci LSI
 	RCC_LSICmd(ENABLE);
-	while(RCC_GetFlagStatus(RCC_FLAG_LSIRDY) == RESET);
+	while (RCC_GetFlagStatus(RCC_FLAG_LSIRDY) == RESET);
 
 	// odaberi LSI kao RTC CLK
 	RCC_RTCCLKConfig(RCC_RTCCLKSource_LSI);

@@ -1,3 +1,6 @@
+#ifndef GLCD_ILI9341_CMD_H
+#define GLCD_ILI9341_CMD_H
+
 /* Level 1 Commands (from the display Datasheet) */
 #define ILI9341_CMD_NOP					0x00
 // 0x02
@@ -86,3 +89,5 @@
 #define ILI9341_CMD_ENABLE_3_GAMMA_CONTROL		0xF2
 #define ILI9341_CMD_INTERFACE_CONTROL			0xF6
 #define ILI9341_CMD_PUMP_RATIO_CONTROL			0xF7
+
+#endif

@@ -57,10 +57,10 @@ uint8_t i2c_start(uint8_t i2c_number)
 	switch (i2c_number)
 	{
 		case 1:
-			//while(I2C_GetFlagStatus(I2C1, I2C_FLAG_BUSY));
-			//while(I2C_GetFlagStatus(I2C1, I2C_FLAG_BUSY));	// ne smije bit za ponovni i2c_start za EEPROM
+			//while (I2C_GetFlagStatus(I2C1, I2C_FLAG_BUSY));
+			//while (I2C_GetFlagStatus(I2C1, I2C_FLAG_BUSY));	// ne smije bit za ponovni i2c_start za EEPROM
 			I2C_GenerateSTART(I2C1, ENABLE);
-			while(!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_MODE_SELECT))
+			while (!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_MODE_SELECT))
 			{
 				if ((timeout--) == 0)
 				{
@@ -69,10 +69,10 @@ uint8_t i2c_start(uint8_t i2c_number)
 			}
 			break;
 		case 2:
-			while(I2C_GetFlagStatus(I2C2, I2C_FLAG_BUSY));	// ne smije bit za ponovni i2c_start za EEPROM XXX
+			while (I2C_GetFlagStatus(I2C2, I2C_FLAG_BUSY));	// ne smije bit za ponovni i2c_start za EEPROM XXX
 			I2C_GenerateSTART(I2C2, ENABLE);
 
-			while(!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_MODE_SELECT))
+			while (!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_MODE_SELECT))
 			{
 				if ((timeout--) == 0)
 				{
@@ -95,11 +95,11 @@ void i2c_stop(uint8_t i2c_number)
 	{
 		case 1:
 			I2C_GenerateSTOP(I2C1, ENABLE);
-			while(I2C_GetFlagStatus(I2C1, I2C_FLAG_BUSY));
+			while (I2C_GetFlagStatus(I2C1, I2C_FLAG_BUSY));
 			break;
 		case 2:
 			I2C_GenerateSTOP(I2C2, ENABLE);
-			while(I2C_GetFlagStatus(I2C2, I2C_FLAG_BUSY));
+			while (I2C_GetFlagStatus(I2C2, I2C_FLAG_BUSY));
 			break;
 		default:
 			printf("\tERROR: i2c_stop(): Wrong I2C port\n");
@@ -117,7 +117,7 @@ uint8_t i2c_sendAddr_tx(uint8_t i2c_number, uint8_t addr)
 	{
 		case 1:
 			I2C_Send7bitAddress(I2C1, addr, I2C_Direction_Transmitter);
-			while(!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED))
+			while (!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED))
 			{
 				if ((timeout--) == 0)
 				{
@@ -127,7 +127,7 @@ uint8_t i2c_sendAddr_tx(uint8_t i2c_number, uint8_t addr)
 			break;
 		case 2:
 			I2C_Send7bitAddress(I2C2, addr, I2C_Direction_Transmitter);
-			while(!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED))
+			while (!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED))
 			{
 				if ((timeout--) == 0)
 				{
@@ -152,7 +152,7 @@ uint8_t i2c_sendAddr_rx(uint8_t i2c_number, uint8_t addr)
 	{
 		case 1:
 			I2C_Send7bitAddress(I2C1, addr, I2C_Direction_Receiver);
-			while(!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED))
+			while (!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED))
 			{
 				if ((timeout--) == 0)
 				{
@@ -162,7 +162,7 @@ uint8_t i2c_sendAddr_rx(uint8_t i2c_number, uint8_t addr)
 			break;
 		case 2:
 			I2C_Send7bitAddress(I2C2, addr, I2C_Direction_Receiver);
-			while(!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED))
+			while (!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED))
 			{
 				if ((timeout--) == 0)
 				{
@@ -186,7 +186,7 @@ uint8_t i2c_write(uint8_t i2c_number, uint8_t data)
 	{
 		case 1:
 			I2C_SendData(I2C1, data);	// 8b
-			while(!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_BYTE_TRANSMITTED))
+			while (!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_BYTE_TRANSMITTED))
 			{
 				if ((timeout--) == 0)
 				{
@@ -196,7 +196,7 @@ uint8_t i2c_write(uint8_t i2c_number, uint8_t data)
 			break;
 		case 2:
 			I2C_SendData(I2C2, data);	// 8b
-			while(!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_BYTE_TRANSMITTED))
+			while (!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_BYTE_TRANSMITTED))
 			{
 				if ((timeout--) == 0)
 				{
@@ -220,7 +220,7 @@ uint8_t i2c_nack(uint8_t i2c_number)
 	{
 		case 1:
 			I2C_AcknowledgeConfig(I2C2, DISABLE);	// NACK, ide prije reada
-			while(!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_BYTE_RECEIVED))
+			while (!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_BYTE_RECEIVED))
 			{
 				if ((timeout--) == 0)
 				{
@@ -230,7 +230,7 @@ uint8_t i2c_nack(uint8_t i2c_number)
 			break;
 		case 2:
 			I2C_AcknowledgeConfig(I2C2, DISABLE);	// NACK, ide prije reada
-			while(!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_BYTE_RECEIVED))
+			while (!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_BYTE_RECEIVED))
 			{
 				if ((timeout--) == 0)
 				{

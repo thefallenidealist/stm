@@ -104,13 +104,13 @@ uint8_t eeprom_read(uint16_t addr)
 
 	// ponovo start
 	//i2c_start(2);	// patchirani _start()
-	// patchirani: Sjebano radi kad je "patchiran" a ovaj ovdje ispod ne smije imat while() ponovo prije 
+	// patchirani: Sjebano radi kad je "patchiran" a ovaj ovdje ispod ne smije imat while () ponovo prije 
 	// generate start jer je I2C zauzet
 
 	// TODO doradit ovo dolje 
 	uint8_t timeout = 0xFF;
 	I2C_GenerateSTART(I2C2, ENABLE);
-	while(!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_MODE_SELECT))
+	while (!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_MODE_SELECT))
 	{
 		if ((timeout--) == 0)
 		{

@@ -76,10 +76,10 @@ uint8_t eeprom_write(uint16_t addr, uint8_t data)
 	uint8_t addrL = addr * 0x00FF;
 
 	// generiraj start signal
-	while(I2C_GetFlagStatus(I2C2, I2C_FLAG_BUSY));
+	while (I2C_GetFlagStatus(I2C2, I2C_FLAG_BUSY));
 	I2C_GenerateSTART(I2C2, ENABLE);
 	timeout = I2C_TIMEOUT_MAX;
-	while(!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_MODE_SELECT))
+	while (!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_MODE_SELECT))
 	{
 		if ((timeout--) == 0)
 		       return 10;
@@ -88,7 +88,7 @@ uint8_t eeprom_write(uint16_t addr, uint8_t data)
 	// posalji adresu slavea sa kojim treba komunicirat
 	I2C_Send7bitAddress(I2C2, EEPROM_ADDR_W, I2C_Direction_Transmitter);		// samo promijenio ADDR
 	timeout = I2C_TIMEOUT_MAX;
-	while(!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED))
+	while (!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED))
 	{
 		if ((timeout--) == 0)
 		       return 11;
@@ -96,13 +96,13 @@ uint8_t eeprom_write(uint16_t addr, uint8_t data)
 
 	// posalji adresu registra koji treba stimat
 	I2C_SendData(I2C2, addrH);	// 8b						// mijenjano
-	while(!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_BYTE_TRANSMITTED))
+	while (!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_BYTE_TRANSMITTED))
 	{
 		if ((timeout--) == 0)
 		       return 12;
 	}
 	I2C_SendData(I2C2, addrL);	// 8b						// mijenjano
-	while(!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_BYTE_TRANSMITTED))
+	while (!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_BYTE_TRANSMITTED))
 	{
 		if ((timeout--) == 0)
 		       return 12;		// TODO promijenit 
@@ -110,7 +110,7 @@ uint8_t eeprom_write(uint16_t addr, uint8_t data)
 
 	// EEPROM sad ocekuje podatak za zapisan na odabranu adresu
 	I2C_SendData(I2C2, data);	// 8b
-	while(!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_BYTE_TRANSMITTED))
+	while (!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_BYTE_TRANSMITTED))
 	{
 		if ((timeout--) == 0)
 		       return 13;
@@ -118,7 +118,7 @@ uint8_t eeprom_write(uint16_t addr, uint8_t data)
 
 	// gotovi smo zasad, generiraj stop
 	I2C_GenerateSTOP(I2C2, ENABLE);
-	while(I2C_GetFlagStatus(I2C2, I2C_FLAG_BUSY));
+	while (I2C_GetFlagStatus(I2C2, I2C_FLAG_BUSY));
 
 	return 0;
 }
@@ -166,10 +166,10 @@ uint8_t eeprom_read(uint16_t addr)
 	// start
 	// wait until I2C2 is not busy any more
 	/*
-	while(I2C_GetFlagStatus(I2C2, I2C_FLAG_BUSY));
+	while (I2C_GetFlagStatus(I2C2, I2C_FLAG_BUSY));
 	I2C_GenerateSTART(I2C2, ENABLE);
 	timeout = I2C_TIMEOUT_MAX;
-	while(!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_MODE_SELECT))
+	while (!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_MODE_SELECT))
 	{
 		if ((timeout--) == 0)
 		       return 10;
@@ -181,7 +181,7 @@ uint8_t eeprom_read(uint16_t addr)
 	// w addr
 	I2C_Send7bitAddress(I2C2, EEPROM_ADDR_W, I2C_Direction_Transmitter);		// promijenjena dev adresa
 	timeout = I2C_TIMEOUT_MAX;
-	while(!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED))
+	while (!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED))
 	{
 		if ((timeout--) == 0)
 		       return 11;
@@ -192,7 +192,7 @@ uint8_t eeprom_read(uint16_t addr)
 	// w reg
 	I2C_SendData(I2C2, addrH);	// 8b						// mijenjano
 	timeout = I2C_TIMEOUT_MAX;
-	while(!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_BYTE_TRANSMITTED))
+	while (!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_BYTE_TRANSMITTED))
 	{
 		if ((timeout--) == 0)
 		       return 12;
@@ -200,7 +200,7 @@ uint8_t eeprom_read(uint16_t addr)
 
 	I2C_SendData(I2C2, addrL);	// 8b						// mijenjano
 	timeout = I2C_TIMEOUT_MAX;
-	while(!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_BYTE_TRANSMITTED))
+	while (!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_BYTE_TRANSMITTED))
 	{
 		if ((timeout--) == 0)
 		       return 12;	// TODO
@@ -211,7 +211,7 @@ uint8_t eeprom_read(uint16_t addr)
 	// ponovo start
 	I2C_GenerateSTART(I2C2, ENABLE);
 	timeout = I2C_TIMEOUT_MAX;
-	while(!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_MODE_SELECT))
+	while (!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_MODE_SELECT))
 	{
 		if ((timeout--) == 0)
 		       return 100;
@@ -220,7 +220,7 @@ uint8_t eeprom_read(uint16_t addr)
 	// w addr
 	I2C_Send7bitAddress(I2C2, EEPROM_ADDR_R, I2C_Direction_Receiver);		// promijenjena dev adresa
 	timeout = I2C_TIMEOUT_MAX;
-	while(!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_RECEIVER_MODE_SELECTED))
+	while (!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_RECEIVER_MODE_SELECTED))
 	{
 		if ((timeout--) == 0)
 		       return 101;
@@ -231,7 +231,7 @@ uint8_t eeprom_read(uint16_t addr)
 	// procitaj data 
 	I2C_AcknowledgeConfig(I2C2, DISABLE);	// NACK, ide prije reada
 	timeout = I2C_TIMEOUT_MAX;
-	while(!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_BYTE_RECEIVED))
+	while (!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_BYTE_RECEIVED))
 	{
 		if ((timeout--) == 0)
 		       return 102;
@@ -242,7 +242,7 @@ uint8_t eeprom_read(uint16_t addr)
 
 	/*
 	I2C_GenerateSTOP(I2C2, ENABLE);
-	while(I2C_GetFlagStatus(I2C2, I2C_FLAG_BUSY));
+	while (I2C_GetFlagStatus(I2C2, I2C_FLAG_BUSY));
 	*/
 	i2c_stop(2);
 
