@@ -7,12 +7,20 @@
 #include <stdlib.h> 	// atoi
 #include <stdbool.h>
 
-#include "stm32f10x_rcc.h"
-#include "stm32f10x_gpio.h"
-#include "stm32f10x_spi.h"
+#ifdef STM32F10X_MD
+	#include "stm32f10x_rcc.h"
+	#include "stm32f10x_gpio.h"
+	#include "stm32f10x_spi.h"
+#endif
+#ifdef STM32F4XX
+	#include "stm32f4xx_rcc.h"
+	#include "stm32f4xx_gpio.h"
+	#include "stm32f4xx_spi.h"
+#endif
 
 #define SPI1_PORT	GPIOA
-//#define SPI1_RCC	RCC_APB2Periph_GPIOA
+//#define SPI1_RCC	RCC_APB2Periph_GPIOA	// F1
+#define SPI1_RCC	RCC_AHB1Periph_GPIOA	// F4
 #define SPI1_SCK	GPIO_Pin_5
 #define SPI1_MISO	GPIO_Pin_6
 #define SPI1_MOSI	GPIO_Pin_7

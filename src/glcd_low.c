@@ -21,40 +21,8 @@ void glcd_io_init(void)
 
 void glcd_spi_init(void)
 {
-	GPIO_InitTypeDef GPIO_InitStructure;
-	SPI_InitTypeDef  SPI_InitStructure;
-
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7 | GPIO_Pin_6 | GPIO_Pin_5;
-	//GPIO_InitStructure.GPIO_Pin = SPI1_SCK | SPI1_MOSI;
-
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;	// F4
-	GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_AF;		// F4
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;	// F4
-	GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_NOPULL;	// F4
-	//GPIO_Init(SPI1_PORT, &GPIO_InitStructure);
-	GPIO_Init(GPIOA, &GPIO_InitStructure);
-
-	GPIO_PinAFConfig(GPIOA, GPIO_PinSource5, GPIO_AF_SPI1);
-	GPIO_PinAFConfig(GPIOA, GPIO_PinSource6, GPIO_AF_SPI1);
-	GPIO_PinAFConfig(GPIOA, GPIO_PinSource7, GPIO_AF_SPI1);
-
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, ENABLE);	// F4
-
-	// the LCD requires the illustrated mode (commonly referred to as CPOL=0,CPHA=0).
-	SPI_InitStructure.SPI_Direction = SPI_Direction_2Lines_FullDuplex;	// separate MOSI and MISO
-	SPI_InitStructure.SPI_Mode 	= SPI_Mode_Master;
-	SPI_InitStructure.SPI_DataSize	= SPI_DataSize_8b;
-	SPI_InitStructure.SPI_CPOL 	= SPI_CPOL_Low;
-	SPI_InitStructure.SPI_CPHA 	= SPI_CPHA_1Edge;
-	//SPI_InitStructure.SPI_NSS 	= SPI_NSS_Hard;		// XXX ovo ne radi sa GLCDom na F4
-	// nesto sa neta:	XXX ovo odblokira SPI na STM32F4, nekako
-	SPI_InitStructure.SPI_NSS 	= SPI_NSS_Soft | SPI_NSSInternalSoft_Set; // set the NSS management to internal and pull internal NSS high
-	SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_2;	// SPI frequency is APB2 frequency / Prescaler
-	SPI_InitStructure.SPI_FirstBit 	= SPI_FirstBit_MSB;			// ILI9341 ocekuje MSB first
-	SPI_Init(SPI1, &SPI_InitStructure);
-
-	SPI_Cmd(SPI1, ENABLE);
+	spi_init();
+	//spi2_init();
 }
 
 

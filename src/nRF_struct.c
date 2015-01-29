@@ -5,6 +5,7 @@ static void spi_init(uint8_t spi_number)
 	GPIO_InitTypeDef	GPIO_InitStructure;
 	SPI_InitTypeDef		SPI_InitStructure;
 
+
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
 

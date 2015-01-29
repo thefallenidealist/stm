@@ -18,6 +18,8 @@
 	#include "stm32f4xx.h"
 #endif
 
+// TODO preimenovat u uptime_get_s i sl
+
 void delay_init(void);
 void delay_us(uint32_t us);
 void delay_ms(uint32_t ms);

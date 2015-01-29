@@ -8,6 +8,9 @@
 #include "delay.h"
 #include <string.h>
 #include <math.h>
+
+// XXX na F4 ne radi get_uptime_us kako treba
+
 // *************************************** variables **********************************************
 // private
 volatile static uint32_t delay_var;	// timer is 24b countdown
@@ -16,24 +19,24 @@ volatile uint32_t uptime_us=0;
 static char uptime_str[35] = {};	// 34 je maksimalno za 170 godina
 // nije volatile da se ne budi kompajler (kasnije treba bit const)
 
-/*
-uint32_t tmp_up;
-void set_tmp_up(uint32_t arg)
-{
-	tmp_up = arg;
-	uptime_us %= 10000;
-	printf("tmp_up: %lu trenutni: %lu\n", tmp_up, uptime_us);
-}
-*/
-
 /**************************************************************************************************
 *  					delay_init(void)					  *
 **************************************************************************************************/
 void delay_init(void)
 {
-	if (SysTick_Config(SystemCoreClock / 1000000) !=0)	// 1000000 Hz 1000 kHz	1Mhz	1us
-								// ticka bas svaku us, oh yes, ticka
-	{
+
+
+	RCC_ClocksTypeDef RCC_ClocksStatus;
+	RCC_GetClocksFreq(&RCC_ClocksStatus);
+
+	uint32_t SYSCLK = RCC_ClocksStatus.SYSCLK_Frequency;
+
+	//if (SysTick_Config(SystemCoreClock / 1000000) !=0)	// 1000000 Hz 1000 kHz	1Mhz	1us
+	// INFO djubre, na M4 je 53MHz, na M3 72MHz
+	//if (SysTick_Config(53000000/ 1000000) !=0)	// 1000000 Hz 1000 kHz	1Mhz	1us
+	if (SysTick_Config(SYSCLK/ 1000000) !=0)	// 1000000 Hz 1000 kHz	1Mhz	1us
+	//if (SysTick_Config(SystemCoreClock / 1680000) !=0)	// 1000000 Hz 1000 kHz	1Mhz	1us
+	{							// ticka bas svaku us, oh yes, ticka
 		while (1);	// error
 	}
 }
@@ -68,7 +71,18 @@ void delay_s(uint32_t s)
 **************************************************************************************************/
 uint32_t get_uptime_us(void)
 {
+	/*
+	static uint32_t uptime_tmp=0;
+	static uint32_t uptime_proslo;
+	uptime_proslo = uptime_tmp;
+
+	uptime_tmp = uptime_us;
+	if (uptime_proslo/1000/1000 != uptime_tmp/1000/1000)
+		printf("e, nije jednako\n");
+	*/
+
 	return uptime_us;
+	//return uptime_tmp/1000/1000;
 }
 
 /**************************************************************************************************
@@ -174,11 +188,15 @@ const char *get_uptime(void)		// const znaci da ce se return value samo citati i
 void SysTick_Handler(void)
 {
 	// IRQ every 1 us
+
+	uptime_us++;	// za uptime, korisnik je ne mijenja
+
 	if (delay_var != 0)
 	{
 		delay_var--;	// za delay, korisnik je moze mijenjat
 	}
-	uptime_us++;	// za uptime, korisnik je ne mijenja
+
+
 	//uptime_us += 1234;
 	//uptime_us %= 4294967000;
 	//if (uptime_us / 4294967000 == 1)

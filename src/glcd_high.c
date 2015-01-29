@@ -1,4 +1,5 @@
 #include "glcd_high.h"
+//#include "src/img.bmp.c"
 
 // 150116	vraceno na "sporije" verzije, ali se postuje layerizacija
 //		"brze" verzije dobiju max 1 ms na -O2 ili -O3 (jednako brzo radi);
@@ -121,6 +122,7 @@ const unsigned char simpleFont[][8] =
 
 //#endif
 
+
 //void glcd_setOrientation(char orientation)
 void glcd_setOrientation(uint8_t orientation)
 {
@@ -193,14 +195,12 @@ static void glcd_setXY(volatile uint16_t x0, volatile uint16_t x1, volatile uint
 
 // javne funkcije
 
-//void glcd_pixel(vuint16_t x0, vuint16_t y0, vuint16_t color)
 void glcd_pixel(volatile uint16_t x0, volatile uint16_t y0, volatile uint16_t color)
 {
 	glcd_setXY(x0,x0,y0,y0);
 	glcd_writeData16(color);
 }
 
-//void glcd_hline(uint16_t x0, uint16_t y0, uint16_t length, uint16_t color)
 void glcd_hline(volatile uint16_t x0, uint16_t y0, uint16_t length, uint16_t color)
 {
 	glcd_setXY(x0,x0+length,y0,y0);
@@ -229,8 +229,29 @@ void glcd_hline(volatile uint16_t x0, uint16_t y0, uint16_t length, uint16_t col
 		// 51 ms
 		//spi_write16(color);	// XXX povreda layera radi brzine
 		spi_write16_fast(color);	// XXX povreda layera radi brzine
+
+		// test
+		/*
+		spi_write_fast(color >> 8);	// XXX povreda layera radi brzine
+		spi_write_fast(color & 0xFF);	// XXX povreda layera radi brzine
+		*/
 	}
         glcd_cs_high();
+}
+
+void glcd_hline2(volatile uint16_t x0, uint16_t y0, uint16_t length, uint16_t colors[])
+{
+	glcd_setXY(x0, x0+length, y0, y0);
+	// INFO povreda layera radi brzine
+	glcd_dc_high();
+	glcd_cs_low();
+
+	for (int i=0; i<length; i++)
+	{
+		spi_write16_fast(colors[i]);
+	}
+
+	glcd_cs_high();
 }
 
 		// ne toliko koristena funkcija
@@ -262,11 +283,8 @@ void glcd_vline(uint16_t x0, uint16_t y0, uint16_t length, uint16_t color)
         glcd_cs_high();
 }
 
-//void glcd_fillRectangle(vuint16_t x0, vuint16_t y0, vuint16_t length, vuint16_t width, vuint16_t color)
 void glcd_fillRectangle(volatile uint16_t x0, volatile uint16_t y0, volatile uint16_t length, volatile uint16_t width, volatile uint16_t color)
 {
-	// TODO
-	// dosta funkcija poziva ovo, probat ga ubrzat
 	for (int i=0;i<width;i++)
 	{
 		glcd_hline(x0,y0+i,length,color);
@@ -275,7 +293,9 @@ void glcd_fillRectangle(volatile uint16_t x0, volatile uint16_t y0, volatile uin
 
 void glcd_bg(int color)
 {
-	glcd_fillRectangle(0, 0, max_x, max_y, color);
+	//glcd_fillRectangle(0, 0, max_x, max_y, color);
+	//glcd_fillRectangle(0, 0, 240, 320, color);
+	glcd_fillRectangle(0, 0, 320, 320, color);
 }
 
 void glcd_char(unsigned char ascii, unsigned int x, unsigned int y, unsigned int size, unsigned int fgcolor)	
@@ -289,7 +309,7 @@ void glcd_char(unsigned char ascii, unsigned int x, unsigned int y, unsigned int
 
 			for (int j=0; j<8; j++)
 			{
-				if ((temp >> j) & 1)	// ako bit na trenutacnoj pozici = 1
+				if ((temp >> j) & 1)	// ako bit na trenutacnoj pozici 1
 				{
 					// onda ga ispisi, pixel po pixel
 					glcd_fillRectangle(x+i*size, y+j*size, size, size, fgcolor);
@@ -349,10 +369,8 @@ void glcd_string(char *string, volatile uint16_t x, volatile uint16_t y, uint8_t
 	}
 }
 
-//uint8_t glcd_number(unsigned int number, unsigned int x0, unsigned int y0,unsigned int size,unsigned int fgcolor)
 uint8_t glcd_number(int32_t number, uint16_t x0, uint16_t y0, uint8_t size, uint16_t fgcolor)
 {
-	//unsigned char char_buffer[10] = "";
 	uint8_t char_buffer[10] = "";
 	uint8_t i = 0;
 	uint8_t digits_count = 0;
@@ -401,19 +419,44 @@ uint16_t glcd_get_bgcolor()
 	return bgcolor;
 }
 
-void glcd_test()
+#define MY	7	
+#define MX	6
+#define MV	5	// vertical refresh
+#define ML	4	// vertical refresh
+#define BGR	3
+#define MH	2
+
+void glcd_init()
 {
 	// TODO provjera jel pozvat init prije poziva ostalih funkcija
 	glcd_io_init();
 	glcd_spi_init();
 	glcd_led_on();
 	glcd_ili9341_init();
-	//glcd_setOrientation(P1);
-	glcd_setOrientation(L2);
-	glcd_set_bgcolor(black);
-	uint16_t bgcolor = glcd_get_bgcolor();
-	glcd_bg(bgcolor);
 
+	glcd_setOrientation(P1);
+	glcd_set_bgcolor(black);
+	//uint16_t bgcolor = glcd_get_bgcolor();
+	glcd_bg(bgcolor);
+}
+
+void glcd_test()
+{
+	static uint8_t mod = 0;
+	// provjerit sa raznim bojama pozadina TODO
+
+	if (mod%2 == 0)
+	{
+		glcd_bg(white);
+		glcd_set_bgcolor(white);
+	}
+	else
+	{
+		glcd_bg(black);
+		glcd_set_bgcolor(black);
+	}
+
+	/*
 	glcd_setOrientation(L2);
 	glcd_string("Fuck you world", 0, 0, 2, blue);
 	glcd_setOrientation(L1);
@@ -422,6 +465,109 @@ void glcd_test()
 	glcd_string("Fuck you world", 0, 0, 2, green);
 	glcd_setOrientation(P2);
 	glcd_string("Fuck you world", 0, 0, 2, red);
+	*/
+
+	glcd_writeCmd(0x36);		// memory access control
+	// default
+	//glcd_writeData( (0 << MY) | (1 << MX) | (0 << MV) | (1 << ML) | (1 << BGR) | (0 << MH) );
+
+	/*
+	   					osvjezava
+	   0	MY=0 MX=0 MV=0 ML=0 MH=0	P1	P1m
+	   1	MY=0 MX=0 MV=0 ML=0 MH=1	P1	P2
+	   2	MY=0 MX=0 MV=0 ML=1 MH=0	P2	P1
+	   3	MY=0 MX=0 MV=0 ML=1 MH=1	P1	P2m
+	   4	MY=0 MX=0 MV=1 ML=0 MH=0	P2	L1
+	   5	MY=0 MX=0 MV=1 ML=0 MH=1	L1	L1m
+	   6	MY=0 MX=0 MV=1 ML=1 MH=0	L1	L2m
+	   7	MY=0 MX=0 MV=1 ML=1 MH=1	L2	L2
+	   8	MY=0 MX=1 MV=0 ML=0 MH=0	L2	P1m
+	   9	MY=0 MX=1 MV=0 ML=0 MH=1	P1	P2
+	   10	MY=0 MX=1 MV=0 ML=1 MH=0	P2	P1
+	   11	MY=0 MX=1 MV=0 ML=1 MH=1	P1	P2m
+	   12	MY=0 MX=1 MV=1 ML=0 MH=0	P2	L1
+	   13	MY=0 MX=1 MV=1 ML=0 MH=1	L1	L1m
+	   14	MY=0 MX=1 MV=1 ML=1 MH=0	L1	L2m
+	   15	MY=0 MX=1 MV=1 ML=1 MH=1	L2	L2
+	   16	MY=1 MX=0 MV=0 ML=0 MH=0	L2	P1m
+	   17	MY=1 MX=0 MV=0 ML=0 MH=1	P1	P2
+	   18	MY=1 MX=0 MV=0 ML=1 MH=0	P2	P1
+	   19	MY=1 MX=0 MV=0 ML=1 MH=1	P1	P2m
+	   20	MY=1 MX=0 MV=1 ML=0 MH=0	P2	L1
+	   21	MY=1 MX=0 MV=1 ML=0 MH=1	L1	L1m
+	   22	MY=1 MX=0 MV=1 ML=1 MH=0	L1	L2m
+	   23	MY=1 MX=0 MV=1 ML=1 MH=1	L2	L2
+	   24	MY=1 MX=1 MV=0 ML=0 MH=0	L2	P1m
+	   25	MY=1 MX=1 MV=0 ML=0 MH=1	P1	P2
+	   26	MY=1 MX=1 MV=0 ML=1 MH=0	P2	P1
+	   27	MY=1 MX=1 MV=0 ML=1 MH=1	P1	P2m
+	   28	MY=1 MX=1 MV=1 ML=0 MH=0	P2	L1
+	   29	MY=1 MX=1 MV=1 ML=0 MH=1	L1	L1m
+	   30	MY=1 MX=1 MV=1 ML=1 MH=0	L1	L2m
+	   31	MY=1 MX=1 MV=1 ML=1 MH=1	L2	L2
+	   */
+
+
+
+
+
+
+
+
+	/*
+	   					osvjezava
+	   0	MY=0 MX=0 MV=0 ML=0 MH=0	P1	P1m
+
+	   7	MY=0 MX=0 MV=1 ML=1 MH=1	L2	L2
+	   31	MY=1 MX=1 MV=1 ML=1 MH=1	L2	L2
+	   15	MY=0 MX=1 MV=1 ML=1 MH=1	L2	L2
+	   23	MY=1 MX=0 MV=1 ML=1 MH=1	L2	L2
+
+	   13	MY=0 MX=1 MV=1 ML=0 MH=1	L1	L1m
+	   21	MY=1 MX=0 MV=1 ML=0 MH=1	L1	L1m
+	   5	MY=0 MX=0 MV=1 ML=0 MH=1	L1	L1m
+	   29	MY=1 MX=1 MV=1 ML=0 MH=1	L1	L1m
+
+
+
+
+	   1	MY=0 MX=0 MV=0 ML=0 MH=1	P1	P2
+	   2	MY=0 MX=0 MV=0 ML=1 MH=0	P2	P1
+
+
+
+	   3	MY=0 MX=0 MV=0 ML=1 MH=1	P1	P2m
+	   4	MY=0 MX=0 MV=1 ML=0 MH=0	P2	L1
+	   6	MY=0 MX=0 MV=1 ML=1 MH=0	L1	L2m
+	   8	MY=0 MX=1 MV=0 ML=0 MH=0	L2	P1m
+	   9	MY=0 MX=1 MV=0 ML=0 MH=1	P1	P2
+	   10	MY=0 MX=1 MV=0 ML=1 MH=0	P2	P1
+	   11	MY=0 MX=1 MV=0 ML=1 MH=1	P1	P2m
+	   12	MY=0 MX=1 MV=1 ML=0 MH=0	P2	L1
+	   14	MY=0 MX=1 MV=1 ML=1 MH=0	L1	L2m
+	   16	MY=1 MX=0 MV=0 ML=0 MH=0	L2	P1m
+	   17	MY=1 MX=0 MV=0 ML=0 MH=1	P1	P2
+	   18	MY=1 MX=0 MV=0 ML=1 MH=0	P2	P1
+	   19	MY=1 MX=0 MV=0 ML=1 MH=1	P1	P2m
+	   20	MY=1 MX=0 MV=1 ML=0 MH=0	P2	L1
+	   22	MY=1 MX=0 MV=1 ML=1 MH=0	L1	L2m
+	   24	MY=1 MX=1 MV=0 ML=0 MH=0	L2	P1m
+	   25	MY=1 MX=1 MV=0 ML=0 MH=1	P1	P2
+	   26	MY=1 MX=1 MV=0 ML=1 MH=0	P2	P1
+	   27	MY=1 MX=1 MV=0 ML=1 MH=1	P1	P2m
+	   28	MY=1 MX=1 MV=1 ML=0 MH=0	P2	L1
+	   30	MY=1 MX=1 MV=1 ML=1 MH=0	L1	L2m
+	   */
+	
+	uint8_t a[5] = {mod>>0&1, mod>>1&1, mod>>2&1, mod>>3&1, mod>>4&1};	// little endian
+	printf("mod: %d %d%d%d%d%d\n",mod, a[4], a[3], a[2], a[1], a[0]);
+
+	glcd_writeData( (a[0] << MY) | (a[1] << MX) | (a[2] << MV) | (a[3] << ML) | (1 << BGR) | (1 << MH) );
+
+	glcd_string("Fuck you world", 0, 0, 2, blue);
+	glcd_number(mod, 50,50,2,red);
+	mod++;
+
 }
 
 void glcd_speedtest()
@@ -433,4 +579,45 @@ void glcd_speedtest()
 
 	printf("glcd_speedtest trajao: %lu ms\n", t2-t1);
 	glcd_number(t2-t1, 50, 50, 3, red);
+}
+
+
+void glcd_img_test()
+{
+	glcd_setOrientation(P1);
+	// XXX 240x320 bmp ne radi u landscapeu
+
+	//glcd_setXY(0,max_x, 0, max_y);
+	glcd_setXY(0,240, 0, 320);
+
+        glcd_dc_high();
+        glcd_cs_low();
+
+	for (uint32_t i=0; i<240*320; i++)
+	{
+		//spi_write16_fast(bmp_data[i]);
+
+	}
+	glcd_cs_high();
+
+	/*
+	// spremi 240 bajtova
+	uint16_t colors[240] = {};
+
+
+	// sa ovima se dobije automatska orijentacija
+	for (int y=0; y<320; y++)
+	{
+		for (int i=0; i<240; i++)
+		{
+			colors[i] = bmp_data[240*y+i];	// spremi 240 boja u array
+		}
+		glcd_hline2(0,y, max_x, colors);	// posalji citavu liniju
+	}
+	*/
+
+
+
+	printf("%s() end\n", __func__);
+
 }

@@ -34,5 +34,7 @@ void glcd_set_bgcolor(uint16_t color);
 uint16_t glcd_get_bgcolor(void);
 void glcd_test();
 void glcd_speedtest();
+void glcd_img_test();
+void glcd_init();
 
 #endif

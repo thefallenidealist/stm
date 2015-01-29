@@ -2,7 +2,7 @@
 NAME	= main
 
 # promijenit i dolje COMMON_FLAGS
-CC  	= clang35
+CC  	= clang36
 #CC	= arm-none-eabi-gcc
 # ne moze se if koristit izvan recepta
 UNAME := $(shell uname -m)	# varijabla iz shella
@@ -11,6 +11,7 @@ UNAME := $(shell uname -m)	# varijabla iz shella
 # linker ne voli * nit tabovi nit komentare u bilo cemu sto ima varijablu za njega. Linker je pizda.
 DIR_TOOLS	= /usr/local/gcc-arm-embedded-4_8-2014q3-20140805
 LD  	= $(DIR_TOOLS)/bin/arm-none-eabi-ld
+#LD	= ld.gold
 OBJCOPY = $(DIR_TOOLS)/bin/arm-none-eabi-objcopy
 SIZE	= $(DIR_TOOLS)/bin/arm-none-eabi-size
 
@@ -20,13 +21,14 @@ DIR_BIN = ./bin
 TARGET	= -target thumb-unknown-eabi
 ARCH	= armv7-m
 CPU	= -mcpu=cortex-m3 
+#CPU	= -mcpu=cortex-m4 
 	# STM32F1
 	#DEFINES	= -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER 
 # STM32F4
 DEFINES	= -DSTM32F4XX -DUSE_STDPERIPH_DRIVER 
 #OPTS	= -O0 -g	# XXX ne radi
-#OPTS	= -O1 -g 
-OPTS	= -O2 -g 
+OPTS	= -O1 -g 
+#OPTS	= -O2 -g 
 #OPTS	= -O3
 DIRS 	=  -Isrc \
 	   -Isrc/lib/f4\
@@ -34,17 +36,24 @@ DIRS 	=  -Isrc \
 
 # clang
 #COMMON_FLAGS 	 = $(TARGET) $(CPU) $(OPTS) -nostdlib -mfloat-abi=soft -Wall
-CLANG_FLAGS	 = $(TARGET)
+#TODO -flto remove unused functions
+CLANG_FLAGS	 = $(TARGET) 
 GCC_FLAGS 	 = -std=c99 -mthumb -mno-thumb-interwork -fno-common -fno-strict-aliasing -fmessage-length=0 -fno-builtin -Wp,-w 
 # -Wmissing-prototypes 
-COMMON_FLAGS 	 = $(CPU) $(OPTS) -nostdlib -mfloat-abi=soft -Wall $(CLANG_FLAGS)  
-#COMMON_FLAGS 	 = $(CPU) $(OPTS) -nostdlib -mfloat-abi=soft -Wall $(GCC_FLAGS)
+# F1
+COMMON_FLAGS 	 = $(CPU) $(OPTS) -nostdlib -mfloat-abi=soft -Wall -ffast-math $(CLANG_FLAGS)  
+# F4
+#COMMON_FLAGS 	 = $(CPU) $(OPTS) -nostdlib -mfloat-abi=hard -Wall $(CLANG_FLAGS)  
 CCFLAGS 	 = $(COMMON_FLAGS) $(DEFINES) $(DIRS) -fno-short-enums \
 		   -ffreestanding	# void main(void)
 ASFLAGS 	 = $(COMMON_FLAGS) 
 
+# F1
 LD_DIRS		 = -L$(DIR_TOOLS)/lib/gcc/arm-none-eabi/4.8.4/armv7-m	#libgcc
 LD_DIRS		+= -L$(DIR_TOOLS)/arm-none-eabi/lib/armv7-m 		# libc, libm
+# F4
+#LD_DIRS		 = -L$(DIR_TOOLS)/lib/gcc/arm-none-eabi/4.8.4/armv7-m	#libgcc
+#LD_DIRS		+= -L$(DIR_TOOLS)/arm-none-eabi/lib/armv7e-m 		# libc, libm
 #LINKER_FILE 	 = $(wildcard src/lib/*.ld)
 	# STM32F1
 	#LINKER_FILE 	 = $(wildcard src/lib/f1/*.ld)

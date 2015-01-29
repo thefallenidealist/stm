@@ -53,13 +53,13 @@
 */
 // STM32F4
 #define GLCD_LED_PORT	GPIOD
-#define GLCD_LED_PIN	GPIO_Pin_0	// PD0
+#define GLCD_LED_PIN	GPIO_Pin_0	// PD0	// brown
 #define GLCD_DC_PORT	GPIOD
-#define GLCD_DC_PIN	GPIO_Pin_1	// PD1
+#define GLCD_DC_PIN	GPIO_Pin_1	// PD1	// gray
 #define GLCD_RESET_PORT GPIOD
-#define GLCD_RESET_PIN	GPIO_Pin_2	// PD2
+#define GLCD_RESET_PIN	GPIO_Pin_2	// PD2	// purple
 #define GLCD_CS_PORT	GPIOD
-#define GLCD_CS_PIN	GPIO_Pin_3	// PD3
+#define GLCD_CS_PIN	GPIO_Pin_3	// PD3	// blue
 // *************************************** variables **********************************************
 
 // *************************************** function prototypes ************************************

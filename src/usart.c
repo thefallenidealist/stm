@@ -1,3 +1,4 @@
+// XXX STM32F4, ubio sam USART1 RX (nikad ne udje u interrupt)
 #include "usart.h"
 
 // *************************************** variables **********************************************
@@ -30,8 +31,8 @@ void USART1_init(uint32_t speed)
 	// GPIO clock
 	//RCC_APB2PeriphClockCmd(USART1_RCC, ENABLE);	// F1
 	//RCC_AHB1PeriphClockCmd(USART1_RCC, ENABLE);	// F4	
-	//RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);
+	//RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
 
 	// 3 GPIO
 
@@ -40,16 +41,16 @@ void USART1_init(uint32_t speed)
 	//GPIO_PinAFConfig(GPIOA, GPIO_PinSource9, GPIO_AF_USART1);
 	//GPIO_PinAFConfig(GPIOA, GPIO_PinSource10, GPIO_AF_USART1);
 
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_7; // Pins 6 (TX) and 7 (RX) are used
-	//GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9 | GPIO_Pin_10;
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_7; // GPIOB
+	//GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9 | GPIO_Pin_10;	// GPIOA
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	//GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;	// F1
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;		// F4
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
 	//GPIO_Init(USART1_GPIO, &GPIO_InitStructure);
-	//GPIO_Init(GPIOA, &GPIO_InitStructure);
 	GPIO_Init(GPIOB, &GPIO_InitStructure);
+	//GPIO_Init(GPIOA, &GPIO_InitStructure);
 
 	//GPIO_InitStructure.GPIO_Pin = USART1_RX_Pin;
 	//GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;	// moze i IPD/IPU		// F1
@@ -80,12 +81,57 @@ void USART1_init(uint32_t speed)
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_Init(&NVIC_InitStructure);
 
+	//void __enable_irq(void);
+
 	USART_Cmd(USART1, ENABLE);				// Enable USART1
 }
 
 /************************************************************************************************
 *  				USART2_init()							*
 *************************************************************************************************/
+void USART2_init(uint32_t speed)
+{
+	GPIO_InitTypeDef	GPIO_InitStructure;
+	USART_InitTypeDef	USART_InitStructure;
+	NVIC_InitTypeDef	NVIC_InitStructure;
+
+	// 1 RCC init
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE);
+
+	// 3 GPIO
+	GPIO_PinAFConfig(GPIOD, GPIO_PinSource5, GPIO_AF_USART2);
+	GPIO_PinAFConfig(GPIOD, GPIO_PinSource6, GPIO_AF_USART2);
+
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_5;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;		// F4
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
+	GPIO_Init(GPIOD, &GPIO_InitStructure);
+
+
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE);
+
+	USART_InitStructure.USART_BaudRate = speed;
+	USART_InitStructure.USART_WordLength = USART_WordLength_8b;
+	USART_InitStructure.USART_StopBits = USART_StopBits_1;
+	USART_InitStructure.USART_Parity = USART_Parity_No;
+	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
+	USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;		// CTS and RTS are not used
+	USART_Init(USART2, &USART_InitStructure);
+
+	USART_ITConfig(USART2, USART_IT_RXNE, ENABLE);
+	//USART_ITConfig(USART2, USART_IT_TXE, ENABLE);	// mora bit ispod USART2 ENABLE
+
+	// 2 NVIC
+	NVIC_InitStructure.NVIC_IRQChannel = USART2_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_Init(&NVIC_InitStructure);
+
+	USART_Cmd(USART2, ENABLE);
+}
 /*
 void USART2_init(uint32_t speed)
 {
@@ -183,16 +229,6 @@ void USART3_init(uint32_t speed)
 *************************************************************************************************/
 void USART1_IRQHandler(void)
 {
-	/*
-	   // svi su uvijek 0
-	printf("USART1 LBD: %d\n",USART_GetITStatus(USART1, USART_IT_LBD));
-	printf("USART1 IDLE: %d\n",USART_GetITStatus(USART1, USART_IT_IDLE));
-	printf("USART1 ORE: %d\n",USART_GetITStatus(USART1, USART_IT_ORE));
-	printf("USART1 NE: %d\n",USART_GetITStatus(USART1, USART_IT_NE));
-	printf("USART1 FE: %d\n",USART_GetITStatus(USART1, USART_IT_FE));
-	printf("USART1 PE: %d\n",USART_GetITStatus(USART1, USART_IT_PE));
-	*/
-
 	if (USART_GetITStatus(USART1, USART_IT_RXNE) == SET)
 	{
 		/*
@@ -202,8 +238,10 @@ void USART1_IRQHandler(void)
 		printf("USART1 RX: %d\n", rx_char);
 			usart1_rx_event = RX_DONE;
 			*/
+
+
 		usart1_rx_event = RX_IN_PROGRESS;
-		static uint8_t cnt = 0; // this counter is used to determine the string length
+		static uint8_t counter = 0; // this counter is used to determine the string length
 
 		char rx_char = USART_ReceiveData(USART1);
 
@@ -212,14 +250,14 @@ void USART1_IRQHandler(void)
 		   usart_puts mora poslat \n da ono cemu salje zna kad je kraj
 		   */
 
-		if ((rx_char != '\n') && (cnt < USART_MAX_LENGTH-1))
+		if ((rx_char != '\n') && (counter < USART_MAX_LENGTH-1))
 		{
-			//printf("cnt: %d\n", cnt);	// onda ne uspije sve primit
-			usart1_rx_string_arr[cnt] = rx_char;
-			cnt++;
+			//printf("counter: %d\n", counter);	// onda ne uspije sve primit
+			usart1_rx_string_arr[counter] = rx_char;
+			counter++;
 			/*
 			   // XXX ne radi
-			if (cnt > USART_MAX_LENGTH-1)
+			if (counter > USART_MAX_LENGTH-1)
 			{
 				printf("USART1 RX je dobio previse znakova error\n");
 			}
@@ -229,12 +267,15 @@ void USART1_IRQHandler(void)
 		{
 			//printf("USART1 else: USART1 RX gotov\n");
 			// obrisi ostatak buffera
-			for (int i=cnt; i<USART_MAX_LENGTH-1; i++)
+			for (int i=counter; i<USART_MAX_LENGTH-1; i++)
 			{
 				usart1_rx_string_arr[i] = '\0';
 			}
-			cnt = 0;
+			counter = 0;
 			usart1_rx_event = RX_DONE;
+
+			printf("trebam pozvat parse()\n");
+			usart_parse();
 		}
 	}
 
@@ -259,7 +300,7 @@ void USART1_IRQHandler(void)
 	}
 	*/
 
-	//USART_ClearITPendingBit(USART1, USART_IT_ERR);
+	USART_ClearITPendingBit(USART1, USART_IT_ERR);
 }
 
 /************************************************************************************************
@@ -271,7 +312,7 @@ void USART3_IRQHandler(void)
 	//if (USART_GetITStatus(USART3, USART_IT_RXNE) != RESET)
 	{
 		usart3_rx_event = RX_IN_PROGRESS;
-		static uint8_t cnt = 0; // this counter is used to determine the string length
+		static uint8_t counter = 0; // this counter is used to determine the string length
 
 		if (USART_GetFlagStatus(USART3, USART_FLAG_FE) == SET)
 		{
@@ -296,114 +337,80 @@ void USART3_IRQHandler(void)
 
 		char rx_char = USART_ReceiveData(USART3);
 		printf("%c", rx_char);
-		//printf("zapisujem %c na mjesto %d\n", rx_char, cnt);
-		usart3_rx_string_arr[cnt++] = rx_char;
+		//printf("zapisujem %c na mjesto %d\n", rx_char, counter);
+		usart3_rx_string_arr[counter++] = rx_char;
 
-		//usart3_rx_string_arr[cnt++] = USART_ReceiveData(USART3);
+		//usart3_rx_string_arr[counter++] = USART_ReceiveData(USART3);
 
 		// samo zapisi u buffer, bez obzira sta je
-		//usart3_rx_string_arr[cnt++] = rx_char;
+		//usart3_rx_string_arr[counter++] = rx_char;
 
 		// komentar
-		if ( ( (rx_char != '\n') && (rx_char != '\r') ) && (cnt < USART_MAX_LENGTH-1) )
-		//if (cnt < USART_MAX_LENGTH-1)
+		if ( ( (rx_char != '\n') && (rx_char != '\r') ) && (counter < USART_MAX_LENGTH-1) )
+		//if (counter < USART_MAX_LENGTH-1)
 		{
 			//printf("USART3 RX if: primio: %c\n", rx_char);
 
-			usart3_rx_string_arr[cnt] = rx_char;
-			cnt++;
+			usart3_rx_string_arr[counter] = rx_char;
+			counter++;
 		}
 		else
 		{
 			//printf("USART1 else: USART1 RX gotov\n");
 			// obrisi ostatak buffera
-			for (int i=cnt; i<USART_MAX_LENGTH-1; i++)
+			for (int i=counter; i<USART_MAX_LENGTH-1; i++)
 			{
 				usart3_rx_string_arr[i] = '\0';
 			}
-			cnt = 0;
+			counter = 0;
 			usart3_rx_event = RX_DONE;
 		}
 		//komentar
 	}
 }
 */
-
 /************************************************************************************************
-*  				usart1_parse()							*
+*  				USART2_IRQHandler()						*
 *************************************************************************************************/
-/*
-void usart1_parse(void)
+void USART2_IRQHandler(void)
 {
-	// ono sto dobije razbije na dva komada. 
-
-	// inicijaliziraj za slucaj da treba ispisat prazni string
-	char rx_string_copy_arr[USART_MAX_LENGTH] = {};
-	//char *rx_string 	= (char *)usart1_rx_string_arr;	// casting da umirimo kompajler, u originalu je volatile char
-								// XXX i onda ne radi kako treba
-	//char *rx_string 	= usart1_rx_string_arr[0];	// XXX
-	char *rx_string 	= usart1_rx_string_arr;
-	char *rx_string_copy 	= rx_string_copy_arr;
-	char cmd[USART_MAX_LENGTH] = {};
-	char arg[USART_MAX_LENGTH] = {};
-	int cmd_delimiter = ':';
-
-	// kopiraj, da ne razjebemo originalni string
-	strncpy(rx_string_copy, rx_string, USART_MAX_LENGTH-1);
-
-	char *tmp = strchr(rx_string_copy, cmd_delimiter);		// nadji mjesto gdje je delimiter
-
-	if (tmp != NULL)
+	if (USART_GetITStatus(USART2, USART_IT_RXNE) == SET)
 	{
-		*tmp = '\0';	// na mjesto gdje pokazuje tmp (gdje je delimiter) ubaci null i skrati glavni string
-		strcpy(cmd, rx_string_copy);
-		strcpy(arg, tmp+1);
 
-		printf("cmd: %s\n", cmd);
-		printf("arg: %s\n", arg);
+		usart_puts(2, "USART2 IRQ unutar if\n");
 
-		usart_cmd(cmd, arg);
-	}
-	else
-	{
-		printf("u stringu nije nadjen delimiter\n");
-	}
+		usart2_rx_event = RX_IN_PROGRESS;
+		static uint8_t counter = 0; // this counter is used to determine the string length
 
-}
-*/
+		char rx_char = USART_ReceiveData(USART2);
 
-/************************************************************************************************
-*  				usart_puts()							*
-*************************************************************************************************/
-/*
-void usart_puts(uint8_t usart, char *string)
-{
-	//printf("usart_puts(): string: %s\n", string);
-
-	do
-	{
-		switch (usart)
+		if ((rx_char != '\n') && (counter < USART_MAX_LENGTH-1))
 		{
-			case 1:
-				while ((USART1->SR & USART_FLAG_TC) == (uint16_t)RESET);
-				//printf("usart_puts() salje %c %d\n", *string, *string);
-				USART1->DR = (*string++ & (uint16_t)0x01FF);
-				break;
-			case 2:
-				while ((USART2->SR & USART_FLAG_TC) == (uint16_t)RESET);
-				USART2->DR = (*string++ & (uint16_t)0x01FF);
-				break;
-			case 3:
-				while ((USART3->SR & USART_FLAG_TC) == (uint16_t)RESET);
-				//printf("usart_puts 3 salje: %c %d\n", *string, *string);
-				USART3->DR = (*string++ & (uint16_t)0x01FF);
-				break;
-			default:
-				printf("usart_puts(): wrong USART number\n");
-				break;
+			usart2_rx_string_arr[counter] = rx_char;
+			counter++;
+			usart_puts(2, "USART2 IRQ unutar if if\n");
 		}
-	//} while ((*string != '\n') && (*string != '\r') && (*string != '\0'));
-	// usart_puts treba poslat \n na kraju da novi serijski zna da je dosao do kraja
-	} while (*string != '\0');
+		else
+		{
+			// XXX nikad ne dodje ovdje
+			usart_puts(2, "USART2 IRQ unutar if else\n");
+
+			for (int i=counter; i<USART_MAX_LENGTH-1; i++)
+			{
+				usart2_rx_string_arr[i] = '\0';
+			}
+			counter = 0;
+			usart2_rx_event = RX_DONE;
+
+			usart_puts(2, "trebam pozvat parse()\n");
+			usart_parse();
+		}
+		usart_puts(2, "USART2 IRQ pred kraj prvog if-a\n");
+			usart_parse();
+	}
 }
-*/
+
+void usart_clear(uint8_t usart)
+{
+	usart_puts(usart, "\033c");	// clear
+}

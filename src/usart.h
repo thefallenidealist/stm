@@ -1,5 +1,5 @@
-//#ifndef USART_H
-//#define USART_H
+#ifndef USART_H
+#define USART_H
 
 // *************************************** sys includes *******************************************
 #include <stdio.h>
@@ -7,6 +7,7 @@
 #include <string.h>
 
 #include "delay.h"
+#include "cmd.h"
 
 // *************************************** local includes *****************************************
 #ifdef STM32F10X_MD
@@ -68,6 +69,7 @@ void USART2_init(uint32_t speed);
 void USART3_init(uint32_t speed);
 void usart1_parse(void);
 void usart_puts(uint8_t usart, char *string);
+void usart_clear(uint8_t usart);
 
 
 // *************************************** variables **********************************************
@@ -84,4 +86,4 @@ extern volatile char usart1_rx_string_arr[USART_MAX_LENGTH];
 extern volatile char usart2_rx_string_arr[USART_MAX_LENGTH];
 extern volatile char usart3_rx_string_arr[USART_MAX_LENGTH];
 
-//#endif
+#endif
