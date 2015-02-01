@@ -41,7 +41,7 @@ CLANG_FLAGS	 = $(TARGET)
 GCC_FLAGS 	 = -std=c99 -mthumb -mno-thumb-interwork -fno-common -fno-strict-aliasing -fmessage-length=0 -fno-builtin -Wp,-w 
 # -Wmissing-prototypes 
 # F1
-COMMON_FLAGS 	 = $(CPU) $(OPTS) -nostdlib -mfloat-abi=soft -Wall -ffast-math $(CLANG_FLAGS)  
+COMMON_FLAGS 	 = $(CPU) $(OPTS) -nostdlib -mfloat-abi=soft -Wall -ffast-math $(CLANG_FLAGS)
 # F4
 #COMMON_FLAGS 	 = $(CPU) $(OPTS) -nostdlib -mfloat-abi=hard -Wall $(CLANG_FLAGS)  
 CCFLAGS 	 = $(COMMON_FLAGS) $(DEFINES) $(DIRS) -fno-short-enums \
@@ -69,7 +69,7 @@ LD_FLAGS 	 = -nostdlib \
 		   --no-enum-size-warning \
 		   -Map $(DIR_BIN)/$(NAME).elf.map  -T $(LINKER_FILE)  \
 		   $(LD_DIRS) $(OBJS) \
-		   --start-group -lgcc -lc -lm --end-group 
+             --start-group -lgcc -lc -lm --end-group 
 
 # mora bit izvan recepata
 # mora bit :=, valjda onda samo jednom pokrene i ne razjebe sve ostalo

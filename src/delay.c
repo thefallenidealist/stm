@@ -10,6 +10,7 @@
 #include <math.h>
 
 // XXX na F4 ne radi get_uptime_us kako treba
+// TODO get days, hours, minutes
 
 // *************************************** variables **********************************************
 // private
@@ -25,20 +26,10 @@ static char uptime_str[35] = {};	// 34 je maksimalno za 170 godina
 void delay_init(void)
 {
 
-
-	RCC_ClocksTypeDef RCC_ClocksStatus;
-	RCC_GetClocksFreq(&RCC_ClocksStatus);
-
-	uint32_t SYSCLK = RCC_ClocksStatus.SYSCLK_Frequency;
-
-	//if (SysTick_Config(SystemCoreClock / 1000000) !=0)	// 1000000 Hz 1000 kHz	1Mhz	1us
-	// INFO djubre, na M4 je 53MHz, na M3 72MHz
-	//if (SysTick_Config(53000000/ 1000000) !=0)	// 1000000 Hz 1000 kHz	1Mhz	1us
-	if (SysTick_Config(SYSCLK/ 1000000) !=0)	// 1000000 Hz 1000 kHz	1Mhz	1us
-	//if (SysTick_Config(SystemCoreClock / 1680000) !=0)	// 1000000 Hz 1000 kHz	1Mhz	1us
-	{							// ticka bas svaku us, oh yes, ticka
-		while (1);	// error
-	}
+    RCC_ClocksTypeDef RCC_Clocks;
+    RCC_GetClocksFreq(&RCC_Clocks);
+    //SysTick_Config(RCC_Clocks.HCLK_Frequency / 1000); // 1ms
+    SysTick_Config(RCC_Clocks.HCLK_Frequency / 1000000);    // 1us
 }
 
 /**************************************************************************************************
@@ -176,8 +167,8 @@ const char *get_uptime(void)		// const znaci da ce se return value samo citati i
 		uptime_d++;
 	}
 
-	sprintf(uptime_str, "uptime: %d days, %.2d:%.2d:%.2d.%.3d", uptime_d, uptime_h, uptime_m, uptime_s, uptime_ms%1000);
-	//sprintf(uptime_str, "uptime: %d days, %.2d:%.2d:%.2d", uptime_d, uptime_h, uptime_m, uptime_s);
+    // TODO day/days
+	sprintf(uptime_str, "%d days, %.2d:%.2d:%.2d.%.3d", uptime_d, uptime_h, uptime_m, uptime_s, uptime_ms%1000);
 
 	return uptime_str;
 }

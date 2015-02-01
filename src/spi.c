@@ -1,4 +1,7 @@
 #include "spi.h"
+// TODO provjerit
+    //while (!((SPI_I2S_GetFlagStatus(spi, SPI_I2S_FLAG_TXE) != RESET) ? 1 : 0));
+    //SPI_I2S_SendData(spi, (uint16_t)data);
 
 void spi_write_fast(uint8_t data8)
 {

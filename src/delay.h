@@ -28,6 +28,6 @@ uint32_t get_uptime_us(void);
 uint32_t get_uptime_ms(void);
 uint32_t get_uptime_s(void);
 const char *get_uptime(void);
-void SysTick_Handler(void);
+void SysTick_Handler(void);     // javni samo zbog debuga/igranja
 
 #endif
