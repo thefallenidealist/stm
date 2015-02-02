@@ -6,6 +6,7 @@
 #endif
 #ifdef STM32F4XX
 	#include "stm32f4xx_spi.h"
+	#include "stm32f4xx_dma.h"
 #endif
 
 //void   spi_write(uint8_t data8);

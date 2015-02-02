@@ -13,8 +13,8 @@
 //#include "baro.h" 	// 5V
 //#include "oled.h" 	// 5V
 //#include "clock_print.h"
-//#include "glcd.h"
-#include "mem.h"
+#include "glcd.h"
+//#include "mem.h"
 //#include "cmd.h"
 //#include "joystick.h"
 //#include "nRF_struct.h"
@@ -24,7 +24,6 @@
 //#include "wii.h"
 #include "debug.h"
 #include "wlan.h"
-//#include "core_cm4.h"
 
 /*
 uint8_t read_rot(uint8_t pin)
@@ -41,8 +40,6 @@ uint8_t read_rot(uint8_t pin)
 */
 
 
-uint8_t EXTI_flag = 0;
-
 void main(void)
 {
 	//printf("DEBUG: function: %s in file: %s at line: %d\n", __func__, __FILE__, __LINE__);
@@ -54,13 +51,9 @@ void main(void)
 	blinky_blinky_init(BLINKY_LED_BLUE, 0);
 	led_init("PA1");
 
-    led_init("PD12");
-
 	uart1_init(115200);
-	//uart2_init(115200);
-	uart2_init(9600);
+	//uart2_init(9600);
 	uart_clear(1);
-	//uart_clear(2);
 
 	printf("\t\t\t\tSTM32 pocetak\n");
 	printf("Na pocetku bješe štos.\n");
@@ -73,21 +66,63 @@ void main(void)
 	//bmp180_example();
 
 	//clock_print();
-	mem_info();
+	//mem_info();
 	//malloc_test();
 
-	//glcd_init();
+    tipka_init();
+	glcd_init();
+	glcd_set_orientation(L1);
+
 	//glcd_test();
 	//glcd_speedtest();
 	//glcd_img_test();
 
 	//wii_init();
-	//wlan_main();
+
+	wlan_init();
+	delay_ms(1000);
+	wlan_scan();
+	//delay_ms(8000);
+	printf("wlan event: %d\n", wlan_event);
 
 
     verbosity_level=0;
 
-    //   NVIC_SetPriority(SysTick_IRQn, 0);
+	//glcd_orientation_test();
+
+	//glcd_set_orientation(L1);
+	//glcd_string(glcd_get_orientation_string(), 50,50,2,white);
+
+	//while ( (wlan_is_scan_done() != 1));
+
+	/*
+	wlan_t wlan = wlan_get(0);
+	printf("Najjaci WLAN\n");
+	printf("SSID: %s\n", wlan.SSID);
+	printf("strength: %d\n", wlan.strength);
+	printf("encription: %s\n", wlan.encription);
+	*/
+
+	/*
+	glcd_hline(0, 0, glcd_get_width()-1, red);
+	glcd_hline(0, 2, glcd_get_width(), red);
+	glcd_hline(0, 4, glcd_get_width()+1, red);
+	//glcd_hline(0, 6, glcd_get_width()+2, red);
+
+	glcd_vline(0, 0, glcd_get_height()-1, blue);
+	glcd_vline(2, 0, glcd_get_height(), blue);
+	glcd_vline(4, 0, glcd_get_height()+1, blue);
+	//glcd_vline(6, 0, glcd_get_height()+2, blue);
+
+
+	//glcd_fillRectangle(10,10, 50, 20, blue);
+
+	glcd_vline(0, 0, glcd_get_height(), yellow);
+	glcd_vline(10, 0, glcd_get_height(), white);
+	glcd_hline(0, 10, 320, yellow);
+	//glcd_hline(0, 11, glcd_get_width(), blue);
+	*/
+
 	printf("sad ide while\n");
 	while (1)
 	{
@@ -95,73 +130,48 @@ void main(void)
 		blinky_blinky(50);
 		//wii_read();
 
-        // interrupt postavi da je krenio zapisivat, ovdje se provjera jel ima OK u stringu
-        //char *ret = strstr(uart2_rx_string_arr, "OK");
-        //printf("str vratio: %s\n", ret);
-            if ( (strstr(uart2_rx_string_arr, "OK") != 0) && (uart2_rx_event != RX_DONE) )
-            {
-                printf("UART2 dobio OK\n");
-                uart2_rx_event = RX_DONE;
-            }
-
-
-        //printf("EXTI flag: %d\n", EXTI_flag);
-
-        /*
-        if (uart2_rx_event == RX_OVERFLOW)
-        {
-            printf("\t\t\t\t\tERROR: RX buffer overflow\n");
-            uart2_rx_event = RX_DONE;   // bezveze, bilo sta drugo
-        }
-        */
-
-        /*
-		if (uart2_rx_event != RX_PRINTED)
+		if ( (strstr((char *)uart2_rx_string_arr, "OK") != 0) && (wlan_event == WLAN_SCAN_IN_PROGRESS) )
 		{
-            printf("main printa rx2 buffer:\n");
-            for (int i=0; i<UART_MAX_LENGTH; i++)
-            {
-                printf("%c", uart2_rx_string_arr[i]);
-            }
-            printf("\n");
+			wlan_event = WLAN_SCAN_DONE;
+			printf("%s(): WLAN scan done\n", __func__);
+		}
 
-            printf("rx gotov\n");
-            uart2_rx_event = RX_PRINTED;
-        }
-        */
+		if (wlan_event == WLAN_SCAN_IN_PROGRESS)
+		{
+			glcd_bg(black);	// obrisi ispis starih WLANova
+			glcd_string("WLAN:", 0, 0, 4, white);
+			printf("skeniranje u tijeku\n");
+			glcd_string("skeniranje u tijeku", 0, 40, 2, red);
+		}
 
+		if (wlan_event == WLAN_SCAN_DONE)
+		{
 
-        /*
+			wlan_parse();
+
+			printf("WLAN:\n");
+			glcd_string("                    ", 0, 40, 2, red);	// obrisi "skeniranje u tijeku"
+
+			for (uint8_t i=0; i<7; i++)	// ispisat samo N najjacih mreza
+			{
+				wlan_t wlan = wlan_get(i);
+
+				//wlan_print();
+				printf("%s \t strength: %d\n", wlan.SSID, wlan.strength);
+
+				// zapisi i na GLCD
+				//glcd_string("                ", 0, i+40, 2, glcd_get_bgcolor());	// obrisi ispod
+				glcd_string(wlan.SSID, 20, 40+(i*20), 2, white);	// 40 jer je gore WLAN size 4, 20 pixela za svaki iduci velicine 2
+				glcd_number(wlan.strength, 0, 40+(i*20), 2, cyan);
+			}
+			wlan_event = WLAN_PRINTED;
+		}
+
 		uint8_t tipka = tipka_read();
 		if(tipka == 1)
 		{
-			//glcd_test();
-            printf("tipka\n");
+			wlan_scan();
 		}
-        */
-
-		//uint8_t rot1_old = read_rot(1);
-		//uint8_t rot2_old = read_rot(2);
-
-		//if ( ((uint8_t rot1_new = read_rot(1)) != rot1_old) || ((uint8_t rot2_new =read_rot(2)) != rot2_old))
-		/*
-		if ((read_rot(1) != rot1_old) || (read_rot(2) != rot2_old))
-		{
-			//printf("rotacijski: %d %d\n", read_rot(1), read_rot(2));
-			if ( (read_rot(1) == 0) && (read_rot(2) == 1) )			// 01
-				if ( (read_rot(1) == 0) && (read_rot(2) == 0) )		// 00
-					if ( (read_rot(1) == 1) && (read_rot(2) == 0) )		// 00
-						printf("R\n");
-		}
-		*/
-
-			/*
-			   po defaultu je 11
-			clockwise	11, 01, 00, 10
-			anticlockwise	11, 10, 00, 01
-			   */
-			//printf("rotacijski: %d %d\n", rotA, rotB);
-
 
 		//bmp180_print();
 

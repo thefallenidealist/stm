@@ -176,3 +176,31 @@ void glcd_ili9341_init(void)
 	glcd_writeCmd(ILI9341_CMD_MEMORY_WRITE);
 	//glcd_bg(bgcolor);	// ovo je high layer
 }
+
+int8_t glcd_set_hw_orientation(glcd_orientation_t orientation)
+{
+	//if ( (orientation < 0) || (orientation > 7) )
+	if (orientation > 7)	// unsigned enum
+	{
+		printf("ERROR %s(): wrong orientation: %d\n", __func__, orientation);
+		return -1;
+	}
+
+	//printf("%s(): argument: %d\n", __func__, orientation);
+
+	uint8_t MV, ML, MH, BGR, MX, MY;
+	BGR = 1;	// D3
+	ML = 1;		// D4	don't care
+	MH = 1;		// D2	don't care
+	MY = (orientation >> 2) & 1;
+	MX = (orientation >> 1) & 1;
+	MV = (orientation >> 0) & 1;
+
+	//printf("pretvoreno u bitove: MY: %d MX: %d MV: %d\n", MY, MX, MV);
+
+	glcd_writeCmd(0x36);
+	glcd_writeData( (MY << 7) | (MX << 6) | (MV << 5) | (ML << 4) | (BGR << 3) | (MH << 2) );
+
+	return 0;
+
+}
