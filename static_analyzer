@@ -1,0 +1,1 @@
+scan-build36 --use-cc=/usr/local/bin/clang36 -v gmake 

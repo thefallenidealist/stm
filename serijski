@@ -1,0 +1,8 @@
+# neat pizdarijica od gore
+brown	GND
+red	RX
+orange	TX
+
+# STM32 od gore
+green	PB10
+red	PB11

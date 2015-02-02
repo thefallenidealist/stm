@@ -1,0 +1,1 @@
+There are two regions of memory that have bit-band alias regions. First there is a 1Mbyte SRAM region from 0x20000000 – 0x20100000 where each bit is aliases by a byte address in the range 0x22000000 – 0x23FFFFFF. Then there is the peripheral space from 0x40000000 – 0x40100000 which is aliased in the same way to the range 0x42000000 – 0x43FFFFFF.
