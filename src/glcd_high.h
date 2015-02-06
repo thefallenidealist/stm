@@ -36,6 +36,8 @@ void glcd_orientation_test();
 int16_t glcd_get_width();
 int16_t glcd_get_height();
 const char *glcd_get_orientation_string();
+void glcd_setXY(volatile uint16_t x0, volatile uint16_t x1, volatile uint16_t y0, volatile uint16_t y1);
+
 
 
 #endif

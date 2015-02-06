@@ -76,6 +76,7 @@ void uart_puts(uint8_t uart, char *string);
 void uart_clear(uint8_t uart);
 void USART1_IRQHandler(void);    // javno zbog debugiranja/igranja
 void uart_puts(uint8_t uart, char *string);
+void uart_init(uint8_t uart_number, uint32_t speed);
 
 
 

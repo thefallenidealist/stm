@@ -5,20 +5,22 @@
 #include <stdlib.h>     // atoi
 #include <stdbool.h>
 // TODO zamijenit memcpy sa memmove FreeBSDov memcpy dopusta kopiranje stringova koji se preklapaju
+#include "glcd.h"
 
-#define BUFFER_SIZE 100 // koliko ce maksimalno bit dugacak string za jednu mrezu (enc+SSID+strength+BSSID+channel)
+#define BUFFER_SIZE 68	// koliko ce maksimalno bit dugacak string za jednu mrezu (enc+SSID+strength+BSSID+channel)
+						// 13 + 33 + 1 + 20 + 1 = 68
 
-// HW
+// globalni objekti
 wlan_hw_t wlan_hw;
+wlan_list_t wlan_list[MAX_WLAN]; // polje objekata
+wlan_event_t wlan_event = WLAN_SCAN_NOT_STARTED;
 
-wlan_t wlan_list[MAX_WLAN]; // polje objekata
-//volatile char *pbuffer = uart2_rx_string_arr;
+// globalne varijable
 char *pbuffer = (char *)uart2_rx_string_arr;
 char encription[5][13];
 
-wlan_event_t wlan_event = WLAN_SCAN_NOT_STARTED;
-
 //void wlan_print(wlan_t wlan_list[])
+/*
 void wlan_print()
 {
 	INFO_START;
@@ -42,33 +44,32 @@ void wlan_print()
 
 	INFO_END;
 }
-
-
+*/
 
 /*
    poslozi listu WLANova po jacini signala, od najveceg, prema najmanjem
    mijenja dobiveni argument
    najlosiji signal je -95, bolji su oni blize 0
 */
-static void poslozi(wlan_t wlan_list[])
+static void poslozi(wlan_list_t wlan_list[])
 {
 	INFO_START;
 
     // bubble sort
-    wlan_t tmp_copy;
+    wlan_list_t tmp_copy;
     bool swapped = false;
 
     do
     {
         swapped = false;
-        wlan_t *trenutni, *prethodni, *tmp;
+        wlan_list_t *trenutni, *prethodni, *tmp;
 
         uint8_t i=0;
 
         // radi sve dok ne naidjes na prazni SSID
         while (strlen(wlan_list[i].SSID))
         {
-            trenutni = &wlan_list[i];
+            trenutni  = &wlan_list[i];
             prethodni = &wlan_list[i-1];
             tmp = &tmp_copy;
 
@@ -76,15 +77,15 @@ static void poslozi(wlan_t wlan_list[])
             {
                 // zamijeni
                 //printf("mijenjam mjesta za pozicije: %d %d\n", i, i-1);
-
-                memcpy(tmp, prethodni, sizeof(*tmp));   // prethodni ide u tmp
-                memcpy(prethodni, trenutni, sizeof(*prethodni)); // trenutni ide u prethodni
-                memcpy(trenutni, tmp, sizeof(*trenutni)); // tmp ide u prethodni
+                memcpy(tmp,			prethodni,	sizeof(*tmp));   // prethodni ide u tmp
+                memcpy(prethodni,	trenutni,	sizeof(*prethodni)); // trenutni ide u prethodni
+                memcpy(trenutni,	tmp, 		sizeof(*trenutni)); // tmp ide u prethodni
                 swapped = true;
             }
             i++;
         }
     } while (swapped == true);
+
 	INFO_END;
 }
 
@@ -101,24 +102,18 @@ void wlan_init()
     strcpy(encription[3], "WPA2_PSK");
     strcpy(encription[4], "WPA_WPA2_PSK");
 
+	// wlan_hw objekt je vec kreiran 
 	wlan_hw.uart_number = WLAN_UART_NUMBER;
 	wlan_hw.uart_speed  = WLAN_UART_SPEED;
 
-	// TODO napravit jednu funkciju za UARTe
-	if (wlan_hw.uart_number == 1)
-	{
-		printf("%s(): pozivam uart1_init(%d)\n", __func__, wlan_hw.uart_speed);
-		uart1_init(wlan_hw.uart_speed);
-	}
-	if (wlan_hw.uart_number == 2)
-	{
-		printf("%s(): pozivam uart2_init(%d)\n", __func__, wlan_hw.uart_speed);
-		uart2_init(wlan_hw.uart_speed);
-	}
+	//printf("UART number: %d\n", WLAN_UART_NUMBER);
+	//printf("UART speed: %d\n", WLAN_UART_SPEED);
+
+	//printf("%s(): pozivam uart%d_init(%d)\n", __func__, wlan_hw.uart_number, wlan_hw.uart_speed);
+	uart_init(wlan_hw.uart_number, wlan_hw.uart_speed);
 
 	INFO_END;
 }
-
 
 /*************************************************************************************************
   				wlan_parse()
@@ -137,7 +132,6 @@ void wlan_parse()
         // ako nema CWLAN nit ~ u liniji, zapisi ga u polje
         if (strstr(token, "CWLAP") == NULL) 
         {
-
             static uint8_t wlan_atribute_counter;
 
             char *token2;
@@ -146,7 +140,6 @@ void wlan_parse()
             {
                 //printf("wlan_number: %d\t wlan_atribute_counter: %d\ttoken2: %s\n", wlan_number, wlan_atribute_counter, token2);
 
-                // TODO napravit manje retardirano
                 if (wlan_atribute_counter == 0)
                 {
                     wlan_list[wlan_number].encription = encription[atoi(token2)];
@@ -198,7 +191,6 @@ void wlan_parse()
         //printf("zapisanih linija: %d\n", zapisanih_linija);
     }
 
-
 	/*
     printf("\nPronadjene mreze: \n");
     wlan_print(wlan_list);
@@ -223,9 +215,11 @@ void wlan_scan()
 }
 
 /*************************************************************************************************
-  				wlan_get()
+  				wlan_get_list()
 *************************************************************************************************/
-wlan_t wlan_get(uint8_t number)
+// vrati N-tu mrezu iz globalnog polja popisa WLANova
+// vrati ERROR ako na N-tom mjestu nema mreze
+wlan_list_t wlan_get_list(uint8_t number)
 {
 	if (strlen(wlan_list[number].SSID) != 0)
 	{
@@ -233,7 +227,7 @@ wlan_t wlan_get(uint8_t number)
 	}
 	else
 	{
-		wlan_t failed = {"ERROR", "ERROR", -127, "ERROR", 0};
+		wlan_list_t failed = {"ERROR", "ERROR", -127, "ERROR", 0};
 		return failed;
 	}
 }
@@ -243,12 +237,36 @@ wlan_t wlan_get(uint8_t number)
 *************************************************************************************************/
 bool wlan_is_scan_done()
 {
+	/*
 	if (wlan_event == WLAN_SCAN_DONE)
+	{
 		return 1;
+	}
 	else
+	{
 		return 0;
-}
+	}
+	*/
 
+	// CP iz maina
+	if ( (strstr((char *)uart2_rx_string_arr, "OK") != 0) && (wlan_event == WLAN_SCAN_IN_PROGRESS) )
+	{
+		wlan_event = WLAN_SCAN_DONE;
+		printf("%s(): WLAN scan done\n", __func__);
+		return 1;
+	}
+	// if
+	else if (wlan_event == WLAN_SCAN_IN_PROGRESS)
+	{
+		printf("skeniranje u tijeku\n");
+		//glcd_string("WLAN:", 0, 0, 4, white);
+		//glcd_string("skeniranje u tijeku", 0, 40, 2, red);
+	}
+	else
+	{
+		return 0;
+	}
+}
 
 uint16_t uart2_rx_position = 0;
 /*************************************************************************************************
@@ -258,23 +276,16 @@ void USART2_IRQHandler(void)
 {
 	if (USART_GetITStatus(USART2, USART_IT_RXNE) == SET)
 	{
-		//uart2_rx_event = RX_IN_PROGRESS;
 		wlan_event = WLAN_SCAN_IN_PROGRESS;
 
 		uint16_t rx_char = USART_ReceiveData(USART2);
         {
         	uart2_rx_string_arr[uart2_rx_position++] = rx_char;
         }
-
-
-		/*
-        if (uart2_rx_position >= MAX_WLAN_BUFFER)
-        {
-            // XXX nikad ne dodje do ovoga, zbog ostalih RX evenata u ISRu
-            uart2_rx_event = RX_OVERFLOW;
-            uart2_rx_position = 0;
-        }
-		*/
 		// main() provjerava jel dosao do kraja buffera i tamo postavlja ispravni wlan_event
 	}
 }
+
+/*************************************************************************************************
+  				wlan_main()
+*************************************************************************************************/

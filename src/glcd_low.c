@@ -67,3 +67,18 @@ void glcd_rst_on(void)
 	GPIO_WriteBit(GLCD_RESET_PORT, GLCD_RESET_PIN, 0);
 }
 */
+
+
+/*
+void glcd_write_dma(const uint16_t *buf, uint16_t len)
+{
+	glcd_cs_low();
+
+	DMA2_Stream3->NDTR = (uint32_t) len;
+	DMA2_Stream3->M0AR = (uint32_t) buf;
+	DMA_Cmd(DMA2_Stream3, ENABLE);
+
+	extern int dma_counter;
+	dma_counter++;
+}
+*/

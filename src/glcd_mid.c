@@ -175,6 +175,7 @@ void glcd_ili9341_init(void)
 	glcd_writeCmd(ILI9341_CMD_DISPLAY_ON);
 	glcd_writeCmd(ILI9341_CMD_MEMORY_WRITE);
 	//glcd_bg(bgcolor);	// ovo je high layer
+	glcd_set_hw_orientation(P1);
 }
 
 int8_t glcd_set_hw_orientation(glcd_orientation_t orientation)
@@ -189,6 +190,7 @@ int8_t glcd_set_hw_orientation(glcd_orientation_t orientation)
 	//printf("%s(): argument: %d\n", __func__, orientation);
 
 	uint8_t MV, ML, MH, BGR, MX, MY;
+	//BGR = 0;	// D3
 	BGR = 1;	// D3
 	ML = 1;		// D4	don't care
 	MH = 1;		// D2	don't care

@@ -23,7 +23,7 @@
 #include "tipka.h"
 //#include "wii.h"
 #include "debug.h"
-#include "wlan.h"
+//#include "wlan.h"
 
 /*
 uint8_t read_rot(uint8_t pin)
@@ -40,6 +40,35 @@ uint8_t read_rot(uint8_t pin)
 */
 
 
+/*
+// TODO #define boje promijenit u velika slova
+uint16_t rgb565(uint8_t arg_red, uint8_t arg_green, uint8_t arg_blue)
+{
+	uint8_t r = arg_red   & 0b11111000;
+	uint8_t g = arg_green & 0b11111100;
+	uint8_t b = arg_blue  & 0b11111000;
+
+	uint16_t rgb565 = (r << 8) | (g << 3) | (b >> 3);
+	printf("%s(): R: %d, G: %d, B: %d, RGB565: %d: 0x%04X\n", __func__, r, g, b, rgb565, rgb565);
+
+	return rgb565;
+}
+
+uint16_t rgb565_percent(uint8_t arg_red, uint8_t arg_green, uint8_t arg_blue)
+{
+	// 5b max: 248, 6b max: 252
+
+	uint8_t r = arg_red*2.48; 	// 100 postaje 248
+	uint8_t g = arg_green*2.52; 	// 100 postaje 252
+	uint8_t b = arg_blue*2.48;
+
+	uint16_t rgb565 = (r << 8) | (g << 3) | (b >> 3);
+	printf("%s(): R: %d, G: %d, B: %d, RGB565: %d: 0x%04X\n", __func__, r, g, b, rgb565, rgb565);
+
+	return rgb565;
+}
+*/
+
 void main(void)
 {
 	//printf("DEBUG: function: %s in file: %s at line: %d\n", __func__, __FILE__, __LINE__);
@@ -47,12 +76,11 @@ void main(void)
     //TODO enum npr TICK_EVERY_US i TICK_EVERY_MS da se moze definirat (i da delayevi rade kako treba bez rekonfiguracije)
 
 	delay_init();
-	//blinky_blinky_init(BLINKY_LED_ALL, 0);
-	blinky_blinky_init(BLINKY_LED_BLUE, 0);
+	blinky_blinky_init(BLINKY_LED_ALL, 0);
+	//blinky_blinky_init(BLINKY_LED_BLUE, 0);
 	led_init("PA1");
 
 	uart1_init(115200);
-	//uart2_init(9600);
 	uart_clear(1);
 
 	printf("\t\t\t\tSTM32 pocetak\n");
@@ -71,56 +99,43 @@ void main(void)
 
     tipka_init();
 	glcd_init();
-	glcd_set_orientation(L1);
+	glcd_set_orientation(P1);
+	//glcd_bg(white);
 
 	//glcd_test();
 	//glcd_speedtest();
-	//glcd_img_test();
+	//glcd_orientation_test();
 
 	//wii_init();
 
 	wlan_init();
-	delay_ms(1000);
-	wlan_scan();
-	//delay_ms(8000);
-	printf("wlan event: %d\n", wlan_event);
+	//wlan_scan();
+
+	glcd_set_orientation(L1);
 
 
     verbosity_level=0;
 
-	//glcd_orientation_test();
-
-	//glcd_set_orientation(L1);
-	//glcd_string(glcd_get_orientation_string(), 50,50,2,white);
-
-	//while ( (wlan_is_scan_done() != 1));
-
 	/*
-	wlan_t wlan = wlan_get(0);
-	printf("Najjaci WLAN\n");
-	printf("SSID: %s\n", wlan.SSID);
-	printf("strength: %d\n", wlan.strength);
-	printf("encription: %s\n", wlan.encription);
-	*/
+	glcd_string(glcd_get_orientation_string(), 50,50,5, white);
 
-	/*
-	glcd_hline(0, 0, glcd_get_width()-1, red);
-	glcd_hline(0, 2, glcd_get_width(), red);
-	glcd_hline(0, 4, glcd_get_width()+1, red);
-	//glcd_hline(0, 6, glcd_get_width()+2, red);
+	glcd_fillRectangle(0,  0, 50,50, white);
+	glcd_fillRectangle(50, 0, 50,50, black);
+	glcd_fillRectangle(0, 50, 50,50, red);
+	glcd_fillRectangle(50, 50, 50,50, green);
+	glcd_fillRectangle(100,50, 50,50, blue);
 
-	glcd_vline(0, 0, glcd_get_height()-1, blue);
-	glcd_vline(2, 0, glcd_get_height(), blue);
-	glcd_vline(4, 0, glcd_get_height()+1, blue);
-	//glcd_vline(6, 0, glcd_get_height()+2, blue);
+	glcd_string("red text",     50,   0, 2, red);
+	glcd_string("green text",   50,  20, 2, green);
+	glcd_string("blue text",    50,  40, 2, blue);
+	glcd_string("yellow text",  50,  60, 2, yellow);
+	glcd_string("cyan text",    50,  80, 2, cyan);
+	glcd_string("magenta text", 50, 100, 2, magenta);
 
 
-	//glcd_fillRectangle(10,10, 50, 20, blue);
-
-	glcd_vline(0, 0, glcd_get_height(), yellow);
-	glcd_vline(10, 0, glcd_get_height(), white);
-	glcd_hline(0, 10, 320, yellow);
-	//glcd_hline(0, 11, glcd_get_width(), blue);
+	printf("REV test: 0xFF00 -> 0x%04X\n", __REV16(0xFF00));
+	printf("REV test: 0xFF00F1F1 -> 0x%08X\n", __REV(0xFF00F1F1));
+	//glcd_img_test();
 	*/
 
 	printf("sad ide while\n");
@@ -130,19 +145,30 @@ void main(void)
 		blinky_blinky(50);
 		//wii_read();
 
+
+
+		   				// WLAN
+
+
+		/*
 		if ( (strstr((char *)uart2_rx_string_arr, "OK") != 0) && (wlan_event == WLAN_SCAN_IN_PROGRESS) )
 		{
 			wlan_event = WLAN_SCAN_DONE;
 			printf("%s(): WLAN scan done\n", __func__);
 		}
+		*/
 
+		//bool skenira = wlan_is_scan_done();
+
+		/*
 		if (wlan_event == WLAN_SCAN_IN_PROGRESS)
 		{
-			glcd_bg(black);	// obrisi ispis starih WLANova
+			//glcd_bg(black);	// obrisi ispis starih WLANova
 			glcd_string("WLAN:", 0, 0, 4, white);
 			printf("skeniranje u tijeku\n");
 			glcd_string("skeniranje u tijeku", 0, 40, 2, red);
 		}
+		*/
 
 		if (wlan_event == WLAN_SCAN_DONE)
 		{
@@ -152,17 +178,20 @@ void main(void)
 			printf("WLAN:\n");
 			glcd_string("                    ", 0, 40, 2, red);	// obrisi "skeniranje u tijeku"
 
-			for (uint8_t i=0; i<7; i++)	// ispisat samo N najjacih mreza
+			for (uint8_t i=0; i<10; i++)	// ispisat samo N najjacih mreza
 			{
-				wlan_t wlan = wlan_get(i);
+				//wlan_t wlan = wlan_get(i);
+				wlan_list_t wlan = wlan_get_list(i);
 
-				//wlan_print();
-				printf("%s \t strength: %d\n", wlan.SSID, wlan.strength);
+				if (strncmp(wlan.SSID, "ERROR", sizeof(wlan.SSID)) != 0)	// nemoj ispisat ako nema WLANa
+				{
+					printf("%s \t strength: %d\n", wlan.SSID, wlan.strength);
 
-				// zapisi i na GLCD
-				//glcd_string("                ", 0, i+40, 2, glcd_get_bgcolor());	// obrisi ispod
-				glcd_string(wlan.SSID, 20, 40+(i*20), 2, white);	// 40 jer je gore WLAN size 4, 20 pixela za svaki iduci velicine 2
-				glcd_number(wlan.strength, 0, 40+(i*20), 2, cyan);
+					// zapisi i na GLCD
+					//glcd_string("                ", 0, i+40, 2, glcd_get_bgcolor());	// obrisi ispod
+					glcd_string(wlan.SSID, 20, 40+(i*20), 2, white);	// 40 jer je gore WLAN size 4, 20 pixela za svaki iduci velicine 2
+					glcd_number(wlan.strength, 0, 40+(i*20), 2, cyan);
+				}
 			}
 			wlan_event = WLAN_PRINTED;
 		}

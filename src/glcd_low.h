@@ -68,6 +68,11 @@ void glcd_io_init(void);
 void glcd_spi_init(void);
 uint8_t glcd_spi_send(uint8_t byte);
 uint16_t glcd_spi_send16(uint16_t HalfWord);
+//void glcd_write_dma(uint16_t *buf, uint16_t len);
+//void glcd_write_dma(uint16_t *buf, uint32_t len);
+void glcd_write_dma(const uint16_t *buf, uint16_t len);
+//void glcd_write_dma(uint32_t *buf, uint32_t len);
+
 /*
 inline static void glcd_cs_low(void);
 inline static void glcd_cs_high(void);

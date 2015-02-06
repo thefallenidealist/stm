@@ -24,12 +24,12 @@ extern wlan_hw_t wlan_hw;
 
 typedef struct
 {
-    const char    *encription;
-    char    SSID[33];   // SSID max 32 okteta
-    int8_t  strength;
-    char    BSSID[20];  // 17 + "" + NULL charova mu treba
-    uint8_t channel;
-} wlan_t;
+    const char  *encription;
+    char    	SSID[33];   // SSID max 32 okteta
+    int8_t		strength;
+    char		BSSID[20];  // 17 + "" + NULL 
+    uint8_t		channel;
+} wlan_list_t;
 
 typedef enum
 {
@@ -42,10 +42,12 @@ typedef enum
 extern wlan_event_t wlan_event;
 
 void wlan_parse(void);
-wlan_t wlan_get(uint8_t number);
+wlan_list_t wlan_get_list(uint8_t number);
 void wlan_scan();
 bool wlan_is_scan_done();
 void wlan_init();
 void wlan_print();
+//void wlan_main(void);
+//void wlan_loop(void);
 
 #endif

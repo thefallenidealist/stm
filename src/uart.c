@@ -12,6 +12,27 @@ volatile char uart2_rx_string_arr[MAX_WLAN_BUFFER] = {};
 //volatile char uart3_rx_string_arr[UART_MAX_LENGTH] = {};
 
 
+void uart_init(uint8_t uart_number, uint32_t speed)
+{
+	switch (uart_number)
+	{
+		case 1:
+			uart1_init(speed);
+			break;
+		case 2:
+			uart2_init(speed);
+			break;
+		case 3:
+		case 4:
+		case 5:
+		case 6:
+		default:
+			printf("ERROR: %s(): Wrong UART: %d\n", __func__, uart_number);
+			break;
+	}
+
+}
+
 /************************************************************************************************
 *  				UART1_init()							*
 *************************************************************************************************/

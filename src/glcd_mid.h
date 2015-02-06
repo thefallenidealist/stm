@@ -29,4 +29,13 @@ void glcd_ili9341_init(void);
 int8_t glcd_set_hw_orientation(glcd_orientation_t orientation);
 
 
+typedef struct
+{
+	const char* driver;
+	uint16_t width;
+	uint16_t height;
+	uint8_t  protocol;
+
+} glcd_t;
+
 #endif

@@ -14,7 +14,7 @@
 
 // *************************************** variables **********************************************
 // private
-volatile static uint32_t delay_var;	// timer is 24b countdown
+_Atomic volatile static uint32_t delay_var;	// timer is 24b countdown
 //volatile static uint32_t uptime_us=0;	
 volatile uint32_t uptime_us=0;	
 static char uptime_str[35] = {};	// 34 je maksimalno za 170 godina

@@ -81,6 +81,8 @@ const char *glcd_get_orientation_string()
 			return "error";
 			break;
 
+			// TODO kako ce primatelj znat koliko je dugacak char?
+			// mozda bolje samo vratit adresu
 	}
 }
 
@@ -103,7 +105,8 @@ static void glcd_setY(volatile uint16_t y0, volatile uint16_t y1)
 }
 */
 
-static void glcd_setXY(volatile uint16_t x0, volatile uint16_t x1, volatile uint16_t y0, volatile uint16_t y1)
+//static void glcd_setXY(volatile uint16_t x0, volatile uint16_t x1, volatile uint16_t y0, volatile uint16_t y1)
+void glcd_setXY(volatile uint16_t x0, volatile uint16_t x1, volatile uint16_t y0, volatile uint16_t y1)
 {
 	// kao set page u koji ces pisat
 	// imamo hw orijentacije, nema vise racunanja ovdje
@@ -350,44 +353,87 @@ void glcd_speedtest()
 	glcd_number(t2-t1, 50, 50, 3, red);
 }
 
+//uint16_t tmp_buffer[] = {red, green, blue};
+uint16_t tmp_buffer[] = {0x1FF1, 0xF1F1, blue};
 
 void glcd_img_test()
 {
-	//glcd_set_orientation(P1);
-	// XXX 240x320 bmp ne radi u landscapeu
+	/*
+	// patch da slika ispadne dobro
+	glcd_set_orientation(P2m);	// za P1 mod
 
-	//glcd_setXY(0,max_x, 0, max_y);
 	glcd_setXY(0,240, 0, 320);
-
-        glcd_dc_high();
-        glcd_cs_low();
+	glcd_dc_high();
+	glcd_cs_low();
 
 	for (uint32_t i=0; i<240*320; i++)
 	{
-		//spi_write16_fast(bmp_data[i]);
-
+		spi_write16_fast(bmp_data[i]);
 	}
 	glcd_cs_high();
-
-	/*
-	// spremi 240 bajtova
-	uint16_t colors[240] = {};
-
-
-	// sa ovima se dobije automatska orijentacija
-	for (int y=0; y<320; y++)
-	{
-		for (int i=0; i<240; i++)
-		{
-			colors[i] = bmp_data[240*y+i];	// spremi 240 boja u array
-		}
-		glcd_hline2(0,y, max_x, colors);	// posalji citavu liniju
-	}
 	*/
 
+	extern int dma_counter;
+
+	static int printed=0;
+	glcd_set_orientation(P1);
+
+	//if (dma_counter < 4)
+	//if (dma_counter > 0)
+	{
+
+#define SPI_PORT_TX_DMA_STREAM             DMA2_Stream3
+
+		//printf("%s(): dma_counter: %d\n", __func__, dma_counter);
+		//printf("%s(): dma_counter: %d TCIF: %d\n", __func__, dma_counter, DMA_GetITStatus(SPI_PORT_TX_DMA_STREAM, DMA_IT_TCIF3));
+
+		//glcd_setXY(0,240, dma_counter*100, dma_counter*100+100);
+		//glcd_setXY(40,200, 200, 260);
+		glcd_setXY(0,240, 0, 320);
+
+		glcd_dc_high();
+		glcd_cs_low();
+		//delay_ms(10);
+
+		// samo omoguci DMA
+		DMA_Cmd(DMA2_Stream3, ENABLE);
+		//dma_counter++;
+
+		//glcd_write_dma(&tmp_buffer[2], 65535);
+		//glcd_write_dma((uint16_t *)red, 500);
+	}
+	if (printed == 0)
+	{
+
+		printf("%s(): odradio svoje\n", __func__);
+		printed = 1;
+	}
 
 
-	printf("%s() end\n", __func__);
+	/*
+	uint32_t length = sizeof(bmp_data)/2;	// jer saljemo 2 bajta odjednom
+
+	//for (uint32_t i=0; i<240*320; i++)
+	while (length > 0)	// ovo radi u slucaju da je slika odrezana
+	{
+		//spi_write16_fast(bmp_data[i]);
+		static int counter;
+		spi_write16_fast(bmp_data[counter++]);
+		length--;
+	}
+	*/
+		//glcd_write_dma(bmp_data, 240*160);	// radi donekle, sjebane boje, manji dio slike tek
+		//glcd_write_dma((uint16_t *)bmp_data, 240*160);
+		//glcd_write_dma((uint16_t *)bmp_data, 64000);
+		//glcd_write_dma((uint32_t *)bmp_data, 65000);	// nece isprintat vise od 65k
+
+		// nova slika
+		//glcd_write_dma((uint32_t *)bmp_data, 240*320);
+		//glcd_write_dma(&bmp_data[0], 240*320*8);
+		//glcd_write_dma(bmp_data, 240*320*8*2);
+
+
+	//printf("%s() end\n", __func__);
 
 }
 
