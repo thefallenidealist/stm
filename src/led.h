@@ -19,6 +19,7 @@
 #define PORTB		GPIOB
 #define PORTC		GPIOC
 #define PORTD		GPIOD
+#define PORTE		GPIOE
 
 #ifdef STM32F10X_MD
 	#define RCCA		RCC_APB2Periph_GPIOA
@@ -29,6 +30,7 @@
 	#define RCCB		RCC_AHB1Periph_GPIOB
 	#define RCCC		RCC_AHB1Periph_GPIOC
 	#define RCCD		RCC_AHB1Periph_GPIOD
+	#define RCCE		RCC_AHB1Periph_GPIOE
 #endif
 
 // *************************************** variables **********************************************

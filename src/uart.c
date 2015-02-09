@@ -1,5 +1,4 @@
 #include "uart.h"
-#include "debug.h"
 // TODO ujedinit uart1_init i uart2_init
 
 // *************************************** variables **********************************************
@@ -273,4 +272,21 @@ void uart_puts(uint8_t uart, char *string)
 				break;
 		}
 	} while (*string != '\0');
+}
+
+/*************************************************************************************************
+  				USART2 IRQ
+*************************************************************************************************/
+void USART2_IRQHandler(void)
+{
+	// samo kopira u globalni buffer
+	static uint16_t uart2_rx_position = 0;
+
+	if (USART_GetITStatus(USART2, USART_IT_RXNE) == SET)
+	{
+		uint16_t rx_char = USART_ReceiveData(USART2);
+        {
+        	uart2_rx_string_arr[uart2_rx_position++] = rx_char;
+        }
+	}
 }

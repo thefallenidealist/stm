@@ -13,7 +13,7 @@
 //#include "baro.h" 	// 5V
 //#include "oled.h" 	// 5V
 //#include "clock_print.h"
-#include "glcd.h"
+//#include "glcd.h"
 //#include "mem.h"
 //#include "cmd.h"
 //#include "joystick.h"
@@ -23,7 +23,7 @@
 #include "tipka.h"
 //#include "wii.h"
 #include "debug.h"
-//#include "wlan.h"
+#include "wlan.h"
 
 /*
 uint8_t read_rot(uint8_t pin)
@@ -87,6 +87,10 @@ void main(void)
 	printf("Na pocetku bješe štos.\n");
 	printf("________________________________________________________________________________\n");
 
+
+
+
+
 	//rtc_main();
 	//rtc_set_time(12, 30, 0);
 
@@ -98,8 +102,8 @@ void main(void)
 	//malloc_test();
 
     tipka_init();
-	glcd_init();
-	glcd_set_orientation(P1);
+	//glcd_init();
+	//glcd_set_orientation(P1);
 	//glcd_bg(white);
 
 	//glcd_test();
@@ -109,9 +113,9 @@ void main(void)
 	//wii_init();
 
 	wlan_init();
-	//wlan_scan();
+	wlan_scan();
 
-	glcd_set_orientation(L1);
+	//glcd_set_orientation(L1);
 
 
     verbosity_level=0;
@@ -138,6 +142,8 @@ void main(void)
 	//glcd_img_test();
 	*/
 
+	//dpot(0);
+
 	printf("sad ide while\n");
 	while (1)
 	{
@@ -149,57 +155,18 @@ void main(void)
 
 		   				// WLAN
 
+		//wlan_is_scan_done();
 
-		/*
-		if ( (strstr((char *)uart2_rx_string_arr, "OK") != 0) && (wlan_event == WLAN_SCAN_IN_PROGRESS) )
-		{
-			wlan_event = WLAN_SCAN_DONE;
-			printf("%s(): WLAN scan done\n", __func__);
-		}
-		*/
+		wlan_print();
 
-		//bool skenira = wlan_is_scan_done();
-
-		/*
-		if (wlan_event == WLAN_SCAN_IN_PROGRESS)
-		{
-			//glcd_bg(black);	// obrisi ispis starih WLANova
-			glcd_string("WLAN:", 0, 0, 4, white);
-			printf("skeniranje u tijeku\n");
-			glcd_string("skeniranje u tijeku", 0, 40, 2, red);
-		}
-		*/
-
-		if (wlan_event == WLAN_SCAN_DONE)
-		{
-
-			wlan_parse();
-
-			printf("WLAN:\n");
-			glcd_string("                    ", 0, 40, 2, red);	// obrisi "skeniranje u tijeku"
-
-			for (uint8_t i=0; i<10; i++)	// ispisat samo N najjacih mreza
-			{
-				//wlan_t wlan = wlan_get(i);
-				wlan_list_t wlan = wlan_get_list(i);
-
-				if (strncmp(wlan.SSID, "ERROR", sizeof(wlan.SSID)) != 0)	// nemoj ispisat ako nema WLANa
-				{
-					printf("%s \t strength: %d\n", wlan.SSID, wlan.strength);
-
-					// zapisi i na GLCD
-					//glcd_string("                ", 0, i+40, 2, glcd_get_bgcolor());	// obrisi ispod
-					glcd_string(wlan.SSID, 20, 40+(i*20), 2, white);	// 40 jer je gore WLAN size 4, 20 pixela za svaki iduci velicine 2
-					glcd_number(wlan.strength, 0, 40+(i*20), 2, cyan);
-				}
-			}
-			wlan_event = WLAN_PRINTED;
-		}
+		static uint8_t tipka_counter;
 
 		uint8_t tipka = tipka_read();
 		if(tipka == 1)
 		{
-			wlan_scan();
+			//wlan_scan();
+			//dpot(++tipka_counter);
+			printf("Tipka stisnita: %d\n", tipka_counter);
 		}
 
 		//bmp180_print();

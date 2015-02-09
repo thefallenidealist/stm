@@ -8,7 +8,7 @@
 
 #include "delay.h"
 #include "cmd.h"
-#include "wlan.h"
+#include "debug.h"
 
 // *************************************** local includes *****************************************
 #ifdef STM32F10X_MD

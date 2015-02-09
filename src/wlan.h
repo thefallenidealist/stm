@@ -20,7 +20,8 @@ typedef struct
 	uint16_t uart_speed;
 } wlan_hw_t;
 
-extern wlan_hw_t wlan_hw;
+//extern wlan_hw_t wlan_hw;
+//extern wlan_hw_t wlan_hw;
 
 typedef struct
 {

@@ -14,6 +14,7 @@ led_structure get_led_structure(char led_port, int led_pin)
 {
 
 	// dobije char, npr PA	i int, npr 2
+	//printf("%s(): arguments: port: %c, pin: %d\n", __func__, led_port, led_pin);
 
 	led_structure ledOut = {};
 
@@ -38,6 +39,11 @@ led_structure get_led_structure(char led_port, int led_pin)
 	{
 		ledOut.rcc = RCCD;
 		ledOut.port = PORTD;	// radi
+	}
+	else if ((led_port == 'E') || (led_port == 'e'))
+	{
+		ledOut.rcc = RCCE;
+		ledOut.port = PORTE;	// radi
 	}
 	else
 	{
@@ -177,6 +183,9 @@ void led_init(char *led)
 
 	char 	led_port = led[1];
 	uint8_t led_pin = atoi(&led[2]);	// predaj adresu, da radi i za dvoznamenkaste
+
+	//printf("%s(): arguments: led: %s\n", __func__, led);
+	//printf("led_init(): arguments: led: %s\n", led);		// XXX zablokira
 
 	led_init_structure(get_led_structure(led_port, led_pin));
 }

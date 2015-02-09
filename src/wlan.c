@@ -11,16 +11,17 @@
 						// 13 + 33 + 1 + 20 + 1 = 68
 
 // globalni objekti
-wlan_hw_t wlan_hw;
-wlan_list_t wlan_list[MAX_WLAN]; // polje objekata
-wlan_event_t wlan_event = WLAN_SCAN_NOT_STARTED;
+//wlan_hw_t wlan_hw;
+wlan_hw_t	 wlan_modul1;
+wlan_list_t	 wlan_list[MAX_WLAN]; // polje objekata
+wlan_event_t wlan_event = WLAN_SCAN_NOT_STARTED;	// TODO ubacit u objekt, da ih moze bit vise
 
 // globalne varijable
 char *pbuffer = (char *)uart2_rx_string_arr;
 char encription[5][13];
 
-//void wlan_print(wlan_t wlan_list[])
 /*
+//void wlan_print(wlan_t wlan_list[])
 void wlan_print()
 {
 	INFO_START;
@@ -71,15 +72,15 @@ static void poslozi(wlan_list_t wlan_list[])
         {
             trenutni  = &wlan_list[i];
             prethodni = &wlan_list[i-1];
-            tmp = &tmp_copy;
+            tmp 	  = &tmp_copy;
 
             if (prethodni->strength < trenutni->strength)
             {
                 // zamijeni
                 //printf("mijenjam mjesta za pozicije: %d %d\n", i, i-1);
-                memcpy(tmp,			prethodni,	sizeof(*tmp));   // prethodni ide u tmp
+                memcpy(tmp,			prethodni,	sizeof(*tmp));   	 // prethodni ide u tmp
                 memcpy(prethodni,	trenutni,	sizeof(*prethodni)); // trenutni ide u prethodni
-                memcpy(trenutni,	tmp, 		sizeof(*trenutni)); // tmp ide u prethodni
+                memcpy(trenutni,	tmp, 		sizeof(*trenutni));  // tmp ide u prethodni
                 swapped = true;
             }
             i++;
@@ -103,14 +104,14 @@ void wlan_init()
     strcpy(encription[4], "WPA_WPA2_PSK");
 
 	// wlan_hw objekt je vec kreiran 
-	wlan_hw.uart_number = WLAN_UART_NUMBER;
-	wlan_hw.uart_speed  = WLAN_UART_SPEED;
+	wlan_modul1.uart_number = WLAN_UART_NUMBER;
+	wlan_modul1.uart_speed  = WLAN_UART_SPEED;
 
 	//printf("UART number: %d\n", WLAN_UART_NUMBER);
 	//printf("UART speed: %d\n", WLAN_UART_SPEED);
 
 	//printf("%s(): pozivam uart%d_init(%d)\n", __func__, wlan_hw.uart_number, wlan_hw.uart_speed);
-	uart_init(wlan_hw.uart_number, wlan_hw.uart_speed);
+	uart_init(wlan_modul1.uart_number, wlan_modul1.uart_speed);
 
 	INFO_END;
 }
@@ -146,13 +147,22 @@ void wlan_parse()
                 }
                 else if (wlan_atribute_counter == 1)
                 {
-                    strncpy(wlan_list[wlan_number].SSID, token2, sizeof(wlan_list[wlan_number].SSID));
+					/*
                     // TODO maknit ""
+					char *token3;
+    				while ((token3 = strsep(&token2, "\"\"")) != NULL)	// maknimo ""
+					{
+						//printf("\t\t\t\ttoken3: %s\n", token3);
+					}
+                    strncpy(wlan_list[wlan_number].SSID, token3, sizeof(wlan_list[wlan_number].SSID));
+					*/
+
+                    strncpy(wlan_list[wlan_number].SSID, token2, sizeof(wlan_list[wlan_number].SSID));
                 }
                 else if (wlan_atribute_counter == 2)
                 {
                     //wlan_list[wlan_number].strength = atoi(token2);	// XXX ovdje zaglavi na ARMu, na PCu radi kako treba
-								// zaglavi negdje u _strtol_r() (newlib atoi je implementiran kao strtol)
+								// zaglavi negdje u _strtol_r() (newlib atoi() je implementiran kao strtol())
 								// token2 ima \0 na kraju, dug je 3(strlen) 4(sizeof)
 								// clang 3.6, newlib iz "gcc version 4.8.4 20140725 (release)"
 
@@ -173,8 +183,21 @@ void wlan_parse()
                 }
                 else if (wlan_atribute_counter == 3)
                 {
-                    strncpy(wlan_list[wlan_number].BSSID, token2, sizeof(wlan_list[wlan_number].BSSID));
                     // TODO maknit ""
+
+					/*
+					char *token3;
+					//printf("pbuffer prije token3: %s\n", pbuffer);
+					//printf("token2 prije token3: %s\n", token2);
+					
+    				while ((token3 = strsep(&token2, "\"\"")) != NULL)	// maknimo ""
+					{
+						//printf("\t\t\t\ttoken3: %s\n", token3);
+					}
+                    strncpy(wlan_list[wlan_number].BSSID, token3, sizeof(wlan_list[wlan_number].BSSID));
+					*/
+
+                    strncpy(wlan_list[wlan_number].BSSID, token2, sizeof(wlan_list[wlan_number].BSSID));
                 }
                 else if (wlan_atribute_counter == 4)
                 {
@@ -209,9 +232,12 @@ void wlan_parse()
 *************************************************************************************************/
 void wlan_scan()
 {
-	printf("%s() start\n", __func__);
+	INFO_START;
+
 	uart_puts(2, "AT+CWLAP\r\n");	// OH, oh, ne zaboravi \r\n
-	printf("%s() end\n", __func__);
+	wlan_event = WLAN_SCAN_IN_PROGRESS;
+
+	INFO_END;
 }
 
 /*************************************************************************************************
@@ -237,30 +263,19 @@ wlan_list_t wlan_get_list(uint8_t number)
 *************************************************************************************************/
 bool wlan_is_scan_done()
 {
-	/*
-	if (wlan_event == WLAN_SCAN_DONE)
-	{
-		return 1;
-	}
-	else
-	{
-		return 0;
-	}
-	*/
-
-	// CP iz maina
-	if ( (strstr((char *)uart2_rx_string_arr, "OK") != 0) && (wlan_event == WLAN_SCAN_IN_PROGRESS) )
+	//if ( (strstr((char *)uart2_rx_string_arr, "OK") != 0) && (wlan_event == WLAN_SCAN_IN_PROGRESS) )
+	if (strstr((char *)uart2_rx_string_arr, "OK"))
 	{
 		wlan_event = WLAN_SCAN_DONE;
 		printf("%s(): WLAN scan done\n", __func__);
 		return 1;
 	}
-	// if
 	else if (wlan_event == WLAN_SCAN_IN_PROGRESS)
 	{
 		printf("skeniranje u tijeku\n");
 		//glcd_string("WLAN:", 0, 0, 4, white);
 		//glcd_string("skeniranje u tijeku", 0, 40, 2, red);
+		return 0;
 	}
 	else
 	{
@@ -268,24 +283,34 @@ bool wlan_is_scan_done()
 	}
 }
 
-uint16_t uart2_rx_position = 0;
 /*************************************************************************************************
-  				USART2 IRQ
+  				wlan_print()
 *************************************************************************************************/
-void USART2_IRQHandler(void)
+void wlan_print()
 {
-	if (USART_GetITStatus(USART2, USART_IT_RXNE) == SET)
+	//if (wlan_event == WLAN_SCAN_DONE)
+	if (wlan_is_scan_done())
 	{
-		wlan_event = WLAN_SCAN_IN_PROGRESS;
+		wlan_parse();
 
-		uint16_t rx_char = USART_ReceiveData(USART2);
-        {
-        	uart2_rx_string_arr[uart2_rx_position++] = rx_char;
-        }
-		// main() provjerava jel dosao do kraja buffera i tamo postavlja ispravni wlan_event
+		printf("WLAN:\n");
+		//glcd_string("                    ", 0, 40, 2, red);	// obrisi "skeniranje u tijeku"
+
+		for (uint8_t i=0; i<10; i++)	// ispisat samo N najjacih mreza
+		{
+			//wlan_t wlan = wlan_get(i);
+			wlan_list_t wlan = wlan_get_list(i);
+
+			if (strncmp(wlan.SSID, "ERROR", sizeof(wlan.SSID)) != 0)	// nemoj ispisat ako nema WLANa
+			{
+				printf("%s \t strength: %d\n", wlan.SSID, wlan.strength);
+
+				// zapisi i na GLCD
+				//glcd_string("                ", 0, i+40, 2, glcd_get_bgcolor());	// obrisi ispod
+				//glcd_string(wlan.SSID, 20, 40+(i*20), 2, white);	// 40 jer je gore WLAN size 4, 20 pixela za svaki iduci velicine 2
+				//glcd_number(wlan.strength, 0, 40+(i*20), 2, cyan);
+			}
+		}
+		wlan_event = WLAN_PRINTED;
 	}
 }
-
-/*************************************************************************************************
-  				wlan_main()
-*************************************************************************************************/
