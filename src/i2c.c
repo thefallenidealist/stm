@@ -61,7 +61,6 @@ int8_t i2c_start(uint8_t i2c_number)
 			}
 			break;
 		case 2:
-			while (I2C_GetFlagStatus(I2C2, I2C_FLAG_BUSY));
 			while (I2C_GetFlagStatus(I2C2, I2C_FLAG_BUSY))
 			if ((timeout--) == 0)
 			{
@@ -78,6 +77,68 @@ int8_t i2c_start(uint8_t i2c_number)
 					return I2C_EXIT_TIMEOUT_START;
 				}
 			}
+			break;
+		default:
+			printf(ANSI_COLOR_RED "ERROR: %s(): Wrong I2C port: %d\n" ANSI_COLOR_RESET, __func__, i2c_number);
+			return I2C_EXIT_WRONG_NUMBER;
+			//break;
+	}
+	//return EXIT_FAILURE;	// treba bit da se kompajler ne buni
+	return 255;
+}
+
+/*************************************************************************************************
+*					i2c_start_wait()
+*************************************************************************************************/
+int8_t i2c_start_wait(uint8_t i2c_number)
+{
+	uint32_t timeout = I2C_TIMEOUT_MAX;
+
+	switch (i2c_number)
+	{
+		case 1:
+			while (I2C_GetFlagStatus(I2C1, I2C_FLAG_BUSY));
+				/*
+			if ((timeout--) == 0)
+			{
+				printf(ANSI_COLOR_RED "ERROR %s(%d) timeouted\n" ANSI_COLOR_RESET, __func__, i2c_number);
+				return I2C_EXIT_TIMEOUT_START+88;
+			}
+			*/
+			I2C_GenerateSTART(I2C1, ENABLE);
+
+			while (!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_MODE_SELECT));
+			/*
+			{
+				if ((timeout--) == 0)
+				{
+					printf(ANSI_COLOR_RED "ERROR %s(%d) timeouted\n" ANSI_COLOR_RESET, __func__, i2c_number);
+					return I2C_EXIT_TIMEOUT_START;
+				}
+			}
+			*/
+			break;
+		case 2:
+			while (I2C_GetFlagStatus(I2C2, I2C_FLAG_BUSY));
+			/*
+			if ((timeout--) == 0)
+			{
+				printf(ANSI_COLOR_RED "ERROR %s(%d) timeouted\n" ANSI_COLOR_RESET, __func__, i2c_number);
+				return I2C_EXIT_TIMEOUT_START+88;
+			}
+			*/
+			I2C_GenerateSTART(I2C2, ENABLE);
+
+			while (!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_MODE_SELECT));
+			/*
+			{
+				if ((timeout--) == 0)
+				{
+					printf(ANSI_COLOR_RED "ERROR %s(%d) timeouted\n" ANSI_COLOR_RESET, __func__, i2c_number);
+					return I2C_EXIT_TIMEOUT_START;
+				}
+			}
+			*/
 			break;
 		default:
 			printf(ANSI_COLOR_RED "ERROR: %s(): Wrong I2C port: %d\n" ANSI_COLOR_RESET, __func__, i2c_number);
@@ -160,8 +221,7 @@ int8_t i2c_restart(uint8_t i2c_number)
 			I2C_GenerateSTOP(I2C2, ENABLE);
 
 			//while (I2C_GetFlagStatus(I2C1, I2C_FLAG_BUSY))
-			/*
-			while (I2C_GetFlagStatus(I2C1, I2C_FLAG_STOPF))		// radi iako je znao prije timeoutat
+			while (I2C_GetFlagStatus(I2C1, I2C_FLAG_STOPF))		
 			{
 				if ((timeout--) == 0)
 				{
@@ -169,8 +229,6 @@ int8_t i2c_restart(uint8_t i2c_number)
 					return I2C_EXIT_TIMEOUT_STOP;
 				}
 			}
-			*/
-
 			break;
 		default:
 			printf(ANSI_COLOR_RED "ERROR: %s(): Wrong I2C port: %d\n" ANSI_COLOR_RESET, __func__, i2c_number, i2c_number);

@@ -5,7 +5,7 @@
 
 void uart_cmd(char *cmd, char *arg)
 {
-    INFO_START;
+    DEBUG_START;
 	//printf("uart_cmd() cmd: %s\n", cmd);
 	//printf("uart_cmd() arg: %s\n", arg);
     // TODO strncmp
@@ -67,7 +67,7 @@ void uart_cmd(char *cmd, char *arg)
 		uart_parse_rtc(arg);
 
 	}
-    INFO_END;
+    DEBUG_END;
 }
 
 /************************************************************************************************
@@ -80,7 +80,7 @@ void uart_parse(void)
 {
 	// ono sto dobije razbije na dva komada. 
 
-    INFO_START;
+    DEBUG_START;
 
 
 	// inicijaliziraj za slucaj da treba ispisat prazni string
@@ -114,7 +114,7 @@ void uart_parse(void)
 		printf("u stringu nije nadjen delimiter\n");
 		//uart_puts(2, "u stringu nije nadjen delimiter\n");
 	}
-    INFO_END;
+    DEBUG_END;
 }
 
 void uart_parse_rtc(const char* arg)

@@ -1,13 +1,15 @@
 // vim: set tw=80:sw=4:ts=4:
 #include <stdio.h>
 #include <stdbool.h>
+
+#include "debug.h"
 #include "newlib_stubs.h"
 #include "clang_patch.h"
 #include "uart.h"
 #include "led.h"
 #include "delay.h"
 #include "blinky.h"
-#include "rtc2.h"
+//#include "rtc2.h"
 //#include "eeprom.h" 	// 3.3V
 //#include "eeprom_stari.h"
 //#include "baro.h" 	// 5V
@@ -18,12 +20,14 @@
 //#include "cmd.h"
 //#include "joystick.h"
 //#include "nRF_struct.h"
-
-#include "colors_ansi.h"
+//#include "colors_ansi.h"
 #include "tipka.h"
 //#include "wii.h"
-#include "debug.h"
-#include "wlan.h"
+#include "wlan_hw.h"
+#include "wlan_list.h"
+//#include "wlan.h"
+#include "rtc_ext.h"
+//#include "rtc_burgi.h"
 
 /*
 uint8_t read_rot(uint8_t pin)
@@ -36,36 +40,6 @@ uint8_t read_rot(uint8_t pin)
 		return GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_9);
 
 	return 255;
-}
-*/
-
-
-/*
-// TODO #define boje promijenit u velika slova
-uint16_t rgb565(uint8_t arg_red, uint8_t arg_green, uint8_t arg_blue)
-{
-	uint8_t r = arg_red   & 0b11111000;
-	uint8_t g = arg_green & 0b11111100;
-	uint8_t b = arg_blue  & 0b11111000;
-
-	uint16_t rgb565 = (r << 8) | (g << 3) | (b >> 3);
-	printf("%s(): R: %d, G: %d, B: %d, RGB565: %d: 0x%04X\n", __func__, r, g, b, rgb565, rgb565);
-
-	return rgb565;
-}
-
-uint16_t rgb565_percent(uint8_t arg_red, uint8_t arg_green, uint8_t arg_blue)
-{
-	// 5b max: 248, 6b max: 252
-
-	uint8_t r = arg_red*2.48; 	// 100 postaje 248
-	uint8_t g = arg_green*2.52; 	// 100 postaje 252
-	uint8_t b = arg_blue*2.48;
-
-	uint16_t rgb565 = (r << 8) | (g << 3) | (b >> 3);
-	printf("%s(): R: %d, G: %d, B: %d, RGB565: %d: 0x%04X\n", __func__, r, g, b, rgb565, rgb565);
-
-	return rgb565;
 }
 */
 
@@ -86,10 +60,6 @@ void main(void)
 	printf("\t\t\t\tSTM32 pocetak\n");
 	printf("Na pocetku bješe štos.\n");
 	printf("________________________________________________________________________________\n");
-
-
-
-
 
 	//rtc_main();
 	//rtc_set_time(12, 30, 0);
@@ -112,8 +82,8 @@ void main(void)
 
 	//wii_init();
 
-	wlan_init();
-	wlan_scan();
+	//wlan_init();
+	//wlan_scan();
 
 	//glcd_set_orientation(L1);
 
@@ -144,6 +114,48 @@ void main(void)
 
 	//dpot(0);
 
+	//ERROR("test\n");
+
+
+
+	wlan_list_init();
+	wlan_modul_t *wifi1 = wlan_new(2, 9600);
+	if (wifi1 == NULL)
+	{
+		printf("Doslo je do greske prilikom kreiranja novog WLAN modul objekta\n");
+	}
+	else
+	{
+		wifi1->scan(wifi1);
+		wifi1->scan_done(wifi1);
+	}
+
+
+	rtc_ext_main();
+
+	/*
+	// Burgijev RTC
+	i2c_init(2, 100000);
+	delay_us(100);
+
+	TimeStamp time;
+
+	time=RTC_GetTimekeeper();
+	*/
+
+	/*
+	time.hours = 12;
+	time.minutes = 30;
+	time.seconds = 0;
+	RTC_SetTimekeeper(time);
+	*/
+
+	/*
+	printf("hour: %d\n", time.hours);
+	printf("minutes: %d\n", time.minutes);
+	printf("seconds: %d\n", time.seconds);
+	*/
+
 	printf("sad ide while\n");
 	while (1)
 	{
@@ -151,16 +163,10 @@ void main(void)
 		blinky_blinky(50);
 		//wii_read();
 
-
-
-		   				// WLAN
-
-		//wlan_is_scan_done();
-
-		wlan_print();
+		//printf("wlan_print return: %d\n", wlan_print(wifi1));
+		wlan_print(wifi1);
 
 		static uint8_t tipka_counter;
-
 		uint8_t tipka = tipka_read();
 		if(tipka == 1)
 		{
@@ -168,6 +174,7 @@ void main(void)
 			//dpot(++tipka_counter);
 			printf("Tipka stisnita: %d\n", tipka_counter);
 		}
+
 
 		//bmp180_print();
 

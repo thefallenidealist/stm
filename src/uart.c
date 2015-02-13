@@ -7,9 +7,8 @@ volatile rx_event_t uart2_rx_event = RX_PRINTED;
 //volatile rx_event_t uart3_rx_event = RX_PRINTED;
 volatile char uart1_rx_string_arr[UART_MAX_LENGTH] = {};
 //volatile char uart2_rx_string_arr[UART_MAX_LENGTH] = {};
-volatile char uart2_rx_string_arr[MAX_WLAN_BUFFER] = {};
+volatile char uart2_rx_string_arr[MAX_WLAN_BUFFER] = {};	// XXX WLAN
 //volatile char uart3_rx_string_arr[UART_MAX_LENGTH] = {};
-
 
 void uart_init(uint8_t uart_number, uint32_t speed)
 {
@@ -74,7 +73,6 @@ void uart1_init(uint32_t speed)
 	////GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;						// F4
 	//GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;		// F4
 	//GPIO_Init(USART1_GPIO, &GPIO_InitStructure);
-
 
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);
 
@@ -161,44 +159,23 @@ void uart2_init(uint32_t speed)
 *************************************************************************************************/
 void USART1_IRQHandler(void)
 {
+	// kopira u glavni buffer sve dok ne dobije \n
 	if (USART_GetITStatus(USART1, USART_IT_RXNE) == SET)
 	{
-		/*
-		   // samo proslijedi
-		uart1_rx_event = RX_IN_PROGRESS;
-		uint16_t rx_char = USART_ReceiveData(USART1);
-		printf("UART1 RX: %d\n", rx_char);
-			uart1_rx_event = RX_DONE;
-			*/
-
 
 		uart1_rx_event = RX_IN_PROGRESS;
 		static uint8_t counter = 0; // this counter is used to determine the string length
 
 		char rx_char = USART_ReceiveData(USART1);
 
-		/*
-		   ne isprazni buffer, ali uart_puts ce slat samo dok ne dobije \0
-		   uart_puts mora poslat \n da ono cemu salje zna kad je kraj
-		   */
-
 		if ((rx_char != '\n') && (counter < UART_MAX_LENGTH-1))
 		{
-			//printf("counter: %d\n", counter);	// onda ne uspije sve primit
 			uart1_rx_string_arr[counter] = rx_char;
 			counter++;
-			/*
-			   // XXX ne radi
-			if (counter > UART_MAX_LENGTH-1)
-			{
-				printf("UART1 RX je dobio previse znakova error\n");
-			}
-			*/
 		}
-		else
+		else if (rx_char == '\n')
 		{
-			//printf("UART1 else: UART1 RX gotov\n");
-			// obrisi ostatak buffera
+			// evo nas na kraju, obrisi ostatak buffera
 			for (int i=counter; i<UART_MAX_LENGTH-1; i++)
 			{
 				uart1_rx_string_arr[i] = '\0';
@@ -208,28 +185,11 @@ void USART1_IRQHandler(void)
 
 			uart_parse();
 		}
-	}
-
-	/*
-
-	static int counter=0;
-	// interrupt treba testirat da zna jel RX ili TX u pitanju
-	if (USART_GetITStatus(USART1, USART_IT_TXE) == SET)
-	{
-		// stalno zaglavi ovdje
-		//printf("UART1 TX IRQ\n");	// stalno salje
-
-		   // neat pizdarijica svijetli ko Betlehem, u terminalu nista
-		USART_SendData(USART1, testbuffer[counter++]);
-
-		//printf("counter: %d\n", counter);
-		if (counter >= (sizeof(testbuffer)-1))
+		else
 		{
-			counter = 0;
-			USART_ITConfig(USART1, UART_IT_TXE, DISABLE);
+			// pregazili smo buffer
 		}
 	}
-	*/
 
 	USART_ClearITPendingBit(USART1, USART_IT_ERR);
 }
@@ -255,7 +215,6 @@ void uart_puts(uint8_t uart, char *string)
 		{
 			case 1:
 				while ((USART1->SR & USART_FLAG_TC) == (uint16_t)RESET);
-				//printf("uart_puts() salje %c %d\n", *string, *string);
 				USART1->DR = (*string++ & (uint16_t)0x01FF);
 				break;
 			case 2:
@@ -264,11 +223,10 @@ void uart_puts(uint8_t uart, char *string)
 				break;
 			case 3:
 				while ((USART3->SR & USART_FLAG_TC) == (uint16_t)RESET);
-				//printf("uart_puts 3 salje: %c %d\n", *string, *string);
 				USART3->DR = (*string++ & (uint16_t)0x01FF);
 				break;
 			default:
-				printf("uart_puts(): wrong USART number\n");
+				printf("%s(): wrong USART number: %d\n", __func__, uart);
 				break;
 		}
 	} while (*string != '\0');
