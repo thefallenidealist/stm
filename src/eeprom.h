@@ -23,9 +23,16 @@
 // *************************************** local includes *****************************************
 // *************************************** defines ************************************************
 // pretpostavka da su A1 i A0 = 0
+/*
 #define EEPROM_ADDR_W	0xA0
 #define EEPROM_ADDR_R	0xA1
+*/
 #define I2C_TIMEOUT_MAX	0xFFFF
+
+// mali EEPROM sa RTC modula
+// svi A pinovi su nula
+#define EEPROM_ADDR_W	0b10100000
+#define EEPROM_ADDR_R	0b10100001
 // *************************************** variables **********************************************
 // *************************************** function prototypes ************************************
 void eeprom_init(void);

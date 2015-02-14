@@ -131,4 +131,15 @@ void eeprom_example(void)
 		eeprom_write((uint16_t)i, 0x0);
 	}
 	*/
+
+	/*
+	for(uint16_t i=0; i<4096; i++)	// mali ima 4K	AT24C32
+	{
+		uint8_t tmp = eeprom_read(i);
+		if (tmp != 0xFF)
+		{
+			printf("mali: addr: 0x%X %d\n", i, tmp);
+		}
+	}
+	*/
 }

@@ -3,18 +3,19 @@
 
 #include "wlan_list.h"
 
-wlan_list_t	 wlan_list[WLAN_LIST_MAX]; // polje objekata wlan lista
-
 // globalne varijable
 char encription[5][13];
+wlan_list_t	 wlan_list[WLAN_LIST_MAX]; // polje objekata wlan lista
 
+/*************************************************************************************************
+  				poslozi()
+*************************************************************************************************/
 /*
    poslozi listu WLANova po jacini signala, od najveceg, prema najmanjem
    mijenja dobiveni argument
    najlosiji signal je -95, bolji su oni blize 0
 */
 static void poslozi(wlan_list_t wlan_list[])
-//static void poslozi(char *buffer)
 {
 	DEBUG_START;
 
@@ -60,10 +61,9 @@ static void poslozi(wlan_list_t wlan_list[])
 }
 
 /*************************************************************************************************
-  				wlan_parse()
+  				parse()
 *************************************************************************************************/
-//static void wlan_parse()
-static void wlan_parse(char *buffer)
+static void parse(char *buffer)
 {
 	DEBUG_START;
 
@@ -149,13 +149,15 @@ static void wlan_parse(char *buffer)
 	DEBUG_END;
 }
 
-
 /*************************************************************************************************
-  				wlan_get_list()
+  				public functions
+*************************************************************************************************/
+/*************************************************************************************************
+  				wlan_list_get()
 *************************************************************************************************/
 // vrati N-tu mrezu iz globalnog polja popisa WLANova
 // vrati ERROR ako na N-tom mjestu nema mreze
-wlan_list_t wlan_get_list(uint8_t number)
+wlan_list_t wlan_list_get(uint8_t number)
 {
 	// TODO presaltat na pointere i da vrati NULL
 	DEBUG_START; 
@@ -177,11 +179,9 @@ wlan_list_t wlan_get_list(uint8_t number)
 }
 
 /*************************************************************************************************
-  				wlan_print()
+  				wlan_list_print()
 *************************************************************************************************/
-//void wlan_print()
-//void wlan_print(wlan_modul_t *wlan0)
-int8_t wlan_print(wlan_modul_t *wlan0)
+int8_t wlan_list_print(wlan_modul_t *wlan0)
 {
 	DEBUG_START;
 
@@ -196,7 +196,7 @@ int8_t wlan_print(wlan_modul_t *wlan0)
 	//if (wlan0->scan_done(wlan0))
 	if (wlan0->scan_done(wlan0) && (wlan0->event != WLAN_SCAN_PRINTED) )
 	{
-		wlan_parse(wlan0->buffer);
+		parse(wlan0->buffer);
 		//poslozi(wlan0->buffer);
 
 		printf("WLAN:\n");
@@ -205,7 +205,7 @@ int8_t wlan_print(wlan_modul_t *wlan0)
 		for (uint8_t i=0; i<WLAN_LIST; i++)	// ispisat samo N najjacih mreza
 		//for (uint8_t i=0; i<5; i++)
 		{
-			wlan_list_t wlan_list0 = wlan_get_list(i);
+			wlan_list_t wlan_list0 = wlan_list_get(i);
 
 			if (strncmp(wlan_list0.SSID, "ERROR", sizeof(wlan_list0.SSID)) != 0)	// nemoj ispisat ako nema WLANa
 			{
@@ -230,6 +230,54 @@ int8_t wlan_print(wlan_modul_t *wlan0)
 	DEBUG_END;
 }
 
+/*************************************************************************************************
+  				wlan_list_ready()
+*************************************************************************************************/
+// slicno print funkciji, ali ovo preko returna javi jel spremno printat i koliko ih ima za isprintat
+int8_t wlan_list_ready(wlan_modul_t *wlan0)
+{
+	DEBUG_START;
+	uint8_t counter = 0;
+
+	if (wlan0 == NULL)
+	{
+		ERROR("dobili smo NULL objekt, izlazim\n");
+		return -1;
+	}
+
+	if (wlan0->scan_done(wlan0) && (wlan0->event != WLAN_SCAN_PRINTED) )
+	{
+		parse(wlan0->buffer);
+
+
+		for (uint8_t i=0; i<WLAN_LIST; i++)	// ispisat samo N najjacih mreza	TODO
+		{
+			wlan_list_t wlan_list0 = wlan_list_get(i);
+
+			if (strncmp(wlan_list0.SSID, "ERROR", sizeof(wlan_list0.SSID)) != 0)	// nemoj ispisat ako nema WLANa
+			{
+				//printf("%d) signal: %d %s enc: %s\n", i+1, wlan_list0.strength, wlan_list0.SSID, wlan_list0.encription);
+				counter++;
+			}
+		}
+		//wlan0->event = WLAN_SCAN_PRINTED;
+
+		return counter;
+	}
+	else
+	{
+		DEBUG_INFO("WLAN skeniranje jos nije gotovo\n");
+		return 0;
+	}
+
+	return 0;
+
+	DEBUG_END;
+}
+
+/*************************************************************************************************
+  				wlan_list_init()
+*************************************************************************************************/
 void wlan_list_init()
 {
 	DEBUG_START; 

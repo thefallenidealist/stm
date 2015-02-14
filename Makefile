@@ -38,6 +38,9 @@ DIRS 	=  -Isrc \
 #COMMON_FLAGS 	 = $(TARGET) $(CPU) $(OPTS) -nostdlib -mfloat-abi=soft -Wall
 #TODO -flto remove unused functions
 CLANG_FLAGS	 = $(TARGET) 
+# INFO ne radi sa sysroot iako ga usmjerim u folder gdje su headeri /usr/local/gcc-arm-embedded-4_8-2014q3-20140805/arm-none-eabi
+#CLANG_FLAGS	 = $(TARGET)  --sysroot /dev/null -I/usr/local/gcc-arm-embedded-4_8-2014q3-20140805/arm-none-eabi/include \
+#-I/usr/local/gcc-arm-embedded-4_8-2014q3-20140805/lib/gcc/arm-none-eabi/4.8.4/include
 GCC_FLAGS 	 = -std=c99 -mthumb -mno-thumb-interwork -fno-common -fno-strict-aliasing -fmessage-length=0 -fno-builtin -Wp,-w 
 # -Wmissing-prototypes 
 # F1

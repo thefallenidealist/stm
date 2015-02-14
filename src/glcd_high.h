@@ -20,7 +20,7 @@ void glcd_hline(uint16_t x0, uint16_t y0, uint16_t length, uint16_t color);
 void glcd_vline(uint16_t x0, uint16_t y0, uint16_t length, uint16_t color);
 //void glcd_fillRectangle(vuint16_t x0, vuint16_t y0, vuint16_t length, vuint16_t width, vuint16_t color);
 //void glcd_fillRectangle(volatile uint16_t x0, volatile uint16_t y0, volatile uint16_t length, volatile uint16_t width, volatile uint16_t color);
-void glcd_fillRectangle(volatile uint16_t x0, volatile uint16_t y0, volatile uint16_t width, volatile uint16_t height, volatile uint16_t color);
+void glcd_fillRectangle(volatile uint16_t x0, volatile uint16_t y0, volatile uint16_t length, volatile uint16_t height, volatile uint16_t color);
 void glcd_bg(int color);
 void glcd_char(unsigned char ascii, unsigned int x, unsigned int y, unsigned int size, unsigned int fgcolor);
 //void glcd_string(char *string, unsigned int x, unsigned int y, unsigned int size, unsigned int fgcolor);
@@ -37,6 +37,7 @@ int16_t glcd_get_width();
 int16_t glcd_get_height();
 const char *glcd_get_orientation_string();
 void glcd_setXY(volatile uint16_t x0, volatile uint16_t x1, volatile uint16_t y0, volatile uint16_t y1);
+void glcd_clear_line(volatile uint16_t x, volatile uint16_t y, uint8_t size);
 
 
 

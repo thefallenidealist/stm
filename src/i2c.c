@@ -4,6 +4,8 @@
 
 // TODO	return 255;
 // TODO sredit bolje delayeve
+// TODO sve funkcije sto citaju 8b, neka vracaju 16b kako bi se moglo skuzit sto je error, a sto ispravni return value
+// TODO preslozit funkcije
 
 // TODO
 // oporavak od bus errora:
@@ -17,7 +19,7 @@
 enum
 {
 	I2C_EXIT_SUCCESS = 0,
-	I2C_EXIT_WRONG_NUMBER,
+	I2C_EXIT_WRONG_NUMBER,	// TODO I2C_EXIT_WRONG_PORT
 	I2C_EXIT_TIMEOUT_START,
 	I2C_EXIT_TIMEOUT_STOP,
 	I2C_EXIT_TIMEOUT_ADDR_TX,
@@ -90,55 +92,23 @@ int8_t i2c_start(uint8_t i2c_number)
 /*************************************************************************************************
 *					i2c_start_wait()
 *************************************************************************************************/
+// kao i2c_start() ali nema timeouta
 int8_t i2c_start_wait(uint8_t i2c_number)
 {
-	uint32_t timeout = I2C_TIMEOUT_MAX;
 
 	switch (i2c_number)
 	{
 		case 1:
 			while (I2C_GetFlagStatus(I2C1, I2C_FLAG_BUSY));
-				/*
-			if ((timeout--) == 0)
-			{
-				printf(ANSI_COLOR_RED "ERROR %s(%d) timeouted\n" ANSI_COLOR_RESET, __func__, i2c_number);
-				return I2C_EXIT_TIMEOUT_START+88;
-			}
-			*/
 			I2C_GenerateSTART(I2C1, ENABLE);
 
 			while (!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_MODE_SELECT));
-			/*
-			{
-				if ((timeout--) == 0)
-				{
-					printf(ANSI_COLOR_RED "ERROR %s(%d) timeouted\n" ANSI_COLOR_RESET, __func__, i2c_number);
-					return I2C_EXIT_TIMEOUT_START;
-				}
-			}
-			*/
 			break;
 		case 2:
 			while (I2C_GetFlagStatus(I2C2, I2C_FLAG_BUSY));
-			/*
-			if ((timeout--) == 0)
-			{
-				printf(ANSI_COLOR_RED "ERROR %s(%d) timeouted\n" ANSI_COLOR_RESET, __func__, i2c_number);
-				return I2C_EXIT_TIMEOUT_START+88;
-			}
-			*/
 			I2C_GenerateSTART(I2C2, ENABLE);
 
 			while (!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_MODE_SELECT));
-			/*
-			{
-				if ((timeout--) == 0)
-				{
-					printf(ANSI_COLOR_RED "ERROR %s(%d) timeouted\n" ANSI_COLOR_RESET, __func__, i2c_number);
-					return I2C_EXIT_TIMEOUT_START;
-				}
-			}
-			*/
 			break;
 		default:
 			printf(ANSI_COLOR_RED "ERROR: %s(): Wrong I2C port: %d\n" ANSI_COLOR_RESET, __func__, i2c_number);
@@ -326,97 +296,6 @@ int8_t i2c_sendAddr_rx(uint8_t i2c_number, uint8_t addr)
 }
 
 /*************************************************************************************************
-*					i2c_nack()
-*************************************************************************************************/
-/*
-//static int8_t i2c_nack(uint8_t i2c_number)
-int8_t i2c_nack(uint8_t i2c_number)
-{
-	uint32_t timeout = I2C_TIMEOUT_MAX;
-
-	switch (i2c_number)
-	{
-		case 1:
-			I2C_AcknowledgeConfig(I2C1, DISABLE);
-			while (!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_BYTE_RECEIVED))
-			{
-				if ((timeout--) == 0)
-				{
-					// TODO
-				       return 102;
-				}
-			}
-			break;
-		case 2:
-			I2C_AcknowledgeConfig(I2C2, DISABLE);
-			while (!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_BYTE_RECEIVED))
-			{
-				if ((timeout--) == 0)
-				{
-					// TODO
-				       return 102;
-				}
-			}
-			break;
-		default:
-			printf(ANSI_COLOR_RED "ERROR: %s(): Wrong I2C port: %d\n" ANSI_COLOR_RESET, __func__, i2c_number);
-			return I2C_EXIT_WRONG_NUMBER;
-			break;
-	}
-
-	return 0;
-}
-*/
-
-/*************************************************************************************************
-*					i2c_ack()
-*************************************************************************************************/
-/*
-//static int8_t i2c_ack(uint8_t i2c_number)
- int8_t i2c_ack(uint8_t i2c_number)
-{
-	uint32_t timeout = I2C_TIMEOUT_MAX;
-
-	switch (i2c_number)
-	{
-		case 1:
-			I2C_AcknowledgeConfig(I2C1, ENABLE);
-			I2C_NACKPositionConfig(I2C1, I2C_NACKPosition_Current);	// mozda treba
-			while (!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_BYTE_RECEIVED))
-			{
-				if ((timeout--) == 0)
-				{
-					// TODO
-				       return 102;
-				}
-			}
-			break;
-		case 2:
-			I2C_AcknowledgeConfig(I2C2, ENABLE);
-			I2C_NACKPositionConfig(I2C2, I2C_NACKPosition_Current);	// mozda treba
-			while (!I2C_CheckEvent(I2C2, I2C_EVENT_MASTER_BYTE_RECEIVED))
-			{
-				if ((timeout--) == 0)
-				{
-					// TODO
-				       return 102;
-				}
-			}
-			break;
-		default:
-			printf(ANSI_COLOR_RED "ERROR: %s(): Wrong I2C port: %d\n" ANSI_COLOR_RESET, __func__, i2c_number);
-			return I2C_EXIT_WRONG_NUMBER;
-			//break;
-	}
-
-	return 0;
-}
-
-*/
-
-
-
-/*************************************************************************************************
 *					public functions
 */
 /*************************************************************************************************
@@ -504,68 +383,6 @@ int8_t i2c_write(uint8_t i2c_number, uint8_t data)
 
 	return 255;
 }
-
-/*
-int8_t i2c_readN(uint8_t i2c_number, uint8_t slave_addr, uint8_t howmany, uint8_t *array)
-{
-	uint8_t received;
-	uint8_t counter = 0;
-	uint32_t timeout = I2C_TIMEOUT_MAX;
-
-	switch (i2c_number)
-	{
-		case 1:
-			// TODO
-			break;
-		case 2:
-			i2c_start(2);
-			i2c_sendAddr_rx(2, slave_addr);
-			//i2c_nack(2);
-			//i2c_stop(2);	// tutorial tako kaze
-
-			while (--howmany)
-			{
-
-				timeout = I2C_TIMEOUT_MAX;
-				printf("unutar %s() howmany: %d counter: %d\n", __func__, howmany, counter);
-
-				while (!I2C_GetFlagStatus(I2C2, I2C_FLAG_RXNE))	// cekaj da primi sve
-				if ((timeout--) == 0)
-				{
-					printf(ANSI_COLOR_RED "ERROR %s(%d) timeouted RXNE\n" ANSI_COLOR_RESET, __func__, i2c_number);
-					//return I2C_EXIT_TIMEOUT_READ_STOPF;
-					return -1;
-				}
-
-				received = I2C_ReceiveData(I2C2);
-				array[counter++] = received;
-				//array[counter++] = counter;
-				//return received;
-			}
-
-			i2c_stop(2);
-				while (I2C_GetFlagStatus(I2C2, I2C_FLAG_STOPF))
-				if ((timeout--) == 0)
-				{
-					printf(ANSI_COLOR_RED "ERROR %s(%d) timeouted STOPF\n" ANSI_COLOR_RESET, __func__, i2c_number);
-					//return I2C_EXIT_TIMEOUT_READ_STOPF;
-					return -1;
-				}
-			return 0;
-		default:
-			printf(ANSI_COLOR_RED "ERROR: %s(): Wrong I2C port: %d\n" ANSI_COLOR_RESET, __func__, i2c_number);
-			return I2C_EXIT_WRONG_NUMBER;
-			//break;
-	}
-	return 255;
-}
-
-*/
-
-
-
-
-
 
 // novi kurtoni
 

@@ -179,12 +179,12 @@ void glcd_vline(uint16_t x0, uint16_t y0, uint16_t length, uint16_t color)
 }
 
 //void glcd_fillRectangle(volatile uint16_t x0, volatile uint16_t y0, volatile uint16_t length, volatile uint16_t width, volatile uint16_t color)
-void glcd_fillRectangle(volatile uint16_t x0, volatile uint16_t y0, volatile uint16_t width, volatile uint16_t height, volatile uint16_t color)
+void glcd_fillRectangle(volatile uint16_t x0, volatile uint16_t y0, volatile uint16_t length, volatile uint16_t height, volatile uint16_t color)
 {
 	// TODO provjerit, moguce da ne nacrta liniju u 0,0 ili mi se mozda samo cini
 	for (uint16_t i=0; i<=height; i++)
 	{
-		glcd_hline(x0,y0+i, width,color);
+		glcd_hline(x0,y0+i, length,color);
 	}
 }
 
@@ -272,6 +272,11 @@ void glcd_string(const char *string, volatile uint16_t x, volatile uint16_t y, u
 			}
 		}
 	}
+}
+
+void glcd_clear_line(volatile uint16_t x, volatile uint16_t y, uint8_t size)
+{
+	glcd_fillRectangle(x, y, max_x, (CHAR_Y+CHAR_SPACE)*size, bgcolor);
 }
 
 uint8_t glcd_number(int32_t number, uint16_t x0, uint16_t y0, uint8_t size, uint16_t fgcolor)

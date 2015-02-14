@@ -61,3 +61,8 @@ I’ve mentioned several times in this blog that the main purpose of source code
 Place all the implicit information in main.c. Why is this you ask? Well if I was to dump three hundred source files on you, which one would you look at first? (An acceptable alternative is to state in main.c that useful information may be found in file X. Be aware however that non obvious source files sometimes get stripped out of source code archives).
 Include in main as a minimum information about the compiler (including its version), the intended hardware target, and how to build the code.
 
+
+// tabuliranje necega da bude poravnato
+ostavit jedno prazno mjesto pa onda tab
+npr:
+var_[tab]= nesto;

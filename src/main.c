@@ -11,11 +11,10 @@
 #include "blinky.h"
 //#include "rtc2.h"
 //#include "eeprom.h" 	// 3.3V
-//#include "eeprom_stari.h"
 //#include "baro.h" 	// 5V
 //#include "oled.h" 	// 5V
 //#include "clock_print.h"
-//#include "glcd.h"
+#include "glcd.h"
 //#include "mem.h"
 //#include "cmd.h"
 //#include "joystick.h"
@@ -26,8 +25,7 @@
 #include "wlan_hw.h"
 #include "wlan_list.h"
 //#include "wlan.h"
-#include "rtc_ext.h"
-//#include "rtc_burgi.h"
+//#include "rtc_ext.h"
 
 /*
 uint8_t read_rot(uint8_t pin)
@@ -72,7 +70,7 @@ void main(void)
 	//malloc_test();
 
     tipka_init();
-	//glcd_init();
+	glcd_init();
 	//glcd_set_orientation(P1);
 	//glcd_bg(white);
 
@@ -85,7 +83,7 @@ void main(void)
 	//wlan_init();
 	//wlan_scan();
 
-	//glcd_set_orientation(L1);
+	glcd_set_orientation(L1);
 
 
     verbosity_level=0;
@@ -116,6 +114,7 @@ void main(void)
 
 	//ERROR("test\n");
 
+	//eeprom_example();
 
 
 	wlan_list_init();
@@ -131,40 +130,21 @@ void main(void)
 	}
 
 
-	rtc_ext_main();
 
-	/*
-	// Burgijev RTC
-	i2c_init(2, 100000);
-	delay_us(100);
-
-	TimeStamp time;
-
-	time=RTC_GetTimekeeper();
-	*/
-
-	/*
-	time.hours = 12;
-	time.minutes = 30;
-	time.seconds = 0;
-	RTC_SetTimekeeper(time);
-	*/
-
-	/*
-	printf("hour: %d\n", time.hours);
-	printf("minutes: %d\n", time.minutes);
-	printf("seconds: %d\n", time.seconds);
-	*/
+	//rtc_ext_example();
 
 	printf("sad ide while\n");
+
+	// odmah isprintat da GLCD ne stoji prazan
+	glcd_string("WLAN", 0, 0, 4, red);
+
 	while (1)
 	{
 		//printf("javlja se masni ARM\n");
 		blinky_blinky(50);
 		//wii_read();
 
-		//printf("wlan_print return: %d\n", wlan_print(wifi1));
-		wlan_print(wifi1);
+		//wlan_list_print(wifi1);
 
 		static uint8_t tipka_counter;
 		uint8_t tipka = tipka_read();
@@ -175,6 +155,34 @@ void main(void)
 			printf("Tipka stisnita: %d\n", tipka_counter);
 		}
 
+		int8_t ret = wlan_list_ready(wifi1);
+		//printf("wlan_list_ready return: %d\n", ret);
+		if (ret)
+		{
+			// isprintat
+			printf("WLAN:\n");
+			//glcd_string("WLAN", 0, 0, 4, red);
+
+
+			for (uint8_t i=0; i<ret; i++)
+			{
+				wlan_list_t wlan_list0 = wlan_list_get(i);
+				printf("%d) signal: %d %s enc: %s\n", i+1, wlan_list0.strength, wlan_list0.SSID, wlan_list0.encription);
+
+				if (i == 0)
+				{
+					glcd_clear_line(0, 40, 2);	// obrisi liniju gdje je pisalo da skeniranje jos traje
+				}
+				glcd_string(wlan_list0.SSID, 20, 40+(i*20), 2, white);	// 40 jer je gore WLAN size 4, 20 pixela za svaki iduci velicine 2
+				glcd_number(wlan_list0.strength, 0, 40+(i*20), 2, cyan);
+			}
+			wifi1->event = WLAN_SCAN_PRINTED;
+		}
+		else if (wifi1->event == WLAN_SCAN_IN_PROGRESS)
+		{
+			printf("WLAN skeniranje jos traje\n");
+			glcd_string("Skeniranje jos traje", 0, 40, 2, red);
+		}
 
 		//bmp180_print();
 
