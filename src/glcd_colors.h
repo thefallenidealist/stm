@@ -12,6 +12,7 @@
 #define cyan	0x07FF	// GB
 #define magenta	0xF81F	// RB
 #define gray	0x0821	// 00001 000001 00001
+#define gray1	0x3186	// 50 50 50 (255)
 
 
 /*

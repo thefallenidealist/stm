@@ -55,7 +55,7 @@
 	#define UART1_GPIO_RCC		RCC_AHB1Periph_GPIOA
 	#define UART1_RCC		RCC_APB2Periph_UART1
 	#define UART1_GPIO		GPIOA
-	//#define UART1_TX_Pin		GPIO_Pin_9	// PA9	// XXX navodno ne radi zbog kondenzatora na tom pinu
+	//#define UART1_TX_Pin		GPIO_Pin_9	// PA9	// INFO navodno ne radi zbog kondenzatora na tom pinu
 	//#define UART1_RX_Pin		GPIO_Pin_10	// PA10
 
     #define UART2_RCC_GPIO      RCC_AHB1Periph_GPIOD

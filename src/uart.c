@@ -9,6 +9,7 @@ volatile char uart1_rx_string_arr[UART_MAX_LENGTH] = {};
 //volatile char uart2_rx_string_arr[UART_MAX_LENGTH] = {};
 volatile char uart2_rx_string_arr[MAX_WLAN_BUFFER] = {};	// XXX WLAN
 //volatile char uart3_rx_string_arr[UART_MAX_LENGTH] = {};
+uint16_t uart2_rx_position = 0;
 
 void uart_init(uint8_t uart_number, uint32_t speed)
 {
@@ -235,10 +236,11 @@ void uart_puts(uint8_t uart, char *string)
 /*************************************************************************************************
   				USART2 IRQ
 *************************************************************************************************/
+
 void USART2_IRQHandler(void)
 {
 	// samo kopira u globalni buffer
-	static uint16_t uart2_rx_position = 0;
+	//static uint16_t uart2_rx_position = 0;
 
 	if (USART_GetITStatus(USART2, USART_IT_RXNE) == SET)
 	{

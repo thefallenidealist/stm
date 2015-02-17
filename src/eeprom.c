@@ -9,6 +9,8 @@
 // provjere sto su vratile i2c_*
 // provjeravanje adrese, da ne pokusa zapisat izvan adresnog prostora ROMa
 
+eeprom_t eeprom_list[EEPROM_MAX_DEVICES];
+
 /**************************************************************************************************
 *  					eeprom_init(void)					  *
 **************************************************************************************************/
@@ -25,6 +27,9 @@ void eeprom_init(void)
 	i2c_init(2, 200000);	// moze, na 3.3V
 }
 
+/**************************************************************************************************
+*  					eeprom_addr_check()
+**************************************************************************************************/
 bool eeprom_addr_check(uint16_t addr)
 {
 	// najveca adresa je 32 768 = 0x8000
@@ -32,7 +37,7 @@ bool eeprom_addr_check(uint16_t addr)
 
 	if ((addr > 32768) || (addr < 0))
 	{
-		return -1;
+		return 1;
 	}
 	else
 	{
@@ -105,12 +110,42 @@ uint8_t eeprom_read(uint16_t addr)
 	return data;
 }
 
+uint8_t devices_counter;	// globalna varijabla samo da bih je mogao ispisat u _print()
+
+eeprom_t *eeprom_new(uint16_t size_in_kB)
+{
+	//static uint8_t devices_counter;
+
+	eeprom_t eeprom0;
+	eeprom0.size_in_kB = size_in_kB;
+	eeprom0.number = devices_counter;
+
+	// kopiraj u globalno polje
+	memcpy(&eeprom_list[devices_counter], &eeprom0, sizeof(eeprom_list[devices_counter]));
+
+	return &eeprom_list[devices_counter++];
+}
+
+void eeprom_print(eeprom_t *eeprom0)
+{
+	printf("addr of EEPROM object: %p\n", eeprom0);
+	printf("size of EEPROM object: %d kB\n", eeprom0->size_in_kB);
+	printf("number of EEPROM object: %d\n", eeprom0->number);
+	printf("created EEPROM objects: %d\n", devices_counter);
+
+}
+
 /**************************************************************************************************
 *  					eeprom_example(void)					  *
 **************************************************************************************************/
 void eeprom_example(void)
 {
 	eeprom_init();
+
+	eeprom_t *maliROM = eeprom_new(4);
+	eeprom_print(maliROM);
+
+
 
 	uint8_t read;
 

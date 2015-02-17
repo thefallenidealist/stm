@@ -66,3 +66,6 @@ Include in main as a minimum information about the compiler (including its versi
 ostavit jedno prazno mjesto pa onda tab
 npr:
 var_[tab]= nesto;
+
+// divajsovi
+hw init funkcija koja treba napravit nesto sa HW pinom treba uzet taj pin kao argument, ako je potrebno, moze se onda napravit to kao #define ili dobit preko serijskog

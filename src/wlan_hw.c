@@ -97,6 +97,8 @@ static bool scan_done(wlan_modul_t *wlan0)
 		//glcd_string("WLAN:", 0, 0, 4, white);
 		//glcd_string("skeniranje u tijeku", 0, 40, 2, red);
 
+		// ovdje stalno dolazi drugi puta
+
 		//DEBUG_END;
 		return 0;
 	}

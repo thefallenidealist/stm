@@ -2,6 +2,7 @@
 #define GLCD_HIGH_H
 
 #include <stdint.h>
+#include <string.h> // strlen
 #include "glcd_colors.h"
 #include "glcd_mid.h"
 #include "glcd_font.h"
@@ -38,6 +39,19 @@ int16_t glcd_get_height();
 const char *glcd_get_orientation_string();
 void glcd_setXY(volatile uint16_t x0, volatile uint16_t x1, volatile uint16_t y0, volatile uint16_t y1);
 void glcd_clear_line(volatile uint16_t x, volatile uint16_t y, uint8_t size);
+
+void glcd_title(char *string, unsigned int size, unsigned int fgcolor, unsigned int bgcolor);
+void glcd_arc(int x, int y, int r, int startAngle, int endAngle, int thickness, unsigned int color);
+void glcd_bar(unsigned int x0, unsigned int y0, unsigned int howmany, unsigned int bar_max, unsigned int size, unsigned int fgcolor, unsigned int rectangle_color);
+void glcd_eq(char *string, unsigned int x0, unsigned int y0, float howmany, unsigned int size, unsigned int fgcolor, unsigned int rectangle_color);
+void glcd_kocka(unsigned int x0, unsigned int y0, unsigned int howmany, unsigned int size, unsigned int fgcolor);
+unsigned char glcd_float(float floatNumber, unsigned int x0, unsigned int y0, unsigned int size, unsigned int fgcolor);
+void glcd_fillCircle(int x0, int y0, int r, unsigned int color);
+void glcd_circle(int x0, int y0, int r, unsigned int color);
+void glcd_rectangle(unsigned int x0, unsigned int y0, unsigned int length, unsigned int width, unsigned int color);
+void glcd_line(unsigned int x0, unsigned int y0, unsigned int x1, unsigned int y1, unsigned int color);
+void glcd_kockice(int size, int fgcolor2, int bgcolor2);
+
 
 
 
