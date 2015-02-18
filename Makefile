@@ -28,7 +28,8 @@ CPU	= -mcpu=cortex-m3
 DEFINES	= -DSTM32F4XX -DUSE_STDPERIPH_DRIVER 
 #OPTS	= -O0 -g	# XXX ne radi
 #OPTS	= -O1 -g 
-OPTS	= -O2 -g 
+#OPTS	= -O2 -g 
+OPTS	= -O2
 #OPTS	= -O3 -g
 DIRS 	=  -Isrc \
 	   -Isrc/lib/f4\
@@ -44,8 +45,8 @@ CLANG_FLAGS	 = $(TARGET)
 GCC_FLAGS 	 = -std=c99 -mthumb -mno-thumb-interwork -fno-common -fno-strict-aliasing -fmessage-length=0 -fno-builtin -Wp,-w 
 # -Wmissing-prototypes 
 # F1
-#COMMON_FLAGS 	 = $(CPU) $(OPTS) -nostdlib -mfloat-abi=soft -Wall $(CLANG_FLAGS) -DDEBUG
-COMMON_FLAGS 	 = $(CPU) $(OPTS) -nostdlib -mfloat-abi=soft -Wall $(CLANG_FLAGS) 
+COMMON_FLAGS 	 = $(CPU) $(OPTS) -nostdlib -mfloat-abi=soft -Wall $(CLANG_FLAGS) -DDEBUG
+#COMMON_FLAGS 	 = $(CPU) $(OPTS) -nostdlib -mfloat-abi=soft -Wall $(CLANG_FLAGS) 
 # F4
 #COMMON_FLAGS 	 = $(CPU) $(OPTS) -nostdlib -mfloat-abi=hard -Wall $(CLANG_FLAGS)  
 CCFLAGS 	 = $(COMMON_FLAGS) $(DEFINES) $(DIRS) -fno-short-enums \

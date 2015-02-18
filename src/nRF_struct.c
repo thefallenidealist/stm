@@ -1,5 +1,6 @@
 #include "nRF_struct.h"
 
+/*
 static void spi_init(uint8_t spi_number)
 {
 	GPIO_InitTypeDef	GPIO_InitStructure;
@@ -36,6 +37,7 @@ static void spi_init(uint8_t spi_number)
 		printf("error: spi_init(): TODO SPI2\n");
 	}
 }
+*/
 
 static int parse_spi(const char *arg)
 //int parse_spi(nRF_t *arg)
@@ -72,185 +74,6 @@ static int parse_spi(const char *arg)
 	{
 		printf("nRF_init(): Wrong SPI: %s.\n", arg);
 		return EXIT_WRONG_SPI;
-	}
-
-	return EXIT_SUCCESS;
-}
-
-//void gpio_init(char port, uint8_t pin, bool direction)
-static uint8_t gpio_init(char port, uint8_t pin, direction_t direction)
-{
-
-	//printf("gpio_init dobio: port: %c, pin: %d, direction: %d\n", port, pin, direction);
-
-	GPIO_InitTypeDef GPIO_InitStructure;
-
-	// GPIO* su uvijek na APB2 sabirnici
-	/*
-	switch (port)
-	{
-		case 'A':
-		case 'a':
-			RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
-			break;
-		case 'B':
-		case 'b':
-			RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
-			break;
-		case 'C':
-		case 'c':
-			RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);
-			break;
-		default:
-			printf("ovdje ne bi smio doc jer su provjere vec obavljene\n");
-			break;
-	}
-	*/
-
-	if (direction == OUT)
-	{
-		GPIO_InitStructure.GPIO_Speed	= GPIO_Speed_50MHz;
-		GPIO_InitStructure.GPIO_Mode	= GPIO_Mode_Out_PP;
-		//GPIO_InitStructure.GPIO_Pin	= NRF1_CSN_PIN;		// GPIO_Pin_5
-		//GPIO_Init(NRF1_CSN_PORT, &GPIO_InitStructure);
-	}
-	else if (direction == IN)
-	{
-		GPIO_InitStructure.GPIO_Speed	= GPIO_Speed_50MHz;
-		GPIO_InitStructure.GPIO_Mode	= GPIO_Mode_IPD;
-		//GPIO_InitStructure.GPIO_Pin	= NRF1_IRQ_PIN;
-		//GPIO_Init(NRF1_IRQ_PORT, &GPIO_InitStructure);
-	}
-	else
-	{
-		printf("error gpio_init(): wrong direction: %d\n", direction);
-		return EXIT_WRONG_GPIO_DIRECTION;
-	}
-
-	switch (pin)
-	{
-		case 0:
-			GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
-			break;
-		case 1:
-			GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1;
-			break;
-		case 2:
-			GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2;
-			break;
-		case 3:
-			GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3;
-			break;
-		case 4:
-			GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4;
-			break;
-		case 5:
-			GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;
-			break;
-		case 6:
-			GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6;
-			break;
-		case 7:
-			GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7;
-			break;
-		case 8:
-			GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8;
-			break;
-		case 9:
-			GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9;
-			break;
-		case 10:
-			GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
-			break;
-		case 11:
-			GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11;
-			break;
-		case 12:
-			GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12;
-			break;
-		case 13:
-			GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13;
-			break;
-		case 14:
-			GPIO_InitStructure.GPIO_Pin = GPIO_Pin_14;
-			break;
-		case 15:
-			GPIO_InitStructure.GPIO_Pin = GPIO_Pin_15;
-			break;
-		default:
-			printf("error gpio_init(): Wrong pin\n");
-			return EXIT_WRONG_GPIO_PIN;
-	}
-
-	// istovremeno pokreni clock i init
-	switch (port)
-	{
-		case 'A':
-		case 'a':
-			RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
-			GPIO_Init(GPIOA, &GPIO_InitStructure);
-			break;
-		case 'B':
-		case 'b':
-			RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
-			GPIO_Init(GPIOB, &GPIO_InitStructure);
-			break;
-		case 'C':
-		case 'c':
-			RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);
-			GPIO_Init(GPIOC, &GPIO_InitStructure);
-			break;
-		default:
-			printf("ovdje ne bi smio doc jer su provjere vec obavljene\n");
-			break;
-	}
-	return EXIT_SUCCESS;
-}
-
-// ocekuje da ce dobit nesto poput "CS", PA2
-//int parse_gpio(const char *name, const char *arg)
-static int parse_gpio(const char *name, const char *arg, direction_t direction)
-{
-	// u ovo ce zapisat samo ako je dobiven ispravni port i pin
-	char port;
-	uint8_t pin;
-
-	char arg_port = arg[1];
-	int arg_pin = atoi(&arg[2]);	// radi i za dvoznamenkaste brojeve
-
-	if (	(arg_port == 'A') ||
-		(arg_port == 'a') ||
-		(arg_port == 'B') ||
-		(arg_port == 'b') ||
-		(arg_port == 'C') ||
-		(arg_port == 'c'))
-	{
-		port = arg_port;
-	}
-	else
-	{
-		printf("error nRF_init(): Wrong %s!\n", name);
-		return EXIT_WRONG_GPIO_PORT;
-	}
-
-	if ((arg_pin < 0) || (arg_pin > 15))
-	{
-		// ARM board ima 16 bitne portove
-		printf("error nRF_init(): Wrong %s pin: %d\n", name, arg_pin);
-		return EXIT_WRONG_GPIO_PIN;
-	}
-	else if ((arg_port == 'C') && (arg_pin > 2))
-	{
-		printf("error nRF_init(): STM32F1x nema PC%d\n", arg_pin);
-		return EXIT_WRONG_GPIO_PIN;
-	}
-	else
-	{
-		pin = arg_pin;
-		//printf("parse_gpio() uspjesan: funkcija: %s, port: %c, pin: %d\n", name, port, pin);
-
-		// znamo port i pin, pozovimo init
-		gpio_init(port, pin, direction);
 	}
 
 	return EXIT_SUCCESS;
@@ -375,4 +198,8 @@ nRF_t *nRF_new(const char *name)
 	return &obj_array[counter++];
 	//printf("adresa koju ce vratit %p\n", &gobj[counter]);
 	//return &gobj[counter++];
+}
+
+void nRF_main()
+{
 }

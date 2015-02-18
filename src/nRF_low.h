@@ -7,9 +7,43 @@
 
 #include <stdio.h>
 #include <stdbool.h>
-#include "spi.h"
 #include "delay.h"
-#include "nRF_struct.h"
+#include "spi.h"
+#include "debug.h"
+//#include "nRF_struct.h"
+
+//#define NRF1_SCK_RCC	RCC_APB2Periph_GPIOA
+#define NRF1_SCK_RCC	RCC_AHB1Periph_GPIOA
+#define NRF1_SCK_PORT	GPIOA
+#define NRF1_SCK_PIN	GPIO_Pin_5
+
+//#define NRF1_MISO_RCC	RCC_APB2Periph_GPIOA
+#define NRF1_MISO_RCC	RCC_AHB1Periph_GPIOA
+#define NRF1_MISO_PORT	GPIOA
+#define NRF1_MISO_PIN	GPIO_Pin_6
+
+//#define NRF1_MOSI_RCC	RCC_APB2Periph_GPIOA
+#define NRF1_MOSI_RCC	RCC_AHB1Periph_GPIOA
+#define NRF1_MOSI_PORT	GPIOA
+#define NRF1_MOSI_PIN	GPIO_Pin_7
+
+//#define	NRF1_CSN_RCC	RCC_APB2Periph_GPIOB	// F1
+//#define NRF1_CE_RCC	RCC_APB2Periph_GPIOB
+//#define NRF1_IRQ_RCC	RCC_APB2Periph_GPIOB
+
+#define	NRF1_CSN_RCC	RCC_AHB1Periph_GPIOB
+#define	NRF1_CSN_PORT	GPIOB
+#define	NRF1_CSN_PIN	GPIO_Pin_5	// PB5
+
+#define NRF1_CE_RCC		RCC_AHB1Periph_GPIOB
+#define NRF1_CE_PORT	GPIOB
+#define NRF1_CE_PIN		GPIO_Pin_4
+
+/*
+#define NRF1_IRQ_RCC	RCC_AHB1Periph_GPIOB
+#define NRF1_IRQ_PORT	GPIOB
+#define NRF1_IRQ_PIN	GPIO_Pin_8	// PB8	// active low
+*/
 
 /**********************************************************************/
 //			 CMD	page 46

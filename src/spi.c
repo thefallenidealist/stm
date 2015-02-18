@@ -66,10 +66,10 @@ void spi_init(void)
 	// TODO doradit i za ostale portove, druge pinove, prescaler/brzinu, ... 		
 	GPIO_InitTypeDef GPIO_InitStructure;
 	SPI_InitTypeDef  SPI_InitStructure;
-	DMA_InitTypeDef	 DMA_InitStructure;
+	//DMA_InitTypeDef	 DMA_InitStructure;
 
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2, ENABLE);		// DMA
+	//RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2, ENABLE);		// DMA
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7 | GPIO_Pin_6 | GPIO_Pin_5;
 	//GPIO_InitStructure.GPIO_Pin = SPI1_SCK | SPI1_MOSI;
 
@@ -99,12 +99,14 @@ void spi_init(void)
 	//SPI_InitStructure.SPI_NSS 	= SPI_NSS_Soft | SPI_NSSInternalSoft_Set; // set the NSS management to internal and pull internal NSS high
 	SPI_InitStructure.SPI_NSS 	= SPI_NSS_Soft;
 	// SPI frequency is APB2 frequency / Prescaler
-	SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_2;	// GLCD
+	//SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_2;	// GLCD
+	SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_128;	// nRF
 	SPI_InitStructure.SPI_FirstBit 	= SPI_FirstBit_MSB;			// ILI9341 ocekuje MSB first
-	SPI_InitStructure.SPI_CRCPolynomial = 7;
+	//SPI_InitStructure.SPI_CRCPolynomial = 7;
 	SPI_Init(SPI1, &SPI_InitStructure);
 	SPI_Cmd(SPI1, ENABLE);
 
+	/*
 	// SPI1 TX 			DMA2	CH3, stream3, stream5
 #define SPI_PORT_TX_DMA_CHANNEL            DMA_Channel_3
 #define SPI_PORT_TX_DMA_STREAM             DMA2_Stream3
@@ -135,17 +137,19 @@ void spi_init(void)
 	//DMA_InitStructure.DMA_BufferSize 	 		= sizeof(bmp_data);
 	//DMA_InitStructure.DMA_BufferSize 	 		= 65535;
 	DMA_InitStructure.DMA_BufferSize 	 		= sizeof(test);
-
-	/*
-	//DMA_InitStructure.DMA_FIFOMode 		  		= DMA_FIFOMode_Disable;	// treba mu inace sjebe orijentaciju, ponekad, samo kad je prescaler = 8
-	DMA_InitStructure.DMA_FIFOMode 		  		= DMA_FIFOMode_Enable;
-	DMA_InitStructure.DMA_FIFOThreshold   		= DMA_FIFOThreshold_Full;
-	DMA_InitStructure.DMA_MemoryBurst 	  		= DMA_MemoryBurst_Single;
-	DMA_InitStructure.DMA_PeripheralBurst 		= DMA_PeripheralBurst_Single;
-	//DMA_InitStructure.DMA_MemoryBurst 	  		= DMA_MemoryBurst_INC4;
-	//DMA_InitStructure.DMA_PeripheralBurst 		= DMA_PeripheralBurst_INC4;
 	*/
 
+				/*
+				//DMA_InitStructure.DMA_FIFOMode 		  		= DMA_FIFOMode_Disable;	// treba mu inace sjebe orijentaciju, ponekad, samo kad je prescaler = 8
+				DMA_InitStructure.DMA_FIFOMode 		  		= DMA_FIFOMode_Enable;
+				DMA_InitStructure.DMA_FIFOThreshold   		= DMA_FIFOThreshold_Full;
+				DMA_InitStructure.DMA_MemoryBurst 	  		= DMA_MemoryBurst_Single;
+				DMA_InitStructure.DMA_PeripheralBurst 		= DMA_PeripheralBurst_Single;
+				//DMA_InitStructure.DMA_MemoryBurst 	  		= DMA_MemoryBurst_INC4;
+				//DMA_InitStructure.DMA_PeripheralBurst 		= DMA_PeripheralBurst_INC4;
+				*/
+
+	/*
 	DMA_Init(SPI_PORT_TX_DMA_STREAM, &DMA_InitStructure);
 	DMA_ITConfig(SPI_PORT_TX_DMA_STREAM, DMA_IT_TC, ENABLE);
 
@@ -160,8 +164,10 @@ void spi_init(void)
 	NVIC_Init(&NVIC_InitStructure);
 	// Enable dma tx request.
 	SPI_I2S_DMACmd(SPI1, SPI_I2S_DMAReq_Tx, ENABLE);
+	*/
 }
 
+/*
 //void glcd_cs_high();
 #include "glcd_mid.h"
 
@@ -182,12 +188,14 @@ void DMA2_Stream3_IRQHandler(void)
 		//dma_counter++;
 	}
 }
+*/
 
 
 
 
 
 
+/*
 void spi2_init(void)
 {
 	// TODO doradit i za ostale portove, druge pinove, prescaler/brzinu, ... 		
@@ -228,3 +236,4 @@ void spi2_init(void)
 
 	SPI_Cmd(SPI2, ENABLE);
 }
+*/

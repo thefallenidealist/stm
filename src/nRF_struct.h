@@ -1,5 +1,5 @@
-#ifndef NRF_STRUCT_H
-#define NRF_STRUCT_H
+#ifndef NRF_H
+#define NRF_H
 
 #include <stdio.h>
 #include <stdint.h>
@@ -17,6 +17,7 @@
 	#include "stm32f4xx_gpio.h"
 	#include "stm32f4xx_spi.h"
 #endif
+#include "spi.h"
 
 #define SPI1_PORT	GPIOA
 //#define SPI1_RCC	RCC_APB2Periph_GPIOA	// F1
@@ -30,11 +31,41 @@
 #define SPI2_MISO	GPIO_Pin_14
 #define SPI2_MOSI	GPIO_Pin_15
 
+// GPIO
+#ifdef STM32F4XX
+	#define RCCA	RCC_AHB1Periph_GPIOA
+	#define RCCB	RCC_AHB1Periph_GPIOA
+	#define RCCC	RCC_AHB1Periph_GPIOA
+	#define RCCD	RCC_AHB1Periph_GPIOA
+
+/*
+// nema potrebe
+	#define PIN0	GPIO_Pin_0
+	#define PIN1	GPIO_Pin_1
+	#define PIN2	GPIO_Pin_2
+	#define PIN3	GPIO_Pin_3
+	#define PIN4	GPIO_Pin_4
+	#define PIN5	GPIO_Pin_5
+	#define PIN6	GPIO_Pin_6
+	#define PIN7	GPIO_Pin_7
+	#define PIN8	GPIO_Pin_8
+	#define PIN9	GPIO_Pin_9
+	#define PIN10	GPIO_Pin_10
+	#define PIN11	GPIO_Pin_11
+	#define PIN12	GPIO_Pin_12
+	#define PIN13	GPIO_Pin_13
+	#define PIN14	GPIO_Pin_14
+	#define PIN15	GPIO_Pin_15
+	*/
+#endif
+
+/*
 typedef enum
 {
 	IN = 0,
 	OUT = 1
 } direction_t;
+*/
 
 /*
 typedef struct
@@ -53,8 +84,8 @@ typedef struct
 //typedef	int (*pFunc)(nRF_t *self);
 
 typedef	struct nRF_t nRF_t;		// prototip structa nRF_t
-typedef	int (*pfunc)(nRF_t *self);	// pointer na funkciju
-typedef void (*pfunc_print)(nRF_t *self);
+//typedef	int (*pfunc)(nRF_t *self);	// pointer na funkciju
+//typedef void (*pfunc_print)(nRF_t *self);
 
 typedef struct 
 {
@@ -73,9 +104,9 @@ struct nRF_t
 	char	*ce;
 	char	*irq;
 	char	*name;
-	pfunc	init;
+	//pfunc	init;
 	//pfunc	print;
-	pfunc_print print;
+	//pfunc_print print;
 	
 //} nRF_t;
 };
@@ -104,5 +135,6 @@ enum
 nRF_t *nRF_new(const char *name);
 //nRF_t *nRF_new(const char *name);
 //void nRF_print(nRF_t *self);
+void nRF_main();
 
 #endif
