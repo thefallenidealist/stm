@@ -7,8 +7,10 @@
 #include "colors_ansi.h"
 
 #ifdef DEBUG
-	#define DEBUG_START			printf(ANSI_COLOR_BLUE "%s() start\n" ANSI_COLOR_RESET, __func__);
-	#define DEBUG_END			printf(ANSI_COLOR_BLUE "%s() end\n"   ANSI_COLOR_RESET, __func__);
+//	#define DEBUG_START			printf(ANSI_COLOR_BLUE "%s() start\n" ANSI_COLOR_RESET, __func__);
+	#define DEBUG_START			;
+//	#define DEBUG_END			printf(ANSI_COLOR_BLUE "%s() end\n"   ANSI_COLOR_RESET, __func__);
+	#define DEBUG_END			;
 	#define DEBUG_INFO( arg )	printf(ANSI_COLOR_YELLOW "%s() %s"   ANSI_COLOR_RESET, __func__, arg);
 	#define ERROR( arg )		printf(ANSI_COLOR_RED "ERROR %s(), " ANSI_COLOR_RESET \
 								"file: %s, line: %d: " \
