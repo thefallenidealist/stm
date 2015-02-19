@@ -52,12 +52,18 @@ typedef enum
 	TOGGLE = 2
 } state_t;
 
-/********************		gpio_t		********************/
+/********************		gpio_hw_t		********************/
 typedef struct
 {
 	uint32_t 		rcc;
 	GPIO_TypeDef 	*port;
 	uint16_t 		pin;
+	//direction_t		direction;		// not implemented
+} gpio_hw_t;
+
+/********************		gpio_t		********************/
+typedef struct
+{
 	//direction_t		direction;		// not implemented
 } gpio_t;
 

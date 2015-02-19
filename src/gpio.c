@@ -1,11 +1,11 @@
 #include "gpio.h"
 
-gpio_t gpio_tmp;	// TODO ovo ce trebat cuvat u multithread kodu
+gpio_hw_t gpio_tmp;	// TODO ovo ce trebat cuvat u multithread kodu
 
 /*************************************************************************************************
   			gpio_real_init()
 *************************************************************************************************/
-static int8_t gpio_real_init(gpio_t *gpio0, direction_t direction)
+static int8_t gpio_real_init(gpio_hw_t *gpio0, direction_t direction)
 {
 	DEBUG_START;
 
@@ -16,21 +16,25 @@ static int8_t gpio_real_init(gpio_t *gpio0, direction_t direction)
 	if (gpio0 != NULL)	// vec je provjeren, al ajde
 	{
 	*/
+
 		GPIO_InitTypeDef GPIO_InitStruct;
 
 		GPIO_InitStruct.GPIO_Pin = gpio0->pin;
+		GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
 
 		if (direction == OUT)
 		{
 			GPIO_InitStruct.GPIO_Mode  = GPIO_Mode_OUT;
 			GPIO_InitStruct.GPIO_OType = GPIO_OType_PP;
 			GPIO_InitStruct.GPIO_PuPd  = GPIO_PuPd_NOPULL;
+			//GPIO_InitStruct.GPIO_PuPd  = GPIO_PuPd_DOWN;
 		}
 		else if (direction == IN)
 		{
 			GPIO_InitStruct.GPIO_Mode  = GPIO_Mode_IN;
 			GPIO_InitStruct.GPIO_OType = GPIO_OType_PP;
 			GPIO_InitStruct.GPIO_PuPd  = GPIO_PuPd_NOPULL;	
+			//GPIO_InitStruct.GPIO_PuPd  = GPIO_PuPd_DOWN;
 		}
 		else
 		{
@@ -38,8 +42,8 @@ static int8_t gpio_real_init(gpio_t *gpio0, direction_t direction)
 			return EXIT_GPIO_WRONG_DIRECTION;
 		}
 
-		// TODO, na malom ARMu vjerojatno nije APB2
-		RCC_APB2PeriphClockCmd(gpio0->rcc, ENABLE);
+		//RCC_APB2PeriphClockCmd(gpio0->rcc, ENABLE);	// mali ARM
+		RCC_AHB1PeriphClockCmd(gpio0->rcc, ENABLE);	// masni ARM
 		GPIO_Init(gpio0->port, &GPIO_InitStruct);
 
 		DEBUG_END;
@@ -57,7 +61,7 @@ static int8_t gpio_real_init(gpio_t *gpio0, direction_t direction)
 /*************************************************************************************************
   			gpio_parse()
 *************************************************************************************************/
-static gpio_t *gpio_parse(const char *arg)
+static gpio_hw_t *gpio_parse(const char *arg)
 {
 	DEBUG_START;
 
@@ -167,16 +171,19 @@ int8_t gpio_init(const char *arg, direction_t direction)
 {
 	DEBUG_START;
 
+	/*
 	if ( (direction != IN) && (direction != OUT) )
 	{
 		ERROR("GPIO wrong direction\n");
 		return EXIT_GPIO_WRONG_DIRECTION;
 	}
+	*/
 
-	gpio_t *gpio0 = gpio_parse(arg);
+	gpio_hw_t *gpio0 = gpio_parse(arg);
 
 	if (gpio0 != NULL)
 	{
+		DEBUG_INFO("Calling gpio_real_init()\n");
 		gpio_real_init(gpio0, direction);
 
 		DEBUG_END;
@@ -196,10 +203,13 @@ int8_t gpio_init(const char *arg, direction_t direction)
 int8_t gpio(const char *arg, state_t state)
 {
 	DEBUG_START;
-	gpio_t *gpio0 = gpio_parse(arg);
+	gpio_hw_t *gpio0 = gpio_parse(arg);
 
 	if (gpio0 != NULL)
 	{
+		DEBUG_INFO("gpio() successful\n");
+		//printf("arg: %s, state: %d\n", arg, state);
+
 		if (state == TOGGLE)
 		{
 			if (GPIO_ReadInputDataBit(gpio0->port, gpio0->pin) == 0)
@@ -242,7 +252,7 @@ int8_t gpio(const char *arg, state_t state)
 bool gpio_read(const char *arg)
 {
 	DEBUG_START;
-	gpio_t *gpio0 = gpio_parse(arg);
+	gpio_hw_t *gpio0 = gpio_parse(arg);
 
 	if (gpio0 != NULL)
 	{

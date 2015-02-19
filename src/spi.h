@@ -9,13 +9,12 @@
 	#include "stm32f4xx_dma.h"
 #endif
 
-//void   spi_write(uint8_t data8);
-void spi_write_fast(uint8_t data8);
-//void   spi_write16(uint16_t data16);
-void     spi_write16_fast(uint16_t data16);
-uint8_t  spi_rw(uint8_t data8);
-uint16_t spi_rw16(uint16_t data16);
-void 	spi_init(void);
-void 	spi2_init(void);
+#include "debug.h"
+
+int8_t 	spi_init	(uint8_t spi_port, uint16_t spi_prescaler);
+void 	spi_write_fast(uint8_t spi_port, uint8_t data8);
+void 	spi_write16_fast(uint8_t spi_port, uint16_t data16);
+uint16_t spi_rw16(uint8_t spi_port, uint16_t data16);
+uint8_t	spi_rw(uint8_t spi_port, uint8_t data8);
 
 #endif

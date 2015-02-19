@@ -1,3 +1,6 @@
+#ifndef MEM_H
+#define MEM_H
+
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h> 	// malloc
@@ -5,5 +8,10 @@
 //#include "core_cm4.h" 	// isto
 #include "stm32f4xx.h"
 
+
+#include "debug.h"
+
 void mem_info();
 void malloc_test();
+
+#endif

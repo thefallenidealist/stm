@@ -49,26 +49,36 @@ void blinky_blinky_init(uint8_t leds, bool arg)
 
 	if (leds == BLINKY_LED_ALL)
 	{
+		/*
 		led_init("PD12");
 		led_init("PD13");
 		led_init("PD14");
 		led_init("PD15");
+		*/
+		gpio_init("PD12", OUT);
+		gpio_init("PD13", OUT);
+		gpio_init("PD14", OUT);
+		gpio_init("PD15", OUT);
 	}
 	if (leds == BLINKY_LED_GREEN)
 	{
-		led_init("PD12");
+		//led_init("PD12");
+		gpio_init("PD12", OUT);
 	}
 	if (leds == BLINKY_LED_ORANGE)
 	{
-		led_init("PD13");
+		//led_init("PD13");
+		gpio_init("PD13", OUT);
 	}
 	if (leds == BLINKY_LED_RED)
 	{
-		led_init("PD14");
+		//led_init("PD14");
+		gpio_init("PD14", OUT);
 	}
 	if (leds == BLINKY_LED_BLUE)
 	{
-		led_init("PD15");
+		//led_init("PD15");
+		gpio_init("PD15", OUT);
 	}
 }
 
@@ -86,50 +96,66 @@ void blinky_blinky(uint8_t arg)
 
 	if (global_leds == BLINKY_LED_GREEN)
 	{
-		led("PD12", 2);
+		//led("PD12", 2);
+		gpio("PD12", TOGGLE);
 		delay_ms(delay);
-		led("PD12", 2);
+		//led("PD12", 2);
+		gpio("PD12", TOGGLE);
 		delay_ms(delay);
 	}
 
 	if (global_leds == BLINKY_LED_ORANGE)
 	{
-		led("PD13", 2);
+		//led("PD13", 2);
+		gpio("PD13", TOGGLE);
 		delay_ms(delay);
-		led("PD13", 2);
+		//led("PD13", 2);
+		gpio("PD13", TOGGLE);
 		delay_ms(delay);
 	}
 
 	if (global_leds == BLINKY_LED_RED)
 	{
-		led("PD14", 2);
+		//led("PD14", 2);
+		gpio("PD14", TOGGLE);
 		delay_ms(delay);
-		led("PD14", 2);
+		//led("PD14", 2);
+		gpio("PD14", TOGGLE);
 		delay_ms(delay);
 	}
 
 	if (global_leds == BLINKY_LED_BLUE)
 	{
-		led("PD15", 2);
+		//led("PD15", 2);
+		gpio("PD15", TOGGLE);
 		delay_ms(delay);
-		led("PD15", 2);
+		//led("PD15", 2);
+		gpio("PD15", TOGGLE);
 		delay_ms(delay);
 	}
 
 	if (global_leds == BLINKY_LED_ALL)
 	{
-		led("PD12", 2);
+		//led("PD12", 2);
+		gpio("PD12", TOGGLE);
 		delay_ms(delay);
-		led("PD12", 2);
-		led("PD13", 2);
+		//led("PD12", 2);
+		gpio("PD12", TOGGLE);
+		//led("PD13", 2);
+		gpio("PD13", TOGGLE);
 		delay_ms(delay);
-		led("PD13", 2);
-		led("PD14", 2);
+		//led("PD13", 2);
+		gpio("PD13", TOGGLE);
+		//led("PD14", 2);
+		gpio("PD14", TOGGLE);
 		delay_ms(delay);
-		led("PD14", 2);
-		led("PD15", 2);
+		//led("PD14", 2);
+		gpio("PD14", TOGGLE);
+		//led("PD15", 2);
+		gpio("PD15", TOGGLE);
 		delay_ms(delay);
-		led("PD15", 2);
+		//led("PD15", 2);
+		gpio("PD15", TOGGLE);
 	}
 
 	if (variable_delay == 1)

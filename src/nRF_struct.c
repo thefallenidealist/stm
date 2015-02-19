@@ -1,5 +1,9 @@
 #include "nRF_struct.h"
 
+//nRF_hw_t gobj[10];
+nRF_hw_t obj_array[10];
+//int globalna = 2;
+
 /*
 static void spi_init(uint8_t spi_number)
 {
@@ -39,8 +43,10 @@ static void spi_init(uint8_t spi_number)
 }
 */
 
+/*************************************************************************************************
+  		parse_spi()
+*************************************************************************************************/
 static int parse_spi(const char *arg)
-//int parse_spi(nRF_t *arg)
 {
 	int ret = -9;	// defaultna, pogresna vrijednost
 
@@ -79,7 +85,10 @@ static int parse_spi(const char *arg)
 	return EXIT_SUCCESS;
 }
 
-static int nRF_init(nRF_t *self)
+/*************************************************************************************************
+  		nRF_init()
+*************************************************************************************************/
+static int nRF_init(nRF_hw_t *self)
 {
 	int ret;
 	ret = parse_spi(self->spi);
@@ -117,7 +126,10 @@ static int nRF_init(nRF_t *self)
 	return EXIT_SUCCESS;
 }
 
-static void nRF_constructor(nRF_t *self)
+/*************************************************************************************************
+  		nRF_constructor()
+*************************************************************************************************/
+static void nRF_constructor(nRF_hw_t *self)
 {
 	// kao konstruktor, popuni neispravnim defaultnim vrijednostima
 	// koje ce se kasnije provjeravat
@@ -127,7 +139,10 @@ static void nRF_constructor(nRF_t *self)
 	self->irq = "X0";
 }
 
-static void nRF_print(nRF_t *self)
+/*************************************************************************************************
+  		nRF_print()
+*************************************************************************************************/
+static void nRF_print(nRF_hw_t *self)
 {
 	printf("nRF_print():\n");
 	printf("\time: %s\n", self->name);
@@ -137,49 +152,34 @@ static void nRF_print(nRF_t *self)
 	printf("\tIRQ: %s\n", self->irq);
 }
 
-//nRF_t gobj[10];
-nRF_t obj_array[10];
-//int globalna = 2;
 
-// javno
+/*************************************************************************************************
+  						public function
+*************************************************************************************************/
+/*************************************************************************************************
+  		nRF_new()
+*************************************************************************************************/
 // kreiraj novi objekt i inicijaliziraj ga
-nRF_t *nRF_new(const char *name)
+nRF_hw_t *nRF_new(const char *name)
 {
 	// TODO
 	// kako napravit npr int var`echo $name`;
 	//printf("_new: %p\n", &gobj);
 
-	static uint8_t counter = 0;
+	static uint8_t counter;
 
 	//printf("odje nRF_new()\n");
 	//printf("argument: %s\n", name);
 
-	nRF_t obj1;
+	nRF_hw_t obj1;
 	nRF_constructor(&obj1);		// zapuni defaultnim vrijednostima
 	obj1.name = (char *)name;	// XXX zasto ga imam kao const ako ga moram pretvorit :-/
 
-	/*
-	nRF_t gobj[counter];
-	printf("addr obj[counter]: %p\n", &gobj[counter]);
-	//nRF_constructor(&obj[counter]);		// zapuni defaultnim vrijednostima
-	//nRF_constructor(&gobj[counter]);		// zapuni defaultnim vrijednostima
-	gobj[counter].name = (char *)name;	// XXX zasto ga imam kao const ako ga moram pretvorit :-/
-	*/
-
-	//printf("napravili smo objekt imena: %s\n", obj1.name);
-
 	obj1.init = nRF_init;
 	obj1.print = nRF_print;
-	/*
-	gobj[counter].init = nRF_init;
-	gobj[counter].print = nRF_print;
-	*/
-
-	//counter++;
 
 	void *pointer = obj_array;
 	printf("void pointer: %p\n", pointer);
-	//printf("napisi sta oces %p\n", obj_array);
 	printf("napisi sta oces %p\n", &obj_array[counter]);
 
 	memcpy(&obj_array[counter], &obj1, sizeof(obj1));

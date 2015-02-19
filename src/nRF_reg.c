@@ -453,8 +453,8 @@ struct REG_FEATURE FEATURE = {0x1D, 2,1,0};
 
 
 
-//int main2()
-int main()
+int main2()
+//int main()
 {
 	printf("ovdje reg.c\n");
 	// staro

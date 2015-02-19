@@ -1,4 +1,3 @@
-#include "debug.h"
 #include "mem.h"
 
 // #defined in linker script
@@ -14,7 +13,7 @@ extern int flash_used_size;
 
 void mem_info()
 {
-	INFO_START;
+	DEBUG_START;
 
 	uint32_t stackp = __get_MSP();
 
@@ -62,7 +61,7 @@ void mem_info()
 	printf(ANSI_COLOR_CYAN "remaining stack: 0x%x %dB\n" ANSI_COLOR_RESET, stack_size, stack_size);
 	printf("heap velicina: %.1f kB\n", (estack - bss_end)/1024.0);
 
-	INFO_END;
+	DEBUG_END;
 	printf("\n");
 }
 

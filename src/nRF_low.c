@@ -58,34 +58,6 @@ void nRF1_io_init()
 	cs_init();
 	//irq_init();
 
-
-	/*
-	GPIO_InitTypeDef GPIO_InitStruct;
-
-	RCC_APB2PeriphClockCmd(NRF1_CSN_RCC | NRF1_CE_RCC | NRF1_IRQ_RCC, ENABLE);
-
-	// zajednicko za output
-	//GPIO_InitStruct.GPIO_Mode = GPIO_Mode_Out_PP;	// F1
-	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_OUT;	// F4
-	GPIO_InitStruct.GPIO_OType = GPIO_OType_PP;
-	GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_NOPULL;	
-	//GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-
-	GPIO_InitStruct.GPIO_Pin = NRF1_CSN_PIN;
-	GPIO_Init(NRF1_CSN_PORT, &GPIO_InitStruct);
-
-	GPIO_InitStruct.GPIO_Pin = NRF1_CE_PIN;
-	GPIO_Init(NRF1_CE_PORT, &GPIO_InitStruct);
-
-	// input
-	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IN;
-	GPIO_InitStruct.GPIO_OType = GPIO_OType_PP;
-	GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_NOPULL;	
-
-	GPIO_InitStruct.GPIO_Pin = NRF1_IRQ_PIN;
-	GPIO_Init(NRF1_IRQ_PORT, &GPIO_InitStruct);
-	*/
-
 	GPIO_WriteBit(NRF1_CSN_PORT, NRF1_CSN_PIN, 1);
 	GPIO_WriteBit(NRF1_CE_PORT, NRF1_CE_PIN, 1);
 	//GPIO_WriteBit(NRF1_IRQ_PORT, NRF1_IRQ_PIN, 1);
@@ -125,7 +97,8 @@ void nRF1_spi_init()
 	// 2 = 24	4 = 12		8 = 10
 	// 16 = 5	32 = 2.6	64 = 1.3
 	// nRF datasheet kaze da je SPI max SCK: 5-8, ovisi o kapacitivnosti
-	SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_32;	// F4 nRF: 32, 64 
+	//SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_32;	// F4 nRF: 32, 64 
+	SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_64;	// F4 nRF: 32, 64 
 	SPI_InitStructure.SPI_FirstBit = SPI_FirstBit_MSB;			// ILI9341 ocekuje MSB first
 	//SPI_InitStructure.SPI_CRCPolynomial = 7;
 
@@ -170,10 +143,8 @@ static uint8_t write_reg(uint8_t reg, uint8_t arg)
 	uint8_t status;
 	cs(0);
 	//cs(nRF, 0);
-	//status = spi_rw(reg + CMD_W_REGISTER);
-	status = spi_rw(reg + CMD_W_REGISTER);
-	spi_rw(arg);
-	//spi_write_fast(arg);
+	status = spi_rw(1, reg + CMD_W_REGISTER);
+	spi_rw(1, arg);
 	delay_ms(1);	// bezveze
 	cs(1);
 
@@ -188,8 +159,8 @@ static uint8_t read_reg(uint8_t reg)
 	DEBUG_START;
 	uint8_t status;
 	cs(0);
-	spi_rw(CMD_R_REGISTER + reg);	// ako citanje REG_STATUS bude zajebavalo ovo zakomentirat samo u tom slucaju
-	status = spi_rw(0x00);	// dummy write
+	spi_rw(1, CMD_R_REGISTER + reg);	// ako citanje REG_STATUS bude zajebavalo ovo zakomentirat samo u tom slucaju
+	status = spi_rw(1, 0x00);	// dummy write
 	cs(1);
 
 	DEBUG_END;

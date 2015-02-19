@@ -46,7 +46,7 @@ void uart_cmd(char *cmd, char *arg)
 	{
 		printf("LED PA1 toggle\n");
 		uint8_t state = (uint8_t) atoi(&arg[0]);
-		led("PA1", state);
+		gpio("PA1", state);
 		//glcd_test();
 	}
 

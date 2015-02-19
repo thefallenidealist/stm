@@ -25,7 +25,6 @@ static char uptime_str[35] = {};	// 34 je maksimalno za 170 godina
 **************************************************************************************************/
 void delay_init(void)
 {
-
     RCC_ClocksTypeDef RCC_Clocks;
     RCC_GetClocksFreq(&RCC_Clocks);
     //SysTick_Config(RCC_Clocks.HCLK_Frequency / 1000); // 1ms
@@ -95,7 +94,7 @@ uint32_t get_uptime_s(void)
 /**************************************************************************************************
 *  					get_uptime(void)					  *
 **************************************************************************************************/
-const char *get_uptime(void)		// const znaci da ce se return value samo citati izvan funkcije, valjda
+const char *get_uptime(void)
 {
 	volatile static uint16_t uptime_ms = 0;
 	volatile static uint8_t  uptime_s  = 0;
