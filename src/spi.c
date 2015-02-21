@@ -5,7 +5,7 @@
     //while (!((SPI_I2S_GetFlagStatus(spi, SPI_I2S_FLAG_TXE) != RESET) ? 1 : 0));
     //SPI_I2S_SendData(spi, (uint16_t)data);
 
-// TODO SPI2, 3
+// TODO SPI3
 
 //#define DISP_SCAN_DATA_CNT     (24 * 3 * 2)                                                   //24 bytes per chip, one chip per colour (RGB), two boards
 #define DISP_SCAN_DATA_CNT     (16 * 3)
@@ -27,6 +27,11 @@ void spi_write_fast(uint8_t spi_port, uint8_t data8)
 		SPI1->DR = data8;
 		while (!(SPI1->SR & SPI_I2S_FLAG_TXE));		// wait for TX
 	}
+	else if (spi_port == 2)
+	{
+		SPI2->DR = data8;
+		while (!(SPI2->SR & SPI_I2S_FLAG_TXE));		// wait for TX
+	}
 	else
 	{
 		ERROR("Wrong SPI port\n");
@@ -38,20 +43,21 @@ void spi_write_fast(uint8_t spi_port, uint8_t data8)
 *************************************************************************************************/
 void spi_write16_fast(uint8_t spi_port, uint16_t data16)
 {
-
 	// tek za 1-2 ms brzi neko 2x pozivanje spi_write();
-
-	//uint8_t dataL = data16 & 0xFF;
-	//uint8_t dataH = data16 >> 8;
 
 	if (spi_port == 1)
 	{
-		//SPI1->DR = dataH;
 		SPI1->DR = data16 >> 8;
 		while (!(SPI1->SR & SPI_I2S_FLAG_TXE));		// wait for TX
-		//SPI1->DR = dataL;
 		SPI1->DR = data16 & 0xFF;
 		while (!(SPI1->SR & SPI_I2S_FLAG_TXE));		// wait for TX
+	}
+	else if (spi_port == 2)
+	{
+		SPI2->DR = data16 >> 8;
+		while (!(SPI2->SR & SPI_I2S_FLAG_TXE));		// wait for TX
+		SPI2->DR = data16 & 0xFF;
+		while (!(SPI2->SR & SPI_I2S_FLAG_TXE));		// wait for TX
 	}
 	else
 	{
@@ -62,7 +68,6 @@ void spi_write16_fast(uint8_t spi_port, uint16_t data16)
 /*************************************************************************************************
 				spi_rw16()
 *************************************************************************************************/
-//uint16_t spi_rw16(uint16_t data16)
 uint16_t spi_rw16(uint8_t spi_port, uint16_t data16)
 {
 	if (spi_port == 1)
@@ -73,6 +78,15 @@ uint16_t spi_rw16(uint8_t spi_port, uint16_t data16)
 		while (SPI1->SR & SPI_I2S_FLAG_BSY);		// wait until SPI is avaible
 
 		return SPI1->DR;
+	}
+	else if (spi_port == 2)
+	{
+		SPI2->DR = data16;
+		while (!(SPI2->SR & SPI_I2S_FLAG_TXE));		// wait for TX
+		while (!(SPI2->SR & SPI_I2S_FLAG_RXNE));	// wait for RX
+		while (SPI2->SR & SPI_I2S_FLAG_BSY);		// wait until SPI is avaible
+
+		return SPI2->DR;
 	}
 	else
 	{
@@ -95,6 +109,15 @@ uint8_t spi_rw(uint8_t spi_port, uint8_t data8)
 
 		return SPI1->DR;
 	}
+	else if (spi_port == 2)
+	{
+		SPI2->DR = data8;
+		while (!(SPI2->SR & SPI_I2S_FLAG_TXE));		// wait for TX
+		while (!(SPI2->SR & SPI_I2S_FLAG_RXNE));	// wait for RX
+		while (SPI2->SR & SPI_I2S_FLAG_BSY);		// wait until SPI is avaible
+
+		return SPI2->DR;
+	}
 	else
 	{
 		ERROR("Wrong SPI port\n");
@@ -107,7 +130,7 @@ uint8_t spi_rw(uint8_t spi_port, uint8_t data8)
 #define SPI_BUFFER_LENGTH		93408	// sizeof(bmp_data)
 extern uint8_t bmp_data[SPI_BUFFER_LENGTH];		// TODO u header
 
-#include "glcd_buffer.c"
+//#include "glcd_buffer.c"
 
 	/*
 //void spi_init(void)
@@ -116,47 +139,8 @@ extern uint8_t bmp_data[SPI_BUFFER_LENGTH];		// TODO u header
 	GPIO_InitTypeDef GPIO_InitStructure;
 	SPI_InitTypeDef  SPI_InitStructure;
 	//DMA_InitTypeDef	 DMA_InitStructure;
+//	SPI_Cmd(SPI1, ENABLE);
 
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
-	//RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2, ENABLE);		// DMA
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7 | GPIO_Pin_6 | GPIO_Pin_5;
-	//GPIO_InitStructure.GPIO_Pin = SPI1_SCK | SPI1_MOSI;
-
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;	// F4
-	GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_AF;		// F4
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;	// F4
-	//GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_NOPULL;	// F4
-	GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_DOWN;	// F4
-	//GPIO_Init(SPI1_PORT, &GPIO_InitStructure);
-	GPIO_Init(GPIOA, &GPIO_InitStructure);
-
-	GPIO_PinAFConfig(GPIOA, GPIO_PinSource5, GPIO_AF_SPI1);
-	GPIO_PinAFConfig(GPIOA, GPIO_PinSource6, GPIO_AF_SPI1);
-	GPIO_PinAFConfig(GPIOA, GPIO_PinSource7, GPIO_AF_SPI1);
-
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, ENABLE);	// F4
-
-	// the LCD requires the illustrated mode (commonly referred to as CPOL=0,CPHA=0).
-	SPI_InitStructure.SPI_Direction = SPI_Direction_2Lines_FullDuplex;	// separate MOSI and MISO
-	//SPI_InitStructure.SPI_Direction = SPI_Direction_1Line_Tx;	// TODO isprobat
-	SPI_InitStructure.SPI_Mode 	= SPI_Mode_Master;
-	SPI_InitStructure.SPI_DataSize	= SPI_DataSize_8b;
-	SPI_InitStructure.SPI_CPOL 	= SPI_CPOL_Low;
-	SPI_InitStructure.SPI_CPHA 	= SPI_CPHA_1Edge;
-	//SPI_InitStructure.SPI_NSS 	= SPI_NSS_Hard;		// XXX ovo ne radi sa GLCDom na F4
-	// nesto sa neta:	XXX ovo odblokira SPI na STM32F4, nekako
-	//SPI_InitStructure.SPI_NSS 	= SPI_NSS_Soft | SPI_NSSInternalSoft_Set; // set the NSS management to internal and pull internal NSS high
-	SPI_InitStructure.SPI_NSS 	= SPI_NSS_Soft;
-	// SPI frequency is APB2 frequency / Prescaler
-	//SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_2;	// GLCD
-	SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_128;	// nRF
-	SPI_InitStructure.SPI_FirstBit 	= SPI_FirstBit_MSB;			// ILI9341 ocekuje MSB first
-	//SPI_InitStructure.SPI_CRCPolynomial = 7;
-	SPI_Init(SPI1, &SPI_InitStructure);
-	SPI_Cmd(SPI1, ENABLE);
-	*/
-
-	/*
 	// SPI1 TX 			DMA2	CH3, stream3, stream5
 #define SPI_PORT_TX_DMA_CHANNEL            DMA_Channel_3
 #define SPI_PORT_TX_DMA_STREAM             DMA2_Stream3
@@ -240,70 +224,60 @@ void DMA2_Stream3_IRQHandler(void)
 }
 */
 
-
-
-
-
-
-/*
-void spi2_init(void)
-{
-	// TODO doradit i za ostale portove, druge pinove, prescaler/brzinu, ... 		
-	GPIO_InitTypeDef GPIO_InitStructure;
-	SPI_InitTypeDef  SPI_InitStructure;
-
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13 | GPIO_Pin_14 | GPIO_Pin_15;	// PC{13,14,15}
-	//GPIO_InitStructure.GPIO_Pin = SPI1_SCK | SPI1_MOSI;
-
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;	// F4
-	GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_AF;		// F4
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;	// F4
-	GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_NOPULL;	// F4
-	//GPIO_Init(SPI1_PORT, &GPIO_InitStructure);
-	GPIO_Init(GPIOA, &GPIO_InitStructure);
-
-	GPIO_PinAFConfig(GPIOA, GPIO_PinSource15, GPIO_AF_SPI2);
-	GPIO_PinAFConfig(GPIOA, GPIO_PinSource14, GPIO_AF_SPI2);
-	GPIO_PinAFConfig(GPIOA, GPIO_PinSource13, GPIO_AF_SPI2);
-
-	RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2, ENABLE);	// F4
-
-	// the LCD requires the illustrated mode (commonly referred to as CPOL=0,CPHA=0).
-	SPI_InitStructure.SPI_Direction = SPI_Direction_2Lines_FullDuplex;	// separate MOSI and MISO
-	SPI_InitStructure.SPI_Mode 	= SPI_Mode_Master;
-	SPI_InitStructure.SPI_DataSize	= SPI_DataSize_8b;
-	SPI_InitStructure.SPI_CPOL 	= SPI_CPOL_Low;
-	SPI_InitStructure.SPI_CPHA 	= SPI_CPHA_1Edge;
-	//SPI_InitStructure.SPI_NSS 	= SPI_NSS_Hard;		// XXX ovo ne radi sa GLCDom na F4
-	// nesto sa neta:	XXX ovo odblokira SPI na STM32F4, nekako
-	//SPI_InitStructure.SPI_NSS 	= SPI_NSS_Soft | SPI_NSSInternalSoft_Set; // set the NSS management to internal and pull internal NSS high
-	SPI_InitStructure.SPI_NSS 	= SPI_NSS_Soft;
-	// SPI frequency is APB2 frequency / Prescaler
-	SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_2;	// GLCD
-	SPI_InitStructure.SPI_FirstBit 	= SPI_FirstBit_MSB;			// ILI9341 ocekuje MSB first
-	SPI_Init(SPI1, &SPI_InitStructure);
-
-	SPI_Cmd(SPI2, ENABLE);
-}
-*/
-
-
 int8_t spi_init(uint8_t spi_port, uint16_t spi_prescaler)
 {
 	// obicni SPI, doradit za DMA TODO
 	GPIO_InitTypeDef GPIO_InitStructure;
 	SPI_InitTypeDef  SPI_InitStructure;
 
+	switch (spi_prescaler)
+	{
+		// SPI frequency is APB2 frequency / Prescaler
+		case 2:
+			SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_2;
+			break;
+		case 4:
+			SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_4;
+			break;
+		case 8:
+			SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_8;
+			break;
+		case 16:
+			SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_16;
+			break;
+		case 32:
+			SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_32;
+			break;
+		case 64:
+			SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_64;
+			break;
+		case 128:
+			SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_128;
+			break;
+		case 256:
+			SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_256;
+			break;
+	}
+
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;	// F4
+	GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_AF;		// F4
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;	// F4
+	GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_DOWN;	// F4
+
+	// INFO pretpostavka da se CPOL i CPHA nece mijenjat
+	SPI_InitStructure.SPI_Direction = SPI_Direction_2Lines_FullDuplex;
+	SPI_InitStructure.SPI_Mode		= SPI_Mode_Master;
+	SPI_InitStructure.SPI_DataSize	= SPI_DataSize_8b;
+	SPI_InitStructure.SPI_CPOL 		= SPI_CPOL_Low;
+	SPI_InitStructure.SPI_CPHA 		= SPI_CPHA_1Edge;
+	SPI_InitStructure.SPI_NSS 		= SPI_NSS_Soft;	// mora bit inace GLCD nece radit
+	SPI_InitStructure.SPI_FirstBit 	= SPI_FirstBit_MSB;			// ILI9341 ocekuje MSB first
+	//SPI_InitStructure.SPI_CRCPolynomial = 7;
+
 	if (spi_port == 1)
 	{
 		RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
 		GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7 | GPIO_Pin_6 | GPIO_Pin_5;
-
-		GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;	// F4
-		GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_AF;		// F4
-		GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;	// F4
-		GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_DOWN;	// F4
 		GPIO_Init(GPIOA, &GPIO_InitStructure);
 
 		GPIO_PinAFConfig(GPIOA, GPIO_PinSource5, GPIO_AF_SPI1);
@@ -312,49 +286,33 @@ int8_t spi_init(uint8_t spi_port, uint16_t spi_prescaler)
 
 		RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, ENABLE);	// F4
 
-		SPI_InitStructure.SPI_Direction = SPI_Direction_2Lines_FullDuplex;
-		SPI_InitStructure.SPI_Mode		= SPI_Mode_Master;
-		SPI_InitStructure.SPI_DataSize	= SPI_DataSize_8b;
-		SPI_InitStructure.SPI_CPOL 		= SPI_CPOL_Low;
-		SPI_InitStructure.SPI_CPHA 		= SPI_CPHA_1Edge;
-		SPI_InitStructure.SPI_NSS 		= SPI_NSS_Soft;	// mora bit inace GLCD nece radit
-		// SPI frequency is APB2 frequency / Prescaler
-		//SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_2;	// GLCD
-
-		switch (spi_prescaler)
-		{
-			case 2:
-				SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_2;
-				break;
-			case 4:
-				SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_4;
-				break;
-			case 8:
-				SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_8;
-				break;
-			case 16:
-				SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_16;
-				break;
-			case 32:
-				SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_32;
-				break;
-			case 64:
-				SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_64;
-				break;
-			case 128:
-				SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_128;
-				break;
-			case 256:
-				SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_256;
-				break;
-		}
-
-		SPI_InitStructure.SPI_FirstBit 	= SPI_FirstBit_MSB;			// ILI9341 ocekuje MSB first
-		//SPI_InitStructure.SPI_CRCPolynomial = 7;
 		SPI_Init(SPI1, &SPI_InitStructure);
 		SPI_Cmd(SPI1, ENABLE);
 
 		return 0;
+	}
+	else if (spi_port == 2)
+	{
+		RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);
+		GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13 | GPIO_Pin_14 | GPIO_Pin_15;
+		GPIO_Init(GPIOB, &GPIO_InitStructure);
+
+		GPIO_PinAFConfig(GPIOB, GPIO_PinSource13, GPIO_AF_SPI2);
+		GPIO_PinAFConfig(GPIOB, GPIO_PinSource14, GPIO_AF_SPI2);
+		GPIO_PinAFConfig(GPIOB, GPIO_PinSource15, GPIO_AF_SPI2);
+
+		RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2, ENABLE);	// F4
+
+		SPI_Init(SPI2, &SPI_InitStructure);
+		SPI_Cmd(SPI2, ENABLE);
+
+		return 0;
+	}
+	else if (spi_port == 3)
+	{
+		// TODO
+		ERROR("SPI3 is not implemented\n");
+		return -1;
 	}
 	else
 	{

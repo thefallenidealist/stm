@@ -30,7 +30,8 @@
 //#include "rom.h"
 //#include "nRF_low.h"
 //#include "nRF_struct.h"
-#include "nRF_novi.h"
+#include "nRF.h"
+//#include "flash.h"
 
 void main(void)
 {
@@ -59,7 +60,6 @@ void main(void)
 
 	gpio_init("PA0", IN);	// tipka
 
-
 #ifdef BLINKY_H
 	blinky_blinky_init(BLINKY_LED_ALL, 0);
 	//blinky_blinky_init(BLINKY_LED_BLUE, 0);
@@ -87,6 +87,10 @@ void main(void)
 
 #ifdef NRF_LOW_H
 	nRF1_main();
+#endif
+
+#ifdef FLASH_H
+	flash_main();
 #endif
 
 	gpio_init("PA1", OUT);

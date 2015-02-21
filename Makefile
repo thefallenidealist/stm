@@ -1,4 +1,5 @@
 # created 141129
+# ovo koristi FreeBSDov stdio.h, stdint.h, unistd.h i sl. newlib-ov printf je zakurac
 NAME	= main
 
 # promijenit i dolje COMMON_FLAGS
@@ -38,17 +39,20 @@ DIRS 	=  -Isrc \
 # clang
 #COMMON_FLAGS 	 = $(TARGET) $(CPU) $(OPTS) -nostdlib -mfloat-abi=soft -Wall
 #TODO -flto remove unused functions
-CLANG_FLAGS	 = $(TARGET) 
+CLANG_FLAGS	 = $(TARGET) -Wformat
 # INFO ne radi sa sysroot iako ga usmjerim u folder gdje su headeri /usr/local/gcc-arm-embedded-4_8-2014q3-20140805/arm-none-eabi
 #CLANG_FLAGS	 = $(TARGET)  --sysroot /dev/null -I/usr/local/gcc-arm-embedded-4_8-2014q3-20140805/arm-none-eabi/include \
 #-I/usr/local/gcc-arm-embedded-4_8-2014q3-20140805/lib/gcc/arm-none-eabi/4.8.4/include
 GCC_FLAGS 	 = -std=c99 -mthumb -mno-thumb-interwork -fno-common -fno-strict-aliasing -fmessage-length=0 -fno-builtin -Wp,-w 
 # -Wmissing-prototypes 
 # F1
-COMMON_FLAGS 	 = $(CPU) $(OPTS) -nostdlib -mfloat-abi=soft -Wall $(CLANG_FLAGS) -DDEBUG
-#COMMON_FLAGS 	 = $(CPU) $(OPTS) -nostdlib -mfloat-abi=soft -Wall $(CLANG_FLAGS) 
+#COMMON_FLAGS 	 = $(CPU) $(OPTS) -nostdlib -nostdinc -I/usr/local/gcc-arm-embedded-4_8-2014q3-20140805/arm-none-eabi/include/ -I/usr/local/gcc-arm-embedded-4_8-2014q3-20140805/lib/gcc/arm-none-eabi/4.8.4/include -mfloat-abi=soft -Wall $(CLANG_FLAGS) 
+
+
+#COMMON_FLAGS 	 = $(CPU) $(OPTS) -nostdlib -mfloat-abi=soft -Wall $(CLANG_FLAGS) -DDEBUG
+#COMMON_FLAGS 	 = $(CPU) $(OPTS) -nostdlib -mfloat-abi=soft -Wall $(CLANG_FLAGS) -ffreestanding -fno-builtin -nostdinc
+COMMON_FLAGS 	 = $(CPU) $(OPTS) -nostdlib -mfloat-abi=soft -Wall $(CLANG_FLAGS) 
 # F4
-#COMMON_FLAGS 	 = $(CPU) $(OPTS) -nostdlib -mfloat-abi=hard -Wall $(CLANG_FLAGS)  
 CCFLAGS 	 = $(COMMON_FLAGS) $(DEFINES) $(DIRS) -fno-short-enums \
 		   -ffreestanding	# void main(void)
 ASFLAGS 	 = $(COMMON_FLAGS) 
@@ -63,7 +67,9 @@ LD_DIRS		+= -L$(DIR_TOOLS)/arm-none-eabi/lib/armv7-m 		# libc, libm
 	# STM32F1
 	#LINKER_FILE 	 = $(wildcard src/lib/f1/*.ld)
 # STM32F4
-LINKER_FILE 	 = $(wildcard src/lib/f4/*.ld)
+#LINKER_FILE 	 = $(wildcard src/lib/f4/*.ld)
+#LINKER_FILE		= src/lib/f4/new.ld
+LINKER_FILE		= src/lib/f4/stm32.ld
 
 
 # -nostartupfiles	ne linka crt*.o objektne fajlove

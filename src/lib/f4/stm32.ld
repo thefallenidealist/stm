@@ -40,6 +40,7 @@ SECTIONS
         _edata = .;
     } >sram
 		
+	/* INFO this sections i needed for linker */
 		.ARM.extab :
 		{
 		    *(.ARM.extab*)
