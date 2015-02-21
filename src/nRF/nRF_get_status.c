@@ -8,7 +8,7 @@ static uint8_t get_status(nRF_hw_t *nRF0)
 	uint8_t spi_port = nRF0->spi_port;
 
 	cs(nRF0, 0);
-	status = spi_rw(spi_port, 0xFF);
+	status = spi_rw(spi_port, CMD_NOP);
 	cs(nRF0, 1);
 
 	/*

@@ -20,7 +20,7 @@ void uart_cmd(char *cmd, char *arg)
 		strncpy(arg_copy, arg, UART_MAX_LENGTH-1);
 		strncat(arg_copy, "\r\n", 3);	// CR NL i null
 
-        if (verbosity_level > 1)
+        if (debug_level > 1)
         {
 		    printf("na UART2 saljem: %s\n", arg_copy);
         }

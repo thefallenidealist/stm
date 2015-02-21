@@ -23,6 +23,6 @@
 	#define ERROR( arg )		;
 #endif
 
-extern uint8_t verbosity_level;
+extern uint8_t debug_level;
 
 #endif

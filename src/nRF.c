@@ -20,12 +20,29 @@
 #include "src/nRF/nRF_is_TX_data_sent.c"
 #include "src/nRF/nRF_clear_TX_data_sent.c" 	// XXX
 // INFO neimplementirano: provjera MAX_RT (REG_STATUS, b4)
-#include "src/nRF/nRF_data_pipe_avaible.c"
+#include "src/nRF/nRF_pipe_available.c"
 #include "src/nRF/nRF_is_TX_full.c"
 #include "src/nRF/nRF_hw_init.c"
 #include "src/nRF/nRF_gpio.c"
 #include "src/nRF/nRF_reg.c"
 #include "src/nRF/nRF_get_status.c"
+#include "src/nRF/nRF_get_RX_address.c"
+#include "src/nRF/nRF_set_RX_address.c" 	// mora se rucno pazit da je adresa ispravne sirine
+#include "src/nRF/nRF_set_TX_address.c" 	// isto
+#include "src/nRF/nRF_get_TX_address.c"
+// TODO preimenovat u samo set/get payload size
+#include "src/nRF/nRF_set_RX_payload_size.c"
+#include "src/nRF/nRF_get_RX_payload_size.c"
+#include "src/nRF/nRF_flush.c"
+#include "src/nRF/nRF_observe_tx.c"
+
+
+
+
+// TODO	
+// ne koristit write_reg nego direktno SPI i zapisivat bit po bit i gotovo
+
+
 
 /*************************************************************************************************
 				nRF_main()
@@ -52,23 +69,15 @@ void nRF_main()
 	}
 	delay_ms(11);	// 10.3 ms
 
-	//printf("nRF je odradio hardverski init\n");
+
 
 	// power up
-	//write_reg(&primac, REG_CONFIG, (1 << PWR_UP) | (0 << PRIM_RX));
-	write_reg(&primac, REG_CONFIG, (1 << PWR_UP) | (0 << PRIM_RX), 0);
-	/*
-	write_reg(&primac, REG_CONFIG, (0 << PRIM_RX), PRIM_RX);
-	write_reg(&primac, REG_CONFIG, (1 << PWR_UP), PWR_UP);
-	*/
-
-	printf("PRIM_RX: %d\n", PRIM_RX);
-	printf("PWR_UP: %d\n", PWR_UP);
+	write_reg(&primac, REG_CONFIG, (1 << PWR_UP) | (0 << PRIM_RX) | (1 << EN_CRC));
+	delay_ms(2);	// 1.5ms
+	// sad je u Standby-1 modu
 
 	print_reg(&primac, REG_CONFIG);
 
-	delay_ms(2);	// 1.5ms
-	// sad je u Standby-1 modu
 
 	/*
 	printf("status: ");
@@ -123,22 +132,55 @@ void nRF_main()
 	nRF_set_channel(&primac, 0);
 	*/
 
+	/*
 	nRF_set_address_width(&primac, 5);
 	uint8_t width = nRF_get_address_width(&primac);
 	printf("nRF main: address width: %d\n", width);
 	printf("address width: %d\n", primac.address_width);
-	nRF_get_RX_address(&primac, P0);	// zapise u objekt
+	nRF_get_RX_address(&primac);	// zapise u objekt
 
 	printf("address: \n");
 	for (uint8_t i=0; i<primac.address_width; i++)
 	{
-		//printf("[%d]: 0x%X\n", i, primac.address[i]);
 		printf("[%d]: 0x%X\n", i, primac.address[0][i]);
 	}
+	*/
 	
-	// set address		// TODO mozda ima bolji nacin
+	// set RX address	
+	// INFO kod postavljanja RX/TX addresa treba rucno pazit da se podudara, inace se skratit ili nesto gore
+	nRF_set_address_width(&primac, 5);
+	uint8_t rx_address[5] = {'a','b','c','d','e'};
+	if (nRF_set_RX_address(&primac, rx_address))
+	{
+		printf("nRF set RX address error\n");
+	}
+	printf("nRF_get_RX_address return: %s\n", nRF_get_RX_address(&primac)); // nacin 2
 
+	// set TX address
+	uint8_t tx_address[5] = {'t','x','T','X','1'};
+	if (nRF_set_TX_address(&primac, tx_address))
+	{
+		printf("nRF set TX address error\n");
+	}
+	printf("nRF_get_TX_address return: %s\n", nRF_get_TX_address(&primac)); // nacin 2
 
+	// set payload size
+	if (nRF_set_RX_payload_size(&primac, P0, 32))
+	{
+		printf("nRF_set_RX_payload_size error\n");
+	}
+	printf("nRF_get_RX_payload_size return: %d\n", nRF_get_RX_payload_size(&primac, P0));
+
+	printf("Lost packets: %d\n", nRF_get_lost_packets(&primac));
+	printf("Retransmitted packets: %d\n", nRF_get_retransmitted_packets(&primac));
+
+	printf("Enabling pipe0\n");
+	//nRF_enable_pipe(&primac, (P2 | P1 | P0));
+	nRF_enable_pipe(&primac, P0);
+
+	nRF_disable_CRC(&primac);
+
+	printf("\n");
 	print_reg(&primac, 0x00);
 	print_reg(&primac, 0x01);
 	print_reg(&primac, 0x02);
@@ -147,115 +189,111 @@ void nRF_main()
 	print_reg(&primac, 0x05);
 	print_reg(&primac, 0x06);
 	print_reg(&primac, 0x07);
+	print_reg(&primac, 0x08);
+
+	//print_reg(&primac, REG_RX_PW_P0);
 
 	DEBUG_END;
 }
 
-//#include "src/nRF/nRF_get_RX_address.c"
-
 /*************************************************************************************************
-				nRF_get_RX_address()
+				nRF_enable_pipe()
 *************************************************************************************************/
-int8_t nRF_get_RX_address(nRF_hw_t *nRF0, pipe_t pipe)				// reg 0x0{A,B,C,D,E,F}
+int8_t nRF_enable_pipe(nRF_hw_t *nRF0, pipe_t pipe)					// reg 0x02
 {
-#define BASE_PIPE REG_RX_ADDR_P0
 
-	uint8_t tmp_addr[5] = {};
+	printf("%s(): argument: %d\n", __func__, pipe);
 
-	//printf("\t\t\t\t%s(): pipe: %d\n", __func__, pipe);
-
-	//if ( (pipe > 5) || (pipe < 0) )
-	if (pipe > 5) 		// unsigned enum
+	// samo jednu po jednu XXX
+	if (pipe > 5)
 	{
 		ERROR("Wrong pipe\n");
-		//printf("Wrong pipe\n");
 		return -1;
 	}
 	else
 	{
-		uint8_t width = nRF_get_address_width(nRF0);
-		uint8_t spi_port = nRF0->spi_port;
-
-		cs(nRF0, 0);
-		// 40 bits, 8bit reads
-
-		if (pipe < 2)	// P0, P1
-		{
-			spi_rw(spi_port, (BASE_PIPE+pipe) + CMD_R_REGISTER);	// 0x0A+pipe
-
-			// procitaj normalno onoliko bajtova kolika je sirina adrese
-			for (uint8_t i=0; i<width; i++)
-			{
-				tmp_addr[i] = spi_rw(spi_port, 0xFF);
-			}
-		}
-		else
-		{
-			spi_rw(spi_port, (BASE_PIPE) + CMD_R_REGISTER);	
-
-			// procitaj max 4 MSB od P0
-			for (uint8_t i=0; i<width-1; i++)
-			{
-				tmp_addr[i] = spi_rw(spi_port, 0xFF);
-			}
-			cs(nRF0, 1);
-			cs(nRF0, 0);
-
-			// procitaj LSB
-			spi_rw(spi_port, (BASE_PIPE+pipe) + CMD_R_REGISTER);	// 0x0A+pipe
-			tmp_addr[width-1] = spi_rw(spi_port, 0xFF);
-		}
-		cs(nRF0, 1);
-
-		printf("width: %d\n", width);
-		// zapisimo u objekt
-		for (uint8_t i=0; i<width; i++)
-		{
-			//memmove(&nRF0->address[i], &tmp_addr[i], sizeof(nRF0->address[i]));
-			// 2D polje
-			memmove(&nRF0->address[pipe][i], &tmp_addr[i], sizeof(nRF0->address[pipe][i]));
-		}
+		write_reg(nRF0, REG_EN_RXADDR, (1 << pipe));	// kad se enablea samo jedna
+		//write_reg(nRF0, REG_EN_RXADDR, pipe + 1);	// +1 jer kad se omogucava pipe0, onda b0 = 1
+		//write_reg(nRF0, REG_EN_RXADDR, (pipe << 1) + 1);
 		return 0;
 	}
 }
 
 
 /*************************************************************************************************
-				nRF_set_RX_address()
+				nRF_enable_CRC()
 *************************************************************************************************/
-//int8_t nRF_set_RX_address(nRF_hw_t *nRF0, uint8_t pipe, char *address)	// reg 0x0A
-int8_t nRF_set_RX_address(nRF_hw_t *nRF0, pipe_t pipe, uint8_t address[])	// reg 0x0A
+void nRF_enable_CRC(nRF_hw_t *nRF0)
 {
-	// LSB se prvi zapisuje
-	uint8_t width = nRF_get_address_width(nRF0);
+	uint8_t spi_port = nRF0->spi_port;
 
-	printf("\t\t\t\t%s(): pipe: %d, address: %s\n", __func__, pipe, address);
+	uint8_t old_value = read_reg(nRF0, REG_CONFIG);
+	uint8_t new_value;
 
-	//if ( (pipe > 5) || (pipe < 0) )
-	if (pipe > 5)		// unsigned enum
+	//new_value = 
+
+
+	/*
+	cs(nRF0, 0);
+	spi_rw(spi_port, REG_CONFIG + CMD_W_REGISTER);
+	
+
+
+	cs(nRF0, 1);
+	*/
+}
+
+/*************************************************************************************************
+				nRF_disable_CRC()
+*************************************************************************************************/
+void nRF_disable_CRC(nRF_hw_t *nRF0)
+{
+	uint8_t spi_port = nRF0->spi_port;
+
+	uint8_t old_value = read_reg(nRF0, REG_CONFIG);
+	uint8_t new_value;
+
+	new_value = old_value & ~EN_CRC;
+
+	printf("%s(): old: %d, new: %d\n", __func__, old_value, new_value);
+
+
+	/*
+	cs(nRF0, 0);
+	spi_rw(spi_port, REG_CONFIG + CMD_W_REGISTER);
+	
+
+
+	cs(nRF0, 1);
+	*/
+}
+
+/*
+   TODO
+   nRF_get_CRC_length
+   nRF_set_CRC_length
+   set_mode RX TX
+   power_on
+   power_off
+   enable_auto_ACK(pipe_t pipe)		// po defaultu upaljeno za sve
+
+   write_payload		
+   */
+
+
+void nRF_write_payload(nRF_hw_t *nRF0, uint8_t *buffer, uint8_t length)
+{
+	uint8_t spi_port = nRF0->spi_port;
+
+	cs(nRF0, 0);
+
+	spi_rw(spi_port, CMD_W_TX_PAYLOAD);
+	while (length --)
 	{
-		ERROR("Wrong pipe\n");
-		printf("Wrong pipe\n");
-		return -1;
+		spi_rw(spi_port, *buffer++);
 	}
-	else if ( (width < 3) || (width > 5) )
-	{
-		ERROR("Wrong address width\n");
-		printf("Wrong address width\n");
-		return -1;
-	}
-	else
-	{
-		cs(nRF0, 0);
-		// 40 bits, 8bit reads
-		spi_rw(nRF0->spi_port, 0x0A + CMD_W_REGISTER);
 
-		for (uint8_t i=0; i<width; i++)
-		{
+	cs(nRF0, 1);
 
-		}
-		cs(nRF0, 1);
 
-		return 0;
-	}
 }

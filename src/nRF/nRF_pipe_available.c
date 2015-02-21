@@ -1,7 +1,7 @@
 /*************************************************************************************************
-				nRF_data_pipe_avaible()
+				nRF_data_pipe_available()
 *************************************************************************************************/
-data_pipe_t nRF_data_pipe_avaible(nRF_hw_t *nRF0)					// reg 0x06, b321
+data_pipe_t nRF_pipe_available(nRF_hw_t *nRF0)					// reg 0x07, b321
 {
 	//Data pipe number for the payload available for 
 	//reading from RX_FIFO

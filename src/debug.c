@@ -1,3 +1,5 @@
 #include "debug.h"
 
-uint8_t verbosity_level = 2;
+uint8_t debug_level = 1;
+
+//void debug_start(I//

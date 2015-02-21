@@ -73,7 +73,6 @@ void main(void)
 #ifdef MEM_H
 	mem_info();
 #endif
-    verbosity_level=0;
 
 	//eeprom_example();
 	//rom_example();
