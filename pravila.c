@@ -39,8 +39,7 @@ Arrays or other variables that represent lists must be written in plural, like e
 When conditions get too long, you’ll have to split the line. Try to split it up before an operator and where conditions are leastly related
 
 switch
-Also leave an extra space right behind the break.
-
+Also leave an extra space right behind the break. 	// ovo mi se bas i ne svidja
 
 // MISRA on unsigned constants
 // uint8_t var = 8		signed int 8 is assigned to an unsigned variable
@@ -64,8 +63,51 @@ Include in main as a minimum information about the compiler (including its versi
 
 // tabuliranje necega da bude poravnato
 ostavit jedno prazno mjesto pa onda tab
-npr:
+npr za "var", "-" je space
 var_[tab]= nesto;
 
 // divajsovi
 hw init funkcija koja treba napravit nesto sa HW pinom treba uzet taj pin kao argument, ako je potrebno, moze se onda napravit to kao #define ili dobit preko serijskog
+funkcije ne uzimaju direktno #define
+// rijeseno sa gpio libom
+
+// Rule #4: Don't make your code unnecessarily complex
+A single line of C code can have multiple side effects. Typically, though, a lengthy line of code that updates multiple variables is more difficult to understand than multiple, simple lines of code that accomplish this same objective. 
+
+// Rule #5: Be explicit
+ if (!tx_val) 
+ if (tx_val == 0) 
+
+// ala Ada 
+Initialize variables before use.
+Do not ignore compiler warnings.
+Check return values.
+
+you also have to make sure that your complex type functions, such as typedefed structs, are initialized first.
+
+//Tip #2—Use enums as error types
+NESTO_SUCCESS = 0,
+NESTO_UNKNOWN_ERROR,
+...
+NESTO_LAST_ERROR
+//LAST_ERROR, makes it possible to iterate over the content of the enum. That means you only have to know what the first element in the chain is. No matter how many more errors you add between the first and the last, all you have to do is check the range or iterate. Also, this last enum value gives you the total number of entries. More on this later.
+// bolja ideja je ono Karlovo sa structom
+
+ ///Tip #3—Expect to fail
+func()
+{
+	return_value = NESTO_ERROR;
+	if (uspjesno)
+	{
+		return_value = NESTO_SUCCESS;
+	}
+	else
+	{
+		return_value = NEST_ERROR_WRONG_NESTO;
+	}
+	return return_value;
+}
+
+//  Tip #4—Check input values: never trust a stranger
+if (enum_t error < NESTO_LAST_ERROR);
+//So, that was range checking. You should also check for NULL pointers if someone gives you an address value. You cannot check pointers for anything other than the NULL value, but this is better than nothing.

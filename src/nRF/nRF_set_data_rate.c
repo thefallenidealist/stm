@@ -12,9 +12,8 @@ void nRF_set_data_rate(nRF_hw_t *nRF0, datarate_t datarate)			// reg 0x06
 	}
 	else
 	{
-		//printf("\t\t\t\t%s(): datarate: %d\n", __func__, datarate);
-		//write_reg(nRF0, REG_RF_SETUP, (datarate << RF_DR));
-		// XXX
+		reg_tmp[RF_DR] = datarate;
+		write_reg(nRF0, REG_RF_SETUP);
 	}
 }
 // INFO provjereno

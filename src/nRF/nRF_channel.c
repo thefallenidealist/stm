@@ -31,7 +31,8 @@ void nRF_set_channel(nRF_hw_t *nRF0, uint8_t ch)					// reg 0x05
 		//printf("uknown datarate\n");
 	}
 
-	printf("max ch: %d\n", max_ch);
+	//printf("max ch: %d\n", max_ch);
+
 	if (ch > max_ch)
 	{
 		ERROR("Wrong channel\n");
@@ -39,21 +40,20 @@ void nRF_set_channel(nRF_hw_t *nRF0, uint8_t ch)					// reg 0x05
 	}
 	else
 	{
-		bool b6, b5, b4, b3, b2, b1, b0;
 		uint8_t new_ch = ch+2;	// jer je ch0 0b0000010 (2)
 
-		b0 = (new_ch >> RF_CH0) & 1;
-		b1 = (new_ch >> RF_CH1) & 1;
-		b2 = (new_ch >> RF_CH2) & 1;
-		b3 = (new_ch >> RF_CH3) & 1;
-		b4 = (new_ch >> RF_CH4) & 1;
-		b5 = (new_ch >> RF_CH5) & 1;
-		b6 = (new_ch >> RF_CH6) & 1;
-
-		//printf("%s() ch: %d new ch: %d bin: %d%d%d%d%d%d%d\n", __func__, ch, new_ch, b6, b5, b4, b3, b2, b1, b0);
-		//write_reg(nRF0, REG_RF_CH, (b6 << RF_CH6) | (b5 << RF_CH5) | (b4 << RF_CH4) | (b3 << RF_CH3) | (b2 << RF_CH2) | (b1 << RF_CH1) | (b0 << RF_CH0));
-		// XXX
-		//write_reg(nRF0, REG_RF_CH, (b6 << RF_CH6) | (b5 << RF_CH5) | (b4 << RF_CH4) | (b3 << RF_CH3) | (b2 << RF_CH2) | (b1 << RF_CH1) | (b0 << RF_CH0));
+		//printf("%s() ch: %d, new ch: %d bin: %s\n", __func__, ch, new_ch, dec2bin8_str(new_ch));
+		write_reg_full(nRF0, REG_RF_CH, new_ch);
 	}
 }
-// INFO provjereno, ali ne i hardverski
+// INFO provjereno
+
+/*************************************************************************************************
+				nRF_set_channel()
+*************************************************************************************************/
+uint8_t nRF_get_channel(nRF_hw_t *nRF0)
+{
+	uint8_t status = read_reg(nRF0, REG_RF_CH);
+
+	return status-2;
+}

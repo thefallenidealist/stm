@@ -16,7 +16,11 @@ void nRF_set_address_width(nRF_hw_t *nRF0, uint8_t width)				// reg 0x03
 		b0 = new_width & 1;
 		b1 = (new_width >> 1) & 1;
 
-		write_reg(nRF0, REG_SETUP_AW, (b1 << AW1) | (b0 << AW0));	
+		//write_reg(nRF0, REG_SETUP_AW, (b1 << AW1) | (b0 << AW0));	
+		reg_tmp[AW1] = b1;
+		reg_tmp[AW0] = b0;
+		//write_reg(nRF0, REG_SETUP_AW, reg_tmp);
+		write_reg(nRF0, REG_SETUP_AW);
 
 		// zapisi u objekt
 		//nRF0->address_width = width;

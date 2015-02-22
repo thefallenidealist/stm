@@ -95,6 +95,7 @@ void main(void)
 	gpio_init("PA1", OUT);
 	gpio("PA1", 1);
 
+
 	printf("sad ide while\n");
 	while (1)
 	{

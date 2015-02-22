@@ -24,6 +24,8 @@ int8_t nRF_set_RX_payload_size(nRF_hw_t *nRF0, pipe_t pipe, uint8_t payload_size
 		spi_rw(spi_port, payload_size);
 		cs(nRF0, 1);
 
+		//write_reg_full(nRF0, REG_RX_PW_P0+pipe, payload_size);
+
 		// zapisi u objekt
 		// INFO i nije potrebno kad _get_ procita direktno sa divajsa
 		//memmove(&nRF0->rx_payload_size[pipe], &payload_size, sizeof(nRF0->rx_payload_size));

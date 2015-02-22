@@ -20,7 +20,8 @@ typedef enum
 	TX  = 0,
 	PTX = 0,
 	RX  = 1,
-	PRX = 1
+	PRX = 1,
+	MODE_ERROR
 } nRF_mode_t;
 
 typedef struct
@@ -74,11 +75,12 @@ typedef enum
 	DELAY_4000us = 15,
 	DELAY_4ms    = 15
 } delay_t;
+// TODO nRF_ prefiks ispreda datatypeova
 
 typedef enum
 {
 	datarate_1Mbps = 0,
-	datarate_2Mbps
+	datarate_2Mbps = 1
 } datarate_t;
 
 typedef enum
@@ -114,6 +116,14 @@ typedef enum
 	P5 = 5
 } pipe_t;
 
+typedef enum
+{
+	CRC_LENGTH_1BTYE = 0,
+	CRC_LENGTH_2BTYE = 1
+} crc_length_t;
+
+extern uint8_t reg_tmp[8];
+extern uint8_t nRF_RX_buffer[256];
 
 /*************************************************************************************************
 				private function prototypes
@@ -123,7 +133,10 @@ static void ce(nRF_hw_t *nRF0, state_t state);
 static void cs(nRF_hw_t *nRF0, state_t state);
 static void print_reg(nRF_hw_t *nRF0, uint8_t reg);
 //static uint8_t write_reg(nRF_hw_t *nRF0, uint8_t reg, uint8_t arg, uint8_t bits);
-static uint8_t write_reg(nRF_hw_t *nRF0, uint8_t reg, uint8_t arg);
+//static uint8_t write_reg(nRF_hw_t *nRF0, uint8_t reg, uint8_t arg);
+//static uint8_t write_reg(nRF_hw_t *nRF0, uint8_t reg, uint8_t value[]);
+static uint8_t write_reg(nRF_hw_t *nRF0, uint8_t reg);
+static uint8_t write_reg_full(nRF_hw_t *nRF0, uint8_t reg, uint8_t value);
 static uint8_t get_status(nRF_hw_t *nRF0);
 
 /*************************************************************************************************
@@ -138,6 +151,7 @@ uint8_t nRF_get_address_width(nRF_hw_t *nRF0);						// reg 0x03
 void 	nRF_set_retransmit_delay(nRF_hw_t *nRF0, delay_t delay);		// reg 0x04
 void 	nRF_set_retransmit_count(nRF_hw_t *nRF0, uint8_t count);		// reg 0x04
 void 	nRF_set_channel(nRF_hw_t *nRF0, uint8_t ch);					// reg 0x05
+uint8_t nRF_get_channel(nRF_hw_t *nRF0);
 void 	nRF_set_data_rate(nRF_hw_t *nRF0, datarate_t datarate);		// reg 0x06
 datarate_t nRF_get_data_rate(nRF_hw_t *nRF0);						// reg 0x06
 void 	nRF_set_output_power(nRF_hw_t *nRF0, output_power_t power);	// reg 0x06
@@ -162,6 +176,26 @@ uint8_t nRF_get_retransmitted_packets(nRF_hw_t *nRF0);				// reg 0x08
 int8_t  nRF_enable_pipe(nRF_hw_t *nRF0, pipe_t pipe);				// reg 0x02
 void nRF_enable_CRC(nRF_hw_t *nRF0);								// reg 0x00
 void nRF_disable_CRC(nRF_hw_t *nRF0);								// reg 0x00
+void nRF_power_on(nRF_hw_t *nRF0);
+void nRF_power_off(nRF_hw_t *nRF0);
+void nRF_set_mode(nRF_hw_t *nRF0, nRF_mode_t mode);					// INFO prvo postavit mode, pa onda power_on		rijeseno
+nRF_mode_t nRF_get_mode(nRF_hw_t *nRF0);
+bool nRF_powered(nRF_hw_t *nRF0);
+
+int8_t 			nRF_set_CRC_length(nRF_hw_t *nRF0, crc_length_t crc_length);
+crc_length_t 	nRF_get_CRC_length(nRF_hw_t *nRF0);
+
+uint8_t *nRF_read_payload(nRF_hw_t *nRF0, uint8_t howmany);
+void nRF_write_payload(nRF_hw_t *nRF0, uint8_t length);
+
+
+
+/*
+   // standby-I
+This is the mode the nRF24L01 returns to from TX or RX mode when CE is set low.
+   */
+
+
 
 
 
