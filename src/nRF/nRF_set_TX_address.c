@@ -2,6 +2,7 @@
 				nRF_set_TX_address()
 *************************************************************************************************/
 int8_t nRF_set_TX_address(nRF_hw_t *nRF0, uint8_t address[])		// reg 0x10
+//int8_t nRF_set_TX_address(nRF_hw_t *nRF0, const unsigned char address[6])		// reg 0x10
 {
 	uint8_t width = nRF_get_address_width(nRF0);
 	//printf("%s(): address width: %d\n", __func__, width);

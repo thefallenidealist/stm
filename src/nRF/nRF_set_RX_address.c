@@ -2,6 +2,8 @@
 				nRF_set_RX_address()
 *************************************************************************************************/
 int8_t nRF_set_RX_address(nRF_hw_t *nRF0, uint8_t address[])	// reg 0x0A
+// char da se moze pozvat npr nRF_set_RX_address(nesto, "adre1");
+//int8_t nRF_set_RX_address(nRF_hw_t *nRF0, const unsigned char address[6])	// reg 0x0A
 {
 #define BASE_PIPE REG_RX_ADDR_P0
 	// TODO zasad implentirano samo pipe0

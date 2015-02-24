@@ -6,6 +6,8 @@
 // mid: operacije sa registrima
 // high: set i get funkcije
 
+// TODO const keyword gdje treba
+
 #include "src/nRF/nRF_set_address_width.c"
 #include "src/nRF/nRF_get_address_width.c"
 #include "src/nRF/nRF_set_retransmit_delay.c"
@@ -50,241 +52,193 @@ void nRF_main()
 
 	delay_ms(12);
 
-	nRF_hw_t davac;
-	nRF_hw_t primac;
+	nRF_hw_t rf_tx;
+	nRF_hw_t rf_rx;
 
-	davac.spi_port = 1;
-	primac.spi_port = 2;
-	davac.spi_prescaler = 32;
-	primac.spi_prescaler = 32;
-	davac.cs = "PB0";
-	primac.cs = "PB5";
-	davac.ce = "PB2";
-	primac.ce = "PB4";
-	//davac.irq = "";	// NC
-	//primac.irq = "PB3";	// NC
+	rf_tx.spi_port = 1;
+	rf_rx.spi_port = 2;
+	rf_tx.spi_prescaler = 32;
+	rf_rx.spi_prescaler = 32;
+	rf_tx.cs = "PA4";
+	rf_rx.cs = "PB5";
+	rf_tx.ce = "PA3";
+	rf_rx.ce = "PB4";
+	//rf_tx.irq = "";	// NC
+	//rf_rx.irq = "PB3";	// NC
 
-	delay_ms(11);	// 10.3 ms		// power on delay
-	if (nRF_hw_init(&davac) != 0)
-	{
-		printf("Davac is not initialized\n");
-		// return -1;
-	}
+	//delay_ms(500);
 
 	delay_ms(11);	// 10.3 ms		// power on delay
-	if (nRF_hw_init(&primac) != 0)
+	if (nRF_hw_init(&rf_tx) != 0)
 	{
-		printf("Primac is not initialized\n");
+		printf("RF_TX is not initialized\n");
 		// return -1;
 	}
 
-	nRF_set_mode(&davac, TX);
-	nRF_set_mode(&primac, RX);
-	nRF_power_on(&davac);
-	nRF_power_on(&primac);
-	nRF_set_retransmit_count(&davac, 15);
-	nRF_set_retransmit_count(&primac, 15);
-	nRF_set_retransmit_delay(&davac, DELAY_1ms);
-	nRF_set_retransmit_delay(&primac, DELAY_1ms);
-	nRF_set_address_width(&davac, 5);
-	nRF_set_address_width(&primac, 5);
-	nRF_set_channel(&davac, 0);
-	nRF_set_channel(&primac, 0);
-	nRF_set_output_power(&davac, power_0dBm);
-	nRF_set_output_power(&primac, power_0dBm);
-	nRF_set_data_rate(&davac, datarate_1Mbps);
-	nRF_set_data_rate(&primac, datarate_1Mbps);
-	nRF_set_RX_payload_size(&davac, P0, 32);
-	nRF_set_RX_payload_size(&primac, P0, 32);
-	nRF_enable_pipe(&davac, P0);
-	nRF_enable_pipe(&primac, P0);
-	nRF_enable_CRC(&davac);
-	nRF_enable_CRC(&primac);
-	nRF_set_CRC_length(&davac, CRC_LENGTH_2BTYE);
-	nRF_set_CRC_length(&primac, CRC_LENGTH_2BTYE);
-
-	nRF_set_RX_address(&primac, "test");
-	printf("Primac address: %s\n", nRF_get_RX_address(&primac));
-	nRF_set_TX_address(&davac, "test");
-	printf("Davac address: %s\n", nRF_get_TX_address(&davac));
-
-	printf("\n");
-	printf("Davac registri:\n");
-	print_reg(&davac, 0x00);
-	print_reg(&davac, 0x01);
-	print_reg(&davac, 0x02);
-	print_reg(&davac, 0x03);
-	print_reg(&davac, 0x04);
-	print_reg(&davac, 0x05);
-	print_reg(&davac, 0x06);
-	print_reg(&davac, 0x07);
-	print_reg(&davac, 0x08);
-	print_reg(&davac, 0x11);
-	print_reg(&davac, 0x12);
-	print_reg(&davac, 0x0A);
-	printf("\n");
-	printf("\n");
-	printf("Primac registri:\n");
-	print_reg(&primac, 0x00);
-	print_reg(&primac, 0x01);
-	print_reg(&primac, 0x02);
-	print_reg(&primac, 0x03);
-	print_reg(&primac, 0x04);
-	print_reg(&primac, 0x05);
-	print_reg(&primac, 0x06);
-	print_reg(&primac, 0x07);
-	print_reg(&primac, 0x08);
-	print_reg(&primac, 0x11);
-	print_reg(&primac, 0x12);
-	print_reg(&primac, 0x0A);
-
-
-
-	/*
-	nRF_hw_t primac;
-
-	primac.spi_port = 2;
-	//primac.spi_speed_MHz = 
-	primac.spi_prescaler = 32;
-	primac.cs = "PB5";
-	primac.ce = "PB4";
-	//primac.irq = "PB3";	// NC
-
-	if (nRF_hw_init(&primac) != 0)
+	delay_ms(11);	// 10.3 ms		// power on delay
+	if (nRF_hw_init(&rf_rx) != 0)
 	{
-		ERROR("module not initialized\n");
+		printf("RF_RX is not initialized\n");
 		// return -1;
 	}
-	delay_ms(11);	// 10.3 ms
 
-	nRF_set_mode(&primac, RX);						// set mode to RX, napravi to automatski
-	nRF_power_on(&primac);							// power up
+	// write 1 to clear bits
+	reg_tmp[RX_DR] = 1;
+	reg_tmp[TX_DS] = 1;
+	reg_tmp[MAX_RT] = 1;
+	write_reg(&rf_rx, REG_STATUS);
+	write_reg(&rf_tx, REG_STATUS);
 
-	print_reg(&primac, REG_CONFIG);
+	nRF_set_mode(&rf_tx, TX);
+	nRF_set_mode(&rf_rx, RX);
+	nRF_power_on(&rf_tx);
+	nRF_power_on(&rf_rx);
+	// XXX
+	//nRF_set_retransmit_count(&rf_tx, 15);
+	//nRF_set_retransmit_delay(&rf_tx, DELAY_1ms);
+	write_reg_full(&rf_tx,  REG_SETUP_RETR, 255);
+	write_reg_full(&rf_rx, REG_SETUP_RETR, 255);
 
-	nRF_set_retransmit_count(&primac, 15); 			// retransmit count = 15
-	nRF_set_retransmit_delay(&primac, DELAY_1ms); 	// 1ms Retransmit Delay
-	nRF_set_address_width(&primac, 5);				// 5 bytes address width
-	nRF_set_channel(&primac, 0);					// set channel
-	*/
+	//nRF_set_retransmit_count(&rf_rx, 15);
+	//nRF_set_retransmit_delay(&rf_rx, DELAY_1ms);
+	nRF_set_address_width(&rf_tx,  5);
+	nRF_set_address_width(&rf_rx, 5);
+	nRF_set_channel(&rf_tx,  0);
+	nRF_set_channel(&rf_rx, 0);
+	nRF_set_output_power(&rf_tx,  power_0dBm);
+	nRF_set_output_power(&rf_rx, power_0dBm);
+	// moguce da radi
+	//nRF_set_data_rate(&rf_tx, datarate_1Mbps);
+	//nRF_set_data_rate(&rf_rx, datarate_1Mbps);
 
+	write_reg_full(&rf_tx,  REG_RF_SETUP, 0b00000110);	// full power, don't care: 0, 1MBps
+	write_reg_full(&rf_rx, REG_RF_SETUP, 0b00000110);	// full power, don't care: 0, 1MBps
 
-	// CRC enable, 1 byte length
+	nRF_set_RX_payload_size(&rf_tx, P0, 3);
+	nRF_set_RX_payload_size(&rf_rx, P0, 3);
+	nRF_enable_pipe(&rf_tx, P0);
+	nRF_enable_pipe(&rf_rx, P0);
+	nRF_enable_CRC(&rf_tx);
+	nRF_enable_CRC(&rf_rx);
+	nRF_set_CRC_length(&rf_tx, CRC_LENGTH_2BTYE);
+	nRF_set_CRC_length(&rf_rx, CRC_LENGTH_2BTYE);
 
-	// max payload length = 32
-	// set channel
-	// set 
+	//nRF_set_RX_address(&rf_rx, "testA");
+	//nRF_set_TX_address(&rf_tx, "testA");
+	//uint8_t addr[5] = "abcde";
+	uint8_t addr[5] = {};
+	addr[0] = 'a';
+	addr[1] = 'b';
+	addr[2] = 'c';
+	addr[3] = 'd';
+	addr[4] = 'a';
 
-	// full powa
-	//nRF_set_output_power(&primac, power_0dBm);
+	//nRF_set_TX_address(&rf_rx, addr);		// XXX vjerojatno ne treba, al da se proba
+	nRF_set_RX_address(&rf_rx, addr);
+	nRF_set_TX_address(&rf_tx, addr);
+	nRF_set_RX_address(&rf_tx, addr);	// mora bit ista kao modulTX TX adresa zbog ACK
+	printf("RF_RX address: %s\n", nRF_get_RX_address(&rf_rx));
+	printf("RF_TX address:  %s\n", nRF_get_TX_address(&rf_tx));
 
+	printf("RF_TX  datarate: %d\n", nRF_get_data_rate(&rf_tx));
+	printf("RF_RX datarate: %d\n", nRF_get_data_rate(&rf_rx));
 
-	/*
-	printf("RX data ready: %d\n", nRF_is_RX_data_ready(&primac));
-	printf("TX data sent: %d\n", nRF_is_TX_data_sent(&primac));
-	//nRF_data_pipe_avaible(&primac);	// TODO provjerit detaljnije
-	printf("TX full: %d\n", nRF_is_TX_full(&primac));
-
-
-	nRF_set_data_rate(&primac, datarate_1Mbps);		// set data rate to 1Mbps
-	datarate_t datarate = nRF_get_data_rate(&primac);
-	if (datarate == datarate_1Mbps)
-	{
-		printf("datarate is 1Mbps\n");
-	}
-	else if (datarate == datarate_2Mbps)
-	{
-		printf("datarate is 2Mbps\n");
-	}
-	else
-	{
-		printf("uknown datarate\n");
-	}
-	*/
-
-
-	/*
-	nRF_get_RX_address(&primac);	// zapise u objekt
-
-	printf("address: \n");
-	for (uint8_t i=0; i<primac.address_width; i++)
-	{
-		printf("[%d]: 0x%X\n", i, primac.address[0][i]);
-	}
-	*/
-	
-	// set RX address	
-	// INFO kod postavljanja RX/TX addresa treba rucno pazit da se podudara, inace se skratit ili nesto gore
-	/*
-	nRF_set_address_width(&primac, 5);
-	uint8_t rx_address[5] = {'a','b','c','d','e'};
-	if (nRF_set_RX_address(&primac, rx_address))
-	{
-		printf("nRF set RX address error\n");
-	}
-	printf("nRF_get_RX_address return: %s\n", nRF_get_RX_address(&primac)); // nacin 2
-	*/
-
-	/*
-	// set TX address
-	uint8_t tx_address[5] = {'t','x','T','X','1'};
-	if (nRF_set_TX_address(&primac, tx_address))
-	{
-		printf("nRF set TX address error\n");
-	}
-	printf("nRF_get_TX_address return: %s\n", nRF_get_TX_address(&primac)); // nacin 2
-	*/
-
-	/*
-
-	// set payload size
-	if (nRF_set_RX_payload_size(&primac, P0, 32))
-	{
-		printf("nRF_set_RX_payload_size error\n");
-	}
-	printf("nRF_get_RX_payload_size return: %d\n", nRF_get_RX_payload_size(&primac, P0));
-
-	printf("Lost packets: %d\n", nRF_get_lost_packets(&primac));
-	printf("Retransmitted packets: %d\n", nRF_get_retransmitted_packets(&primac));
-
-	printf("Enabling pipe0\n");
-	//nRF_enable_pipe(&primac, (P2 | P1 | P0));
-	nRF_enable_pipe(&primac, P0);
-
-	nRF_enable_CRC(&primac);
+	// start RX
+	ce(&rf_rx, 1);
+	delay_us(130);
 
 	printf("\n");
-	print_reg(&primac, 0x00);
-	print_reg(&primac, 0x01);
-	print_reg(&primac, 0x02);
-	print_reg(&primac, 0x03);
-	print_reg(&primac, 0x04);
-	print_reg(&primac, 0x05);
-	print_reg(&primac, 0x06);
-	print_reg(&primac, 0x07);
-	print_reg(&primac, 0x08);
-	print_reg(&primac, 0x11);
-	print_reg(&primac, 0x12);
+	printf("Registri, 1TX, 2RX\n");
+	print_reg(&rf_tx,  0x00);
+	print_reg(&rf_rx, 0x00);
 
-	printf("nRF primac mode [0 TX, 1 RX]: %d\n", nRF_get_mode(&primac));
-	printf("nRF ch: %d\n", nRF_get_channel(&primac));
+	print_reg(&rf_tx,  0x01);
+	print_reg(&rf_rx, 0x01);
 
-	nRF_set_CRC_length(&primac, CRC_LENGTH_2BTYE);
-	printf("Primac CRC length [0 - 1byte, 1 - 2bytes]: %d\n", nRF_get_CRC_length(&primac));
-	*/
+	//print_reg(&rf_tx, 0x02);
+	//print_reg(&rf_tx, 0x03);
+
+	print_reg(&rf_tx,  0x04);
+	print_reg(&rf_rx, 0x04);
+
+	//print_reg(&rf_tx, 0x05);
+
+	print_reg(&rf_tx,  0x06);
+	print_reg(&rf_rx, 0x06);
+
+	print_reg(&rf_tx,  0x07);
+	print_reg(&rf_rx, 0x07);
+
+	print_reg(&rf_tx,  0x08);
+	print_reg(&rf_rx, 0x08);
+
+	//print_reg(&rf_tx,  0x11);
+	//print_reg(&rf_rx, 0x11);
+
+	//print_reg(&rf_tx,  0x12);
+	//print_reg(&rf_rx, 0x12);
+
+	print_reg(&rf_tx,  0x0A);
+	print_reg(&rf_rx, 0x0A);
 
 	/*
-	printf("Citam payload\n");
-	if (nRF_read_payload(&primac, 32) != NULL)
+	printf("\n");
+	printf("\n");
+	printf("RF_RX registri:\n");
+	print_reg(&rf_rx, 0x02);
+	print_reg(&rf_rx, 0x03);
+	print_reg(&rf_rx, 0x05);
+	*/
+	printf("Is data sent: %d\n", nRF_is_TX_data_sent(&rf_tx));
+
+
+	printf("\t\t\t\tSaljem teret\n");
+	// write 1 to clear bits
+	reg_tmp[RX_DR] = 1;		// mora bit odje, picka mu mater'na
+	reg_tmp[TX_DS] = 1;
+	reg_tmp[MAX_RT] = 1;
+	write_reg(&rf_tx, REG_STATUS);
+
+	nRF_TX_buffer[0] = 'x';
+	nRF_TX_buffer[1] = 'y';
+	nRF_TX_buffer[2] = 'z';
+	nRF_write_payload(&rf_tx, 3);
+
+
+	printf("Lost packets: %d\n", 			nRF_get_lost_packets(&rf_rx));
+	printf("Retransmitted packets: %d\n", 	nRF_get_retransmitted_packets(&rf_rx));
+
+	printf("\n");
+	print_reg(&rf_tx, REG_CONFIG);
+	printf("Is data sent: %d\n", nRF_is_TX_data_sent(&rf_tx));
+
+	delay_ms(100);	// pricekaj da posalje
+	ce(&rf_rx, 0);
+	delay_ms(10);
+
+	printf("RX data ready: %d\n", nRF_is_RX_data_ready(&rf_rx));
+
+	printf("bit: MAX_RT: %d\n", nRF_get_bit(&rf_tx, REG_STATUS, MAX_RT));
+
+
+	//				RX
+	// already listening
+	printf("Pipe u kojoj su podaci [ne smije bit 110 nit 111]: %d\n", read_reg(&rf_rx, REG_STATUS) >> 1 & 0b111);
+	printf("Printamo buffer: \n");
+	for (uint8_t i=0; i<3; i++)
 	{
-		printf("Read payload gotov\n");
-		printf("Printam buffer:\n");
-		for (uint16_t i=0; i<256; i++)
-		{
-			printf("RX[%d]: 0x%02X\n", i, nRF_RX_buffer[i]);
-		}
+		printf("[%d]: %d %c\n", i, nRF_RX_buffer[i], nRF_RX_buffer[i]);
+	}
+
+	/*
+	printf("DEBUG reg\n");
+	for(uint8_t i=0; i<=0x17; i++)
+	{
+		print_reg(&rf_tx, i);
+		print_reg(&rf_rx, i);
 	}
 	*/
+
 
 	DEBUG_END;
 }
@@ -305,7 +259,7 @@ void nRF_main()
    */
 
 
-uint8_t nRF_TX_buffer[256];
+uint8_t nRF_TX_buffer[32];
 /*************************************************************************************************
 				nRF_write_payload()
 *************************************************************************************************/
@@ -313,25 +267,66 @@ uint8_t nRF_TX_buffer[256];
 void nRF_write_payload(nRF_hw_t *nRF0, uint8_t length)
 {
 	uint8_t spi_port = nRF0->spi_port;
+	uint8_t *buffer = &nRF_TX_buffer[0];	// TODO not hardcoded
+	//nRF_flush_TX(nRF0);	// in main()
 
-	uint8_t *buffer = &nRF_TX_buffer[0];
+	uint8_t debug_buffer[4] = {};
+	uint8_t debug_length[4] = {};
+
+
+	//printf("%s(): payload length: %d\n", __func__, length);
+
+	reg_tmp[PWR_UP] = 1;
+	reg_tmp[PRIM_RX] = 0;
+	write_reg(nRF0, REG_CONFIG);
+	delay_us(150);
 
 	cs(nRF0, 0);
 
+	//spi_rw(spi_port, *nRF_get_TX_address(nRF0));
+
+
 	spi_rw(spi_port, CMD_W_TX_PAYLOAD);
-	while (length --)
+	while (length--)
 	{
+		//static uint8_t i;
+		//debug_buffer[i] = *buffer;
+		//debug_length[i] = length;
 		spi_rw(spi_port, *buffer++);
+		//i++;
 	}
 
 	cs(nRF0, 1);
+
+	// CE pulse for 10us
+	ce(nRF0, 1);
+	delay_us(11);
+	ce(nRF0, 0);
+
+
+	for (uint8_t i=0; i<10; i++)
+	{
+		uint8_t tx_ds = (read_reg(nRF0, REG_STATUS)) >> 5 & 1;
+		uint8_t max_rt = (read_reg(nRF0, REG_STATUS)) >> 4 & 1;
+		uint8_t ret_pkg = (read_reg(nRF0, REG_OBSERVE_TX));
+		printf("TX_DS: %d \t MAX_RT: %d \t retransmitted packets: %d\n", tx_ds, max_rt, ret_pkg);
+		delay_ms(5);
+	}
+
+	/*
+	printf("%s(): payload length: %d trenutni buffer: %d [0,1,2]: %d %d %d\n", __func__, length, *buffer, nRF_TX_buffer[0], nRF_TX_buffer[1], nRF_TX_buffer[2]);
+	for (uint8_t i=0; i<4; i++)
+	{
+		printf("length: %d, buffer: %d %c\n", debug_length[i], debug_buffer[i], debug_buffer[i]);
+	}
+	*/
 }
 
 
 /*************************************************************************************************
 				nRF_read_payload()
 *************************************************************************************************/
-uint8_t nRF_RX_buffer[256];
+uint8_t nRF_RX_buffer[32];
 
 uint8_t *nRF_read_payload(nRF_hw_t *nRF0, uint8_t howmany)
 {
@@ -342,6 +337,8 @@ uint8_t *nRF_read_payload(nRF_hw_t *nRF0, uint8_t howmany)
 
 		return NULL;
 	}
+
+	//delay_us(130);	// neka se nadje
 	uint8_t spi_port = nRF0->spi_port;
 
 	cs(nRF0, 0);
@@ -356,3 +353,12 @@ uint8_t *nRF_read_payload(nRF_hw_t *nRF0, uint8_t howmany)
 	return nRF_RX_buffer;
 }
 
+/*************************************************************************************************
+				nRF_get_bit()
+*************************************************************************************************/
+uint8_t nRF_get_bit(nRF_hw_t *nRF0, uint8_t reg, uint8_t bit)
+{
+	//uint8_t spi_port = nRF0->spi_port;
+	uint8_t status = read_reg(nRF0, reg);
+	return (status >> bit) & 1;
+}

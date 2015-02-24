@@ -123,7 +123,8 @@ typedef enum
 } crc_length_t;
 
 extern uint8_t reg_tmp[8];
-extern uint8_t nRF_RX_buffer[256];
+extern uint8_t nRF_RX_buffer[32];
+extern uint8_t nRF_TX_buffer[32];
 
 /*************************************************************************************************
 				private function prototypes
@@ -165,7 +166,9 @@ bool 	nRF_is_TX_full(nRF_hw_t *nRF0);								// reg 0x07, b0
 
 uint8_t *nRF_get_RX_address(nRF_hw_t *nRF0);						// reg 0x0A
 int8_t 	 nRF_set_RX_address(nRF_hw_t *nRF0, uint8_t address[]);		// reg 0x0A
+//int8_t nRF_set_RX_address(nRF_hw_t *nRF0, const unsigned char address[6]);	// reg 0x0A
 int8_t   nRF_set_TX_address(nRF_hw_t *nRF0, uint8_t address[]);		// reg 0x10
+//int8_t nRF_set_TX_address(nRF_hw_t *nRF0, const unsigned char address[6]);		// reg 0x10
 uint8_t *nRF_get_TX_address(nRF_hw_t *nRF0);						// reg 0x10
 int8_t   nRF_set_RX_payload_size(nRF_hw_t *nRF0, pipe_t pipe, uint8_t payload_size);	// reg 0x{11,12,13,14,15,16}
 int8_t   nRF_get_RX_payload_size(nRF_hw_t *nRF0, pipe_t pipe);		// reg 0x{11,12,13,14,15,16}
@@ -187,6 +190,8 @@ crc_length_t 	nRF_get_CRC_length(nRF_hw_t *nRF0);
 
 uint8_t *nRF_read_payload(nRF_hw_t *nRF0, uint8_t howmany);
 void nRF_write_payload(nRF_hw_t *nRF0, uint8_t length);
+uint8_t nRF_get_bit(nRF_hw_t *nRF0, uint8_t reg, uint8_t bit);
+
 
 
 

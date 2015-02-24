@@ -18,25 +18,25 @@ void nRF_set_mode(nRF_hw_t *nRF0, nRF_mode_t mode)
 		if (nRF_powered(nRF0) == 1)
 		{
 			// treba ga ugasit prije stimanja moda
-			//printf("Gasim pizdariju\n");
+			printf("Gasim pizdariju\n");
 			nRF_power_off(nRF0);
 		}
 
 		if (mode == RX)
 		{
-			ce(nRF0, 1);	// for RX mode
+			//ce(nRF0, 1);	// for RX mode
 
 			reg_tmp[PRIM_RX] = mode;
 			write_reg(nRF0, REG_CONFIG);
 
-			//printf("Palim pizdariju\n");
+			printf("Palim pizdariju\n");
 			nRF_power_on(nRF0);
 		}
 		else
 		{
 			// kad se napuni buffer
 
-			ce(nRF0, 0);
+			//ce(nRF0, 0);
 
 			reg_tmp[PRIM_RX] = mode;
 			write_reg(nRF0, REG_CONFIG);
@@ -44,8 +44,8 @@ void nRF_set_mode(nRF_hw_t *nRF0, nRF_mode_t mode)
 			//printf("Palim pizdariju\n");
 			nRF_power_on(nRF0);
 
-			ce(nRF0, 1);
-			delay_us(15);	// 10 us
+			//ce(nRF0, 1);
+			//delay_us(15);	// 10 us
 			// sam se vrati u TX mode
 		}
 

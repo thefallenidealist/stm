@@ -95,6 +95,12 @@ void main(void)
 	gpio_init("PA1", OUT);
 	gpio("PA1", 1);
 
+	/*
+	gpio_init("PA4", OUT);
+	gpio_init("PA3", OUT);
+	gpio("PA4", 1);
+	gpio("PA3", 1);
+	*/
 
 	printf("sad ide while\n");
 	while (1)
