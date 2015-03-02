@@ -32,6 +32,7 @@ typedef struct
 	char	*cs;
 	char	*ce;
 	char	*irq;
+	char	*power;
 	// XXX zapravo ne pripada vamo, al mi se jos ne da mijenjt sve
 	// TODO ovo sve ispod maknit i ako treba direktno citat sa divajsa
 	//uint8_t address_width;
@@ -129,16 +130,12 @@ extern uint8_t nRF_TX_buffer[32];
 /*************************************************************************************************
 				private function prototypes
 *************************************************************************************************/
-static uint8_t read_reg(nRF_hw_t *nRF0, uint8_t reg);
-static void ce(nRF_hw_t *nRF0, state_t state);
-static void cs(nRF_hw_t *nRF0, state_t state);
-static void print_reg(nRF_hw_t *nRF0, uint8_t reg);
-//static uint8_t write_reg(nRF_hw_t *nRF0, uint8_t reg, uint8_t arg, uint8_t bits);
-//static uint8_t write_reg(nRF_hw_t *nRF0, uint8_t reg, uint8_t arg);
-//static uint8_t write_reg(nRF_hw_t *nRF0, uint8_t reg, uint8_t value[]);
-static uint8_t write_reg(nRF_hw_t *nRF0, uint8_t reg);
-static uint8_t write_reg_full(nRF_hw_t *nRF0, uint8_t reg, uint8_t value);
-static uint8_t get_status(nRF_hw_t *nRF0);
+static uint8_t 	read_reg		(nRF_hw_t *nRF0, uint8_t reg);
+static void 	ce				(nRF_hw_t *nRF0, state_t state);
+static void 	cs				(nRF_hw_t *nRF0, state_t state);
+static void 	print_reg		(nRF_hw_t *nRF0, uint8_t reg);
+static uint8_t 	write_reg		(nRF_hw_t *nRF0, uint8_t reg);
+static uint8_t 	write_reg_full	(nRF_hw_t *nRF0, uint8_t reg, uint8_t value);
 
 /*************************************************************************************************
 				public function prototypes
@@ -166,9 +163,7 @@ bool 	nRF_is_TX_full(nRF_hw_t *nRF0);								// reg 0x07, b0
 
 uint8_t *nRF_get_RX_address(nRF_hw_t *nRF0);						// reg 0x0A
 int8_t 	 nRF_set_RX_address(nRF_hw_t *nRF0, uint8_t address[]);		// reg 0x0A
-//int8_t nRF_set_RX_address(nRF_hw_t *nRF0, const unsigned char address[6]);	// reg 0x0A
 int8_t   nRF_set_TX_address(nRF_hw_t *nRF0, uint8_t address[]);		// reg 0x10
-//int8_t nRF_set_TX_address(nRF_hw_t *nRF0, const unsigned char address[6]);		// reg 0x10
 uint8_t *nRF_get_TX_address(nRF_hw_t *nRF0);						// reg 0x10
 int8_t   nRF_set_RX_payload_size(nRF_hw_t *nRF0, pipe_t pipe, uint8_t payload_size);	// reg 0x{11,12,13,14,15,16}
 int8_t   nRF_get_RX_payload_size(nRF_hw_t *nRF0, pipe_t pipe);		// reg 0x{11,12,13,14,15,16}
@@ -177,20 +172,22 @@ uint8_t nRF_get_lost_packets(nRF_hw_t *nRF0);						// reg 0x08
 uint8_t nRF_get_retransmitted_packets(nRF_hw_t *nRF0);				// reg 0x08
 
 int8_t  nRF_enable_pipe(nRF_hw_t *nRF0, pipe_t pipe);				// reg 0x02
-void nRF_enable_CRC(nRF_hw_t *nRF0);								// reg 0x00
-void nRF_disable_CRC(nRF_hw_t *nRF0);								// reg 0x00
-void nRF_power_on(nRF_hw_t *nRF0);
-void nRF_power_off(nRF_hw_t *nRF0);
-void nRF_set_mode(nRF_hw_t *nRF0, nRF_mode_t mode);					// INFO prvo postavit mode, pa onda power_on		rijeseno
-nRF_mode_t nRF_get_mode(nRF_hw_t *nRF0);
-bool nRF_powered(nRF_hw_t *nRF0);
+void 	nRF_enable_CRC(nRF_hw_t *nRF0);								// reg 0x00
+void 	nRF_disable_CRC(nRF_hw_t *nRF0);								// reg 0x00
+void 	nRF_power_on(nRF_hw_t *nRF0);
+void 	nRF_power_off(nRF_hw_t *nRF0);
+void 	nRF_set_mode(nRF_hw_t *nRF0, nRF_mode_t mode);					// INFO prvo postavit mode, pa onda power_on		rijeseno
+nRF_mode_t 	nRF_get_mode(nRF_hw_t *nRF0);
+bool 	nRF_powered(nRF_hw_t *nRF0);
 
 int8_t 			nRF_set_CRC_length(nRF_hw_t *nRF0, crc_length_t crc_length);
 crc_length_t 	nRF_get_CRC_length(nRF_hw_t *nRF0);
 
-uint8_t *nRF_read_payload(nRF_hw_t *nRF0, uint8_t howmany);
-void nRF_write_payload(nRF_hw_t *nRF0, uint8_t length);
-uint8_t nRF_get_bit(nRF_hw_t *nRF0, uint8_t reg, uint8_t bit);
+uint8_t*	nRF_read_payload	(nRF_hw_t *nRF0, uint8_t howmany);
+void 		nRF_write_payload	(nRF_hw_t *nRF0, uint8_t *buffer, uint8_t length);
+uint8_t 	nRF_get_bit			(nRF_hw_t *nRF0, uint8_t reg, uint8_t bit);
+//uint8_t 	nRF_get_number_of_bits_in_RX_FIFO(nRF_hw_t *nRF0, pipe_t pipe);
+
 
 
 

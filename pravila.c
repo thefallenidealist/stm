@@ -111,3 +111,7 @@ func()
 //  Tip #4—Check input values: never trust a stranger
 if (enum_t error < NESTO_LAST_ERROR);
 //So, that was range checking. You should also check for NULL pointers if someone gives you an address value. You cannot check pointers for anything other than the NULL value, but this is better than nothing.
+
+// pointeri i funkcije
+uint8_t *var;
+uint8_t* funkcija();

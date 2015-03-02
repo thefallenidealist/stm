@@ -11,7 +11,7 @@
 #include "delay.h"
 #include "blinky.h"
 
-//#include "rtc2.h"
+#include "rtc2.h"
 //#include "eeprom.h" 	// 3.3V
 //#include "baro.h" 	// 5V
 //#include "oled.h" 	// 5V
@@ -28,9 +28,7 @@
 //#include "wlan.h"
 //#include "rtc_ext.h"
 //#include "rom.h"
-//#include "nRF_low.h"
-//#include "nRF_struct.h"
-#include "nRF.h"
+//#include "nRF.h"
 //#include "flash.h"
 
 void main(void)
@@ -48,8 +46,10 @@ void main(void)
 	printf("Na pocetku bješe štos.\n");
 	printf("________________________________________________________________________________\n");
 
-	//rtc_main();
+#ifdef RTC_H
+	rtc_main();
 	//rtc_set_time(12, 30, 0);
+#endif
 
 	//eeprom_example();	
 	//bmp180_example();
@@ -95,12 +95,6 @@ void main(void)
 	gpio_init("PA1", OUT);
 	gpio("PA1", 1);
 
-	/*
-	gpio_init("PA4", OUT);
-	gpio_init("PA3", OUT);
-	gpio("PA4", 1);
-	gpio("PA3", 1);
-	*/
 
 	printf("sad ide while\n");
 	while (1)
@@ -130,7 +124,8 @@ void main(void)
 
 		//bmp180_print();
 
-		//rtc_get_time();
+		rtc_get_time();
 		//printf("main RTC: %02d:%02d:%02d \tuptime: %s\n", RTC_data.hours, RTC_data.minutes, RTC_data.seconds, get_uptime());
+		printf("RTC seconds: %02d\n", RTC_data.seconds);
 	}
 }

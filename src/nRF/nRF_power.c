@@ -15,8 +15,10 @@ void nRF_power_on(nRF_hw_t *nRF0)
 *************************************************************************************************/
 void nRF_power_off(nRF_hw_t *nRF0)
 {
-	reg_tmp[PWR_UP] = 0;
-	write_reg(nRF0, REG_CONFIG);
+	// XXX izgleda da ovako pravi probleme
+	//reg_tmp[PWR_UP] = 0;
+	//write_reg(nRF0, REG_CONFIG);
+	write_reg_full(nRF0, REG_CONFIG, 0);
 }
 
 /*************************************************************************************************
