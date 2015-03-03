@@ -24,24 +24,28 @@ void nRF_set_mode(nRF_hw_t *nRF0, nRF_mode_t mode)
 			nRF_power_off(nRF0);
 		}
 		*/
-		printf("Gasim pizdariju za svaki slucaj: %p\n", nRF0);
+		//printf("Gasim pizdariju za svaki slucaj: %p\n", nRF0);
 		nRF_power_off(nRF0);
+		delay_ms(10);	// bezveze
+		// moguce da ga ovaj delay i ovi dolje od 100 ms poprave, TODO provjerit nekako
 
 		if (mode == RX)
 		{
 			reg_tmp[PRIM_RX] = mode;
 			write_reg(nRF0, REG_CONFIG);
 
-			printf("Palim pizdariju: %p, mode: RX\n", nRF0);
+			//printf("Palim pizdariju: %p, mode: RX\n", nRF0);
 			nRF_power_on(nRF0);
+			delay_ms(100);	//
 		}
 		else if (mode == TX)
 		{
 			reg_tmp[PRIM_RX] = mode;
 			write_reg(nRF0, REG_CONFIG);
 
-			printf("Palim pizdariju: %p, mode: TX\n", nRF0);
+			//printf("Palim pizdariju: %p, mode: TX\n", nRF0);
 			nRF_power_on(nRF0);
+			delay_ms(100);	//
 
 		}
 		else

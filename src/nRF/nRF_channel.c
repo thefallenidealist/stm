@@ -10,9 +10,9 @@ void nRF_set_channel(nRF_hw_t *nRF0, uint8_t ch)					// reg 0x05
 	// 1Mbps	- kanali razmakniti 1MHz
 	// 2Mbps	- kanali razmakniti 2Mhz
 
-	// pretpostavka da je defaultni kanal 0 = 0000010
+	// defaultni kanal 0 = 0000010
 
-	datarate_t datarate = nRF_get_data_rate(nRF0);
+	datarate_t datarate = nRF_get_datarate(nRF0);
 	uint8_t max_ch = 0;
 
 	// TODO ch test when datarate is 2Mbps
@@ -20,20 +20,18 @@ void nRF_set_channel(nRF_hw_t *nRF0, uint8_t ch)					// reg 0x05
 	if (datarate == datarate_1Mbps)
 	{
 		//printf("datarate is 1Mbps\n");
-		max_ch = 125;	// uracunat i nulti
+		max_ch = 125;	// 0..125
 	}
 	else if (datarate == datarate_2Mbps)
 	{
 		//printf("datarate is 2Mbps\n");
-		max_ch = 62;	// uracunat i nulti
+		max_ch = 62;	// 0..62
 	}
 	else
 	{
 		ERROR("uknown datarate\n");
 		//printf("uknown datarate\n");
 	}
-
-	//printf("max ch: %d\n", max_ch);
 
 	if (ch > max_ch)
 	{
@@ -51,7 +49,7 @@ void nRF_set_channel(nRF_hw_t *nRF0, uint8_t ch)					// reg 0x05
 // INFO provjereno
 
 /*************************************************************************************************
-				nRF_set_channel()
+				nRF_get_channel()
 *************************************************************************************************/
 uint8_t nRF_get_channel(nRF_hw_t *nRF0)
 {

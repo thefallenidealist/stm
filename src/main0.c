@@ -6,7 +6,6 @@
 #include "newlib_stubs.h"
 #include "clang_patch.h"
 #include "uart.h"
-//#include "led.h"
 #include "gpio.h"
 #include "delay.h"
 #include "blinky.h"
@@ -28,13 +27,12 @@
 //#include "wlan.h"
 //#include "rtc_ext.h"
 //#include "rom.h"
-//#include "nRF.h"
+#include "nRF.h"
 //#include "flash.h"
 
 void main(void)
 {
     //TODO enum npr TICK_EVERY_US i TICK_EVERY_MS da se moze definirat (i da delayevi rade kako treba bez rekonfiguracije)
-
 
 	delay_init();
 	//led_init("PA1");
@@ -80,12 +78,12 @@ void main(void)
 
 	//rtc_ext_example();
 
+		rtc_get_time();
 #ifdef NRF_H
-	nRF_main();
-#endif
-
-#ifdef NRF_LOW_H
-	nRF1_main();
+	if (nRF_main() != 0)
+	{
+		printf("%s(): nRF_main has failed\n", __func__);
+	}
 #endif
 
 #ifdef FLASH_H
@@ -124,8 +122,10 @@ void main(void)
 
 		//bmp180_print();
 
+#ifdef RTC_H
 		rtc_get_time();
 		//printf("main RTC: %02d:%02d:%02d \tuptime: %s\n", RTC_data.hours, RTC_data.minutes, RTC_data.seconds, get_uptime());
-		printf("RTC seconds: %02d\n", RTC_data.seconds);
+		//printf("RTC seconds: %02d\n", RTC_data.seconds);
+#endif
 	}
 }

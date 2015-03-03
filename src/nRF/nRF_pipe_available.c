@@ -1,8 +1,10 @@
 /*************************************************************************************************
-				nRF_data_pipe_available()
+				nRF_datapipe_available()
 *************************************************************************************************/
-data_pipe_t nRF_pipe_available(nRF_hw_t *nRF0)					// reg 0x07, b321
+datapipe_t nRF_pipe_available(nRF_hw_t *nRF0)					// reg 0x07, b321
 {
+	// TODO malo bolje sredit, return neki ubacit itd
+
 	//Data pipe number for the payload available for 
 	//reading from RX_FIFO
 	//000-101: Data Pipe Number
@@ -10,9 +12,9 @@ data_pipe_t nRF_pipe_available(nRF_hw_t *nRF0)					// reg 0x07, b321
 	//111: RX FIFO Empty		default
 
 	uint8_t status = read_reg(nRF0, REG_STATUS);
-	data_pipe_t pipe = (status >> 1) & 0b111;	// pretvori u decimalni broj
+	datapipe_t pipe = (status >> 1) & 0b111;
 
-	printf("%s(): data pipe: %d\n", __func__, pipe);
+	//printf("%s(): data pipe: %d\n", __func__, pipe);
 
 	if (pipe == RX_FIFO_empty)
 	{

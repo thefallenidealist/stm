@@ -17,10 +17,21 @@ void nRF_set_retransmit_count(nRF_hw_t *nRF0, uint8_t count)		// reg 0x04
 		b2 = (count >> 2) & 1;
 		b3 = (count >> 3) & 1;
 
-		//printf("\t\t\t\t%s(): count: %d bin:%d%d%d%d\n", __func__, count, b3, b2, b1, b0);
+		reg_tmp[ARC3] = b3;
+		reg_tmp[ARC2] = b2;
+		reg_tmp[ARC1] = b1;
+		reg_tmp[ARC0] = b0;
 
-		//write_reg(nRF0, REG_SETUP_RETR, (b3 << ARC3) | (b2 << ARC2) | (b1 << ARC1) | (b0 << ARC0));
-		//write_reg(nRF0, REG_SETUP_RETR, (b3 << ARC3) | (b2 << ARC2) | (b1 << ARC1) | (b0 << ARC0)); XXX
+		write_reg(nRF0, REG_SETUP_RETR);
 	}
 }
-// INFO provjereno
+
+/*************************************************************************************************
+				nRF_get_retransmit_count()
+*************************************************************************************************/
+uint8_t nRF_get_retransmit_count(nRF_hw_t *nRF0)
+{
+	uint8_t status = read_reg(nRF0, REG_SETUP_RETR);
+	uint8_t count = status & 0b1111;
+	return count;
+}

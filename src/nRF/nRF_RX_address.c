@@ -2,8 +2,6 @@
 				nRF_set_RX_address()
 *************************************************************************************************/
 int8_t nRF_set_RX_address(nRF_hw_t *nRF0, uint8_t address[])	// reg 0x0A
-// char da se moze pozvat npr nRF_set_RX_address(nesto, "adre1");
-//int8_t nRF_set_RX_address(nRF_hw_t *nRF0, const unsigned char address[6])	// reg 0x0A
 {
 #define BASE_PIPE REG_RX_ADDR_P0
 	// TODO zasad implentirano samo pipe0
@@ -11,12 +9,9 @@ int8_t nRF_set_RX_address(nRF_hw_t *nRF0, uint8_t address[])	// reg 0x0A
 	// LSB se prvi zapisuje
 	uint8_t width = nRF_get_address_width(nRF0);
 	uint8_t spi_port = nRF0->spi_port;
-		//uint8_t address_length = strlen((const char*)address);	// cast da se kompajler ne buni jer je uint8_t type
-	//uint8_t address_length = sizeof(address)/sizeof(address[0]);
 
 	//printf("\t\t\t\t%s(): pipe: %d, address: %s\n", __func__, pipe, address);
 
-	//if ( (pipe > 5) || (pipe < 0) )
 	if (pipe > 5)		// unsigned enum
 	{
 		ERROR("Wrong pipe\n");
@@ -29,15 +24,8 @@ int8_t nRF_set_RX_address(nRF_hw_t *nRF0, uint8_t address[])	// reg 0x0A
 		printf("Wrong address width\n");
 		return -1;
 	}
-	/*
-	else if (address_length != width)
-	{
-		DEBUG_INFO("TODO");
-		printf("Dobivena adresa je duza ili kraca od stvarno potrebne adrese\n");
-		// XXX
-		return -1;
-	}
-	*/
+	// INFO	ako dobije duzu adresu nego sto treba, zapisat ce samo onoliko bajtova koliko treba
+	// TODO ako dobije kracu onda...
 	else
 	{
 		cs(nRF0, 0);
@@ -53,9 +41,36 @@ int8_t nRF_set_RX_address(nRF_hw_t *nRF0, uint8_t address[])	// reg 0x0A
 		}
 		cs(nRF0, 1);
 
-		// da bi mogao posluzit kao string
+		// dodaj NULL na kraj da se moze ispisat kao string
 		memset(&nRF0->rx_address[pipe][width], 0, 1);
 
 		return 0;
 	}
+}
+
+/*************************************************************************************************
+				nRF_get_RX_address()
+*************************************************************************************************/
+uint8_t *nRF_get_RX_address(nRF_hw_t *nRF0)				// reg 0x0{A,B,C,D,E,F}
+{
+	// TODO zasad koristi samo pipe0 iako moze procitat adrese ostalih pipeova
+	uint8_t pipe = 0;
+	return nRF0->rx_address[pipe];
+
+	/*
+	uint8_t spi_port = nRF0->spi_port;
+	// samo pipe0
+	cs(nRF0, 0);
+	spi_rw(spi_port, REG_RX_ADDR_P0 + CMD_R_REGISTER);
+
+	char addr[5] = {};
+
+	for (uint8_t i=0; i<5; i++) // 40 bits
+	{
+		addr[i] = spi_rw(spi_port, REG_RX_ADDR_P0);
+	}
+	cs(nRF0, 1);
+
+	return (const char)addr;
+	*/
 }
