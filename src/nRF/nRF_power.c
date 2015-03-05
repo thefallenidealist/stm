@@ -24,7 +24,7 @@ void nRF_power_off(nRF_hw_t *nRF0)
 /*************************************************************************************************
 				nRF_is_powered()
 *************************************************************************************************/
-bool nRF_powered(nRF_hw_t *nRF0)
+bool nRF_is_powered(nRF_hw_t *nRF0)
 {
 	uint8_t status = read_reg(nRF0, REG_CONFIG);
 	bool powered = (status >> 1) & 1;

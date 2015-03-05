@@ -15,8 +15,6 @@ void nRF_set_channel(nRF_hw_t *nRF0, uint8_t ch)					// reg 0x05
 	datarate_t datarate = nRF_get_datarate(nRF0);
 	uint8_t max_ch = 0;
 
-	// TODO ch test when datarate is 2Mbps
-
 	if (datarate == datarate_1Mbps)
 	{
 		//printf("datarate is 1Mbps\n");
@@ -46,7 +44,6 @@ void nRF_set_channel(nRF_hw_t *nRF0, uint8_t ch)					// reg 0x05
 		write_reg_full(nRF0, REG_RF_CH, new_ch);
 	}
 }
-// INFO provjereno
 
 /*************************************************************************************************
 				nRF_get_channel()

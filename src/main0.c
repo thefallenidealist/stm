@@ -10,7 +10,7 @@
 #include "delay.h"
 #include "blinky.h"
 
-#include "rtc2.h"
+//#include "rtc2.h"
 //#include "eeprom.h" 	// 3.3V
 //#include "baro.h" 	// 5V
 //#include "oled.h" 	// 5V
@@ -27,7 +27,7 @@
 //#include "wlan.h"
 //#include "rtc_ext.h"
 //#include "rom.h"
-#include "nRF.h"
+//#include "nRF.h"
 //#include "flash.h"
 
 void main(void)
@@ -78,7 +78,9 @@ void main(void)
 
 	//rtc_ext_example();
 
+#ifdef RTC_H
 		rtc_get_time();
+#endif
 #ifdef NRF_H
 	if (nRF_main() != 0)
 	{

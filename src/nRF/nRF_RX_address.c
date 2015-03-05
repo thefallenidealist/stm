@@ -58,18 +58,22 @@ uint8_t *nRF_get_RX_address(nRF_hw_t *nRF0)				// reg 0x0{A,B,C,D,E,F}
 	return nRF0->rx_address[pipe];
 
 	/*
+	   // XXX sjebano
 	uint8_t spi_port = nRF0->spi_port;
-	// samo pipe0
+
 	cs(nRF0, 0);
 	spi_rw(spi_port, REG_RX_ADDR_P0 + CMD_R_REGISTER);
 
 	char addr[5] = {};
+	uint8_t width = nRF_get_address_width(nRF0);
 
-	for (uint8_t i=0; i<5; i++) // 40 bits
+	for (uint8_t i=0; i<width; i++) // 40 bits
 	{
-		addr[i] = spi_rw(spi_port, REG_RX_ADDR_P0);
+		addr[i] = spi_rw(spi_port, REG_RX_ADDR_P0);	// samo pipe0
 	}
 	cs(nRF0, 1);
+
+	printf("%s(): address: %s\n", __func__, addr);
 
 	return (const char)addr;
 	*/

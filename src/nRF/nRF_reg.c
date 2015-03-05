@@ -35,16 +35,13 @@ static void print_reg(nRF_hw_t *nRF0, uint8_t reg)
 	DEBUG_END;
 }
 
+#define REG_T_EMPTY 		2	// bilo sto sto nije 0 ili 1
+#define BITS_IN_REGISTER	8
+//uint8_t reg_tmp[8] = { [0 ... 7] = REG_T_EMPTY};
+uint8_t reg_tmp[BITS_IN_REGISTER] = { [0 ... (BITS_IN_REGISTER-1)] = REG_T_EMPTY};
 /*************************************************************************************************
 				write_reg()
 *************************************************************************************************/
-#define REG_T_EMPTY 2	// bilo sto sto nije 0 ili 1
-#define BITS_IN_REGISTER	8
-
-uint8_t reg_tmp[8] = { [0 ... 7] = REG_T_EMPTY};
-
-//static uint8_t write_reg(nRF_hw_t *nRF0, uint8_t reg, uint8_t arg)
-//static uint8_t write_reg(nRF_hw_t *nRF0, uint8_t reg, uint8_t value[])
 static uint8_t write_reg(nRF_hw_t *nRF0, uint8_t reg)
 {
 	DEBUG_START;

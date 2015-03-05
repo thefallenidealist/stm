@@ -3,7 +3,6 @@
 
 // created 121228
 // TODO prebacit poneki #define u enum, radi ljepseg debuggiranja
-// TODO svi ovi silni registri bi trebali bit privatni
 
 /**********************************************************************/
 //			 CMD	page 46
@@ -106,8 +105,8 @@
 // 			registers
 //			page 54
 /****************************************************************************/
-// defaultne vrijednosti su 0, osim ako nije spomenito drugacije
-// defaultne vrijednosti RW, osim ako nije napisano drugacije
+// defaultne vrijednosti su 0, osim ako nije spomenito drugacije	XXX prijevod
+// defaultne vrijednosti RW, osim ako nije napisano drugacije		XXX prijevod
 
 #define	REG_CONFIG	0x00
 /*
@@ -163,23 +162,24 @@ typedef enum
 #define ERX_P0		0			// Enable data pipe 0	default: 1
 
 																						// vise bajtova adrese - sporiji prijenos
+																	// XXX prijevod
 #define REG_SETUP_AW	0x03	// Setup of Address Widths (common for all data pipes)
 #define AW1		1				// 00 - illegal		01 - 3 bytes	
 #define AW0		0				// 10 - 4 bytes		11 - 5 bytes
 
 #define REG_SETUP_RETR	0x04	// Setup of Automatic Retransmission
-#define ARD3		7	// Auto Retransmit Delay
-#define ARD2		6	// 0000 – Wait 250µs
-#define ARD1		5	// 0001 - 500 us
-#define ARD0		4	// 0010 - 750 us		// 1111 4000 us
-#define ARC3		3	// Auto Retransmit Count
-#define ARC2		2	// 0000 retransmit disabled
-#define ARC1		1	// 0001	up to 1 retransmit
-#define ARC0		0	// 1111 up to 15 retransmit
+#define ARD3		7			// Auto Retransmit Delay
+#define ARD2		6			// 0000 – Wait 250µs
+#define ARD1		5			// 0001 - 500 us
+#define ARD0		4			// 0010 - 750 us		// 1111 4000 us
+#define ARC3		3			// Auto Retransmit Count
+#define ARC2		2			// 0000 retransmit disabled
+#define ARC1		1			// 0001	up to 1 retransmit
+#define ARC0		0			// 1111 up to 15 retransmit
 
 #define REG_RF_CH	0x05	// RF Channel
-#define RF_CH6		6	// Sets the frequency channel nRF24L01 operates on
-#define RF_CH5		5	// default [6..0]: 0000010
+#define RF_CH6		6		// Sets the frequency channel nRF24L01 operates on
+#define RF_CH5		5		// default [6..0]: 0000010
 #define RF_CH4		4
 #define RF_CH3		3
 #define RF_CH2		2
@@ -187,16 +187,16 @@ typedef enum
 #define RF_CH0		0
 
 #define	REG_RF_SETUP	0x06	// RF Setup Register
-#define	PLL_LOCK	4	// Force PLL lock signal. Only used in test
-#define	RF_DR		3	// Air Data Rate
-						// '0' – 1Mbps
-						// '1' – 2Mbps		default
-#define RF_PWR1		2	// Set RF output power in TX mode
-#define RF_PWR0		1	// '00' –  -18dBm
-						// '01' –  -12dBm
-						// '10' –   -6dBm
-						// '11' –    0dBm	default
-//#define	LNA_HCURR	0	// Setup LNA gain	default: 1		Obsolete
+#define	PLL_LOCK	4			// Force PLL lock signal. Only used in test
+#define	RF_DR		3			// Air Data Rate
+								// '0' – 1Mbps
+								// '1' – 2Mbps		default
+#define RF_PWR1		2			// Set RF output power in TX mode
+#define RF_PWR0		1			// '00' –  -18dBm
+								// '01' –  -12dBm
+								// '10' –   -6dBm
+								// '11' –    0dBm	default
+//#define	LNA_HCURR	0		// Setup LNA gain	default: 1		Obsolete
 
 #define REG_STATUS	0x07
 #define	RX_DR		6	// Data Ready RX FIFO interrupt. Asserted when 
@@ -311,7 +311,7 @@ typedef enum
 								// as CE is high. TX_REUSE is set by the SPI com
 								// mand REUSE_TX_PL, and is reset by the SPI 
 								// commands W_TX_PAYLOAD or FLUSH TX
-// INFO zove se TX_FULL2 jer gore vec ima TX_FULL
+// INFO zove se TX_FULL2 jer gore vec ima TX_FULL	XXX prijevod
 #define TX_FULL2	5			// TX FIFO full flag. 1: TX FIFO full. 0: Available 	RO
 								// locations in TX FIFO.
 #define TX_EMPTY	4			// TX FIFO empty flag. 					RO
@@ -321,7 +321,7 @@ typedef enum
 #define RX_EMPTY	0			// RO
 
 /*
-   thesea are not registers
+   these are not a registers	// those?	a?	XXX prijevod
 
    ACK_PLD		[255..0] 	WO
    	Written by separate SPI command

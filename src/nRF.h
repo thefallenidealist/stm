@@ -4,7 +4,6 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
-//#include <stdlib.h> 	// atoi
 #include <stdbool.h>
 
 #include "debug.h"
@@ -134,9 +133,9 @@ extern uint8_t nRF_TX_buffer[32];
 /*************************************************************************************************
 				private function prototypes
 *************************************************************************************************/
-static uint8_t 	read_reg		(nRF_hw_t *nRF0, uint8_t reg);
 static void 	ce				(nRF_hw_t *nRF0, state_t state);
 static void 	cs				(nRF_hw_t *nRF0, state_t state);
+static uint8_t 	read_reg		(nRF_hw_t *nRF0, uint8_t reg);
 static void 	print_reg		(nRF_hw_t *nRF0, uint8_t reg);
 static uint8_t 	write_reg		(nRF_hw_t *nRF0, uint8_t reg);
 static uint8_t 	write_reg_full	(nRF_hw_t *nRF0, uint8_t reg, uint8_t value);
@@ -146,63 +145,65 @@ static uint8_t 	write_reg_full	(nRF_hw_t *nRF0, uint8_t reg, uint8_t value);
 *************************************************************************************************/
 int8_t	nRF_main();
 int8_t 	nRF_hw_init(nRF_hw_t *nRF0);
-// provjereno:
-void nRF_set_address_width(nRF_hw_t *nRF0, uint8_t width);			// reg 0x03
-uint8_t nRF_get_address_width(nRF_hw_t *nRF0);						// reg 0x03
 
-int8_t	nRF_set_retransmit_delay(nRF_hw_t *nRF0, delay_t delay);		// reg 0x04
-uint8_t nRF_get_retransmit_delay(nRF_hw_t *nRF0);
-void 	nRF_set_retransmit_count(nRF_hw_t *nRF0, uint8_t count);		// reg 0x04
-uint8_t nRF_get_retransmit_count(nRF_hw_t *nRF0);
+void	nRF_set_address_width		(nRF_hw_t *nRF0, uint8_t width);
+uint8_t nRF_get_address_width		(nRF_hw_t *nRF0);
 
-void 	nRF_set_channel		(nRF_hw_t *nRF0, uint8_t ch);					// reg 0x05
+int8_t	nRF_set_retransmit_delay	(nRF_hw_t *nRF0, delay_t delay);
+uint8_t nRF_get_retransmit_delay	(nRF_hw_t *nRF0);
+void 	nRF_set_retransmit_count	(nRF_hw_t *nRF0, uint8_t count);
+uint8_t nRF_get_retransmit_count	(nRF_hw_t *nRF0);
+uint8_t nRF_get_lost_packets		(nRF_hw_t *nRF0);
+uint8_t nRF_get_retransmitted_packets	(nRF_hw_t *nRF0);
+
+void 	nRF_set_channel		(nRF_hw_t *nRF0, uint8_t ch);
 uint8_t nRF_get_channel		(nRF_hw_t *nRF0);
-void 	nRF_set_datarate	(nRF_hw_t *nRF0, datarate_t datarate);		// reg 0x06
-datarate_t nRF_get_datarate(nRF_hw_t *nRF0);						// reg 0x06
-void 	nRF_set_output_power(nRF_hw_t *nRF0, output_power_t power);	// reg 0x06
 
-bool 	nRF_is_RX_data_ready(nRF_hw_t *nRF0);							// reg 0x06, b6
-bool 	nRF_is_TX_data_sent(nRF_hw_t *nRF0);							// reg 0x06, b5
-datapipe_t nRF_pipe_available(nRF_hw_t *nRF0);						// reg 0x07, b321
-bool 	nRF_is_TX_full(nRF_hw_t *nRF0);								// reg 0x07, b0
-
-void 	nRF_clear_RX_data_ready(nRF_hw_t *nRF0);						// reg 0x06, b6
-void 	nRF_clear_TX_max_retransmits(nRF_hw_t *nRF0);
-void 	nRF_clear_TX_data_sent(nRF_hw_t *nRF0);						// reg 0x07, b5
+void 		nRF_set_datarate	(nRF_hw_t *nRF0, datarate_t datarate);
+datarate_t	nRF_get_datarate	(nRF_hw_t *nRF0);
 
 
-uint8_t *nRF_get_RX_address(nRF_hw_t *nRF0);						// reg 0x0A
-int8_t 	 nRF_set_RX_address(nRF_hw_t *nRF0, uint8_t address[]);		// reg 0x0A
-int8_t   nRF_set_TX_address(nRF_hw_t *nRF0, uint8_t address[]);		// reg 0x10
-uint8_t *nRF_get_TX_address(nRF_hw_t *nRF0);						// reg 0x10
-int8_t   nRF_set_payload_size(nRF_hw_t *nRF0, pipe_t pipe, uint8_t payload_size);	// reg 0x{11,12,13,14,15,16}
-int8_t   nRF_get_payload_size(nRF_hw_t *nRF0, pipe_t pipe);		// reg 0x{11,12,13,14,15,16}
+bool 	nRF_is_RX_data_ready	(nRF_hw_t *nRF0);
+bool 	nRF_is_TX_data_sent		(nRF_hw_t *nRF0);
+bool 	nRF_is_TX_full			(nRF_hw_t *nRF0);	
+bool	nRF_is_TX_full2			(nRF_hw_t *nRF0);
+bool 	nRF_is_TX_empty			(nRF_hw_t *nRF0);
+bool	nRF_is_RX_empty2		(nRF_hw_t *nRF0);
+bool 	nRF_is_RX_empty			(nRF_hw_t *nRF0);
+bool 	nRF_is_RX_full			(nRF_hw_t *nRF0);
 
-uint8_t nRF_get_lost_packets(nRF_hw_t *nRF0);						// reg 0x08
-uint8_t nRF_get_retransmitted_packets(nRF_hw_t *nRF0);				// reg 0x08
+bool	nRF_is_present			(nRF_hw_t *nRF0);
 
-int8_t  nRF_enable_pipe(nRF_hw_t *nRF0, pipe_t pipe);				// reg 0x02
-void 	nRF_enable_CRC(nRF_hw_t *nRF0);								// reg 0x00
-void 	nRF_disable_CRC(nRF_hw_t *nRF0);								// reg 0x00
-void 	nRF_power_on(nRF_hw_t *nRF0);
-void 	nRF_power_off(nRF_hw_t *nRF0);
-void 	nRF_set_mode(nRF_hw_t *nRF0, nRF_mode_t mode);					// INFO prvo postavit mode, pa onda power_on		rijeseno
+int8_t  	nRF_enable_pipe		(nRF_hw_t *nRF0, pipe_t pipe);
+datapipe_t 	nRF_get_payload_pipe(nRF_hw_t *nRF0);
+
+void 	nRF_clear_bits(nRF_hw_t *nRF0);
+
+int8_t		nRF_set_RX_address	(nRF_hw_t *nRF0, uint8_t address[]);
+uint8_t*	nRF_get_RX_address	(nRF_hw_t *nRF0);
+int8_t		nRF_set_TX_address	(nRF_hw_t *nRF0, uint8_t address[]);
+uint8_t*	nRF_get_TX_address	(nRF_hw_t *nRF0);	
+
+int8_t		nRF_set_payload_size	(nRF_hw_t *nRF0, pipe_t pipe, uint8_t payload_size);
+int8_t		nRF_get_payload_size	(nRF_hw_t *nRF0, pipe_t pipe);
+
+void 		nRF_power_on			(nRF_hw_t *nRF0);
+void 		nRF_power_off			(nRF_hw_t *nRF0);
+bool 		nRF_is_powered			(nRF_hw_t *nRF0);
+void 		nRF_set_output_power	(nRF_hw_t *nRF0, output_power_t power);
+
+void 		nRF_set_mode(nRF_hw_t *nRF0, nRF_mode_t mode);
 nRF_mode_t 	nRF_get_mode(nRF_hw_t *nRF0);
-bool 	nRF_powered(nRF_hw_t *nRF0);
 
 int8_t 			nRF_set_CRC_length(nRF_hw_t *nRF0, crc_length_t crc_length);
 crc_length_t 	nRF_get_CRC_length(nRF_hw_t *nRF0);
+void 			nRF_enable_CRC(nRF_hw_t *nRF0);
+void 			nRF_disable_CRC(nRF_hw_t *nRF0);
 
-uint8_t*	nRF_read_payload	(nRF_hw_t *nRF0, uint8_t howmany);
+uint8_t*	nRF_read_payload	(nRF_hw_t *nRF0);
 void 		nRF_write_payload	(nRF_hw_t *nRF0, uint8_t *buffer, uint8_t length);
-uint8_t 	nRF_get_bit			(nRF_hw_t *nRF0, uint8_t reg, uint8_t bit);
-//uint8_t 	nRF_get_number_of_bits_in_RX_FIFO(nRF_hw_t *nRF0, pipe_t pipe);
 
-
-
-bool	nRF_is_present(nRF_hw_t *nRF0);
-
-
+void nRF_start_listening(nRF_hw_t *nRF0);
 
 
 #endif

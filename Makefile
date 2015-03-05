@@ -1,6 +1,28 @@
 # created 141129
 # ovo koristi FreeBSDov stdio.h, stdint.h, unistd.h i sl. newlib-ov printf je zakurac
+# -mthumb -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16
+
+# newlib mozda TODO sluzbena dokumentacija
+# -enable-newlib-io-c99-formats
+# 	--enable-newlib-mb		# multibyte support
+# `--enable-newlib-nano-malloc'
+		# gcc -nostdlib 		$(target_install_dir)/lib/crt0.o progname.c -I $(target_install_dir)/include -L $(target_install_dir)/lib -lc -lm -lgcc
+# static: gcc -nostdlib -static $(target_install_dir)/lib/crt0.o progname.c -I $(target_install_dir)/include -L $(target_install_dir)/lib -lc -lm
+
+# newlib TODO negdje sa neta
+#     --with-cpu=cortex-m4 --with-fpu=fpv4-sp-d16 --with-mode=thumb
+
+# newlib TODO
+# make all-target-newlib
+# make all-target-libgloss
+# make install-target-newlib
+# make install-target-libgloss
+# ./configure --target=arm-none-eabi --prefix=/usr/local/arm-none-eabi --enable-interwork --enable-multilib --disable-libssp --disable-nls --enable-newlib-io-long-long --enable-newlib-register-fini --disable-newlib-supplied-syscalls
+# make CFLAGS_FOR_TARGET="-D__IEEE_BIG_ENDIAN -D__IEEE_BYTES_LITTLE_ENDIAN -D__BUFSIZ__=64" && env "PATH=$PATH" make install || env "PATH=$PATH" make install
+
 NAME	= main
+
+# To get really good code-size you need to look at options for getting rid of unused code aggressively like -ffunction-sections -fdata-sections --gc-sections in gcc or --split-sections in armcc.
 
 # promijenit i dolje COMMON_FLAGS
 CC  	= clang36
@@ -10,7 +32,10 @@ UNAME := $(shell uname -m)	# varijabla iz shella
 
 #DIR_TOOLS	= /usr/local/gcc-arm-embedded-*/
 # linker ne voli * nit tabovi nit komentare u bilo cemu sto ima varijablu za njega. Linker je pizda.
-DIR_TOOLS	= /usr/local/gcc-arm-embedded-4_8-2014q3-20140805
+# pkg: gcc-arm-embedded
+#DIR_TOOLS	= /usr/local/gcc-arm-embedded-4_8-2014q3-20140805
+# pkg: arm-none-eabi-{gcc,binutils}
+DIR_TOOLS	= /usr/local
 LD  	= $(DIR_TOOLS)/bin/arm-none-eabi-ld
 #LD	= ld.gold
 OBJCOPY = $(DIR_TOOLS)/bin/arm-none-eabi-objcopy
@@ -20,13 +45,12 @@ DIR_OBJ = ./obj
 DIR_BIN = ./bin
 
 TARGET	= -target thumb-unknown-eabi
-ARCH	= armv7-m
+#ARCH	= armv7-m		# nekoristeno nigdje
 CPU	= -mcpu=cortex-m3 
-#CPU	= -mcpu=cortex-m4 
-	# STM32F1
-	#DEFINES	= -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER 
-# STM32F4
-DEFINES	= -DSTM32F4XX -DUSE_STDPERIPH_DRIVER 
+# GCC V4 does not sopport the Cortex -M4
+#CPU	= -mcpu=cortex-m4 	# TODO
+#DEFINES	= -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER 
+DEFINES		= -DSTM32F4XX -DUSE_STDPERIPH_DRIVER 
 #OPTS	= -O0 -g	# XXX ne radi
 #OPTS	= -O1 -g 
 #OPTS	= -O2 -g 
@@ -36,6 +60,11 @@ DIRS 	=  -Isrc \
 	   -Isrc/lib/f4\
 	   -I.
 
+# INFO objasnjenja INFO
+# -mno-thumb-interwork		# nemoj koristit ARM i Thumb zajedno	# default GCC
+# -mlittle-endian			# default GCC
+# -mtune=cortex-m4
+
 # clang
 #COMMON_FLAGS 	 = $(TARGET) $(CPU) $(OPTS) -nostdlib -mfloat-abi=soft -Wall
 #TODO -flto remove unused functions
@@ -43,7 +72,7 @@ CLANG_FLAGS	 = $(TARGET) -Wformat
 # INFO ne radi sa sysroot iako ga usmjerim u folder gdje su headeri /usr/local/gcc-arm-embedded-4_8-2014q3-20140805/arm-none-eabi
 #CLANG_FLAGS	 = $(TARGET)  --sysroot /dev/null -I/usr/local/gcc-arm-embedded-4_8-2014q3-20140805/arm-none-eabi/include \
 #-I/usr/local/gcc-arm-embedded-4_8-2014q3-20140805/lib/gcc/arm-none-eabi/4.8.4/include
-GCC_FLAGS 	 = -std=c99 -mthumb -mno-thumb-interwork -fno-common -fno-strict-aliasing -fmessage-length=0 -fno-builtin -Wp,-w 
+#GCC_FLAGS 	 = -std=c99 -mthumb -mno-thumb-interwork -fno-common -fno-strict-aliasing -fmessage-length=0 -fno-builtin -Wp,-w 
 # -Wmissing-prototypes 
 # F1
 #COMMON_FLAGS 	 = $(CPU) $(OPTS) -nostdlib -nostdinc -I/usr/local/gcc-arm-embedded-4_8-2014q3-20140805/arm-none-eabi/include/ -I/usr/local/gcc-arm-embedded-4_8-2014q3-20140805/lib/gcc/arm-none-eabi/4.8.4/include -mfloat-abi=soft -Wall $(CLANG_FLAGS) 
@@ -52,25 +81,22 @@ GCC_FLAGS 	 = -std=c99 -mthumb -mno-thumb-interwork -fno-common -fno-strict-alia
 #COMMON_FLAGS 	 = $(CPU) $(OPTS) -nostdlib -mfloat-abi=soft -Wall $(CLANG_FLAGS) -DDEBUG
 #COMMON_FLAGS 	 = $(CPU) $(OPTS) -nostdlib -mfloat-abi=soft -Wall $(CLANG_FLAGS) -ffreestanding -fno-builtin -nostdinc
 COMMON_FLAGS 	 = $(CPU) $(OPTS) -nostdlib -mfloat-abi=soft -Wall $(CLANG_FLAGS) 
+
+# ako je newlib sa hardFP INFO
+#COMMON_FLAGS 	 = $(CPU) $(OPTS) -nostdlib -mfloat-abi=hard -mfpu=fpv4-sp-d16 -Wall $(CLANG_FLAGS) 
 # F4
-CCFLAGS 	 = $(COMMON_FLAGS) $(DEFINES) $(DIRS) -fno-short-enums \
-		   -ffreestanding	# void main(void)
+CCFLAGS 	 = $(COMMON_FLAGS) $(DEFINES) $(DIRS) \
+						-fno-short-enums \
+						-ffreestanding	# void main(void)
 ASFLAGS 	 = $(COMMON_FLAGS) 
 
-# F1
-LD_DIRS		 = -L$(DIR_TOOLS)/lib/gcc/arm-none-eabi/4.8.4/armv7-m	#libgcc
-LD_DIRS		+= -L$(DIR_TOOLS)/arm-none-eabi/lib/armv7-m 		# libc, libm
-# F4
+# F1, F4
 #LD_DIRS		 = -L$(DIR_TOOLS)/lib/gcc/arm-none-eabi/4.8.4/armv7-m	#libgcc
-#LD_DIRS		+= -L$(DIR_TOOLS)/arm-none-eabi/lib/armv7e-m 		# libc, libm
-#LINKER_FILE 	 = $(wildcard src/lib/*.ld)
-	# STM32F1
-	#LINKER_FILE 	 = $(wildcard src/lib/f1/*.ld)
-# STM32F4
-#LINKER_FILE 	 = $(wildcard src/lib/f4/*.ld)
-#LINKER_FILE		= src/lib/f4/new.ld
-LINKER_FILE		= src/lib/f4/stm32.ld
+#LD_DIRS		+= -L$(DIR_TOOLS)/arm-none-eabi/lib/armv7-m 		# libc, libm
+#LD_DIRS		+= -L/usr/local/lib/gcc/arm-none-eabi/4.9.1/	# pkg: arm-none-eabi-*	libgcc
+LD_DIRS 		= -L src/lib/toolchain/armv7-m
 
+LINKER_FILE		= src/lib/f4/stm32.ld
 
 # -nostartupfiles	ne linka crt*.o objektne fajlove
 # --gc-sections ne smije bit za GCC
@@ -167,3 +193,4 @@ clean:
 
 upload:
 	./upload.sh
+
