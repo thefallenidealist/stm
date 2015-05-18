@@ -40,6 +40,6 @@ struct wlan_modul_t
 };
 
 // javni prototipi
-wlan_modul_t	*wlan_new(uint8_t uart, uint16_t speed);
+wlan_modul_t	*wlan_new(uint8_t uart, uint32_t speed);
 
 #endif

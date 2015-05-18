@@ -25,10 +25,18 @@ static char uptime_str[35] = {};	// 34 je maksimalno za 170 godina
 **************************************************************************************************/
 void delay_init(void)
 {
+#ifdef STM32F4XX
     RCC_ClocksTypeDef RCC_Clocks;
     RCC_GetClocksFreq(&RCC_Clocks);
     //SysTick_Config(RCC_Clocks.HCLK_Frequency / 1000); // 1ms
     SysTick_Config(RCC_Clocks.HCLK_Frequency / 1000000);    // 1us
+#endif
+#ifdef STM32F1
+	if(SysTick_Config(SystemCoreClock / 1000000) !=0)	// 1000000 Hz 1000 kHz	1Mhz	1us
+	{
+		while(1);	// error
+	}
+#endif
 }
 
 /**************************************************************************************************

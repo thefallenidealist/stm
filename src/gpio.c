@@ -22,6 +22,7 @@ static int8_t gpio_real_init(gpio_hw_t *gpio0, direction_t direction)
 		GPIO_InitStruct.GPIO_Pin = gpio0->pin;
 		GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
 
+#ifdef STM32F4XX
 		if (direction == OUT)
 		{
 			GPIO_InitStruct.GPIO_Mode  = GPIO_Mode_OUT;
@@ -44,6 +45,25 @@ static int8_t gpio_real_init(gpio_hw_t *gpio0, direction_t direction)
 
 		//RCC_APB2PeriphClockCmd(gpio0->rcc, ENABLE);	// mali ARM
 		RCC_AHB1PeriphClockCmd(gpio0->rcc, ENABLE);	// masni ARM
+#endif
+#ifdef STM32F1
+		if (direction == OUT)
+		{
+			GPIO_InitStruct.GPIO_Mode = GPIO_Mode_Out_PP;
+
+		}
+		else if (direction == IN)
+		{
+			GPIO_InitStruct.GPIO_Mode  = GPIO_Mode_IPD;
+		}
+		else
+		{
+			ERROR("Wrong GPIO diretion\n");
+			return EXIT_GPIO_WRONG_DIRECTION;
+		}
+
+		RCC_APB2PeriphClockCmd(gpio0->rcc, ENABLE);	// mali ARM
+#endif
 		GPIO_Init(gpio0->port, &GPIO_InitStruct);
 
 		DEBUG_END;
@@ -85,6 +105,7 @@ static gpio_hw_t *gpio_parse(const char *arg)
 			gpio_tmp.rcc  = RCCC;
 			gpio_tmp.port = GPIOC;
 			break;
+#ifndef STM32F1
 		case 'D':
 		case 'd':
 			gpio_tmp.rcc  = RCCD;
@@ -95,6 +116,7 @@ static gpio_hw_t *gpio_parse(const char *arg)
 			gpio_tmp.rcc  = RCCE;
 			gpio_tmp.port = GPIOE;
 			break;
+#endif
 		default:
 			ERROR("Wrong GPIO port\n");
 			DEBUG_END;
@@ -198,16 +220,16 @@ int8_t gpio_init(const char *arg, direction_t direction)
 }
 
 /*************************************************************************************************
-  			gpio()
+  			gpio_write()
 *************************************************************************************************/
-int8_t gpio(const char *arg, state_t state)
+int8_t gpio_write(const char *arg, state_t state)
 {
 	DEBUG_START;
 	gpio_hw_t *gpio0 = gpio_parse(arg);
 
 	if (gpio0 != NULL)
 	{
-		DEBUG_INFO("gpio() successful\n");
+		DEBUG_INFO("gpio_write() successful\n");
 		//printf("arg: %s, state: %d\n", arg, state);
 
 		if (state == TOGGLE)

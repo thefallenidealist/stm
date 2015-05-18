@@ -1,5 +1,3 @@
-// XXX	moguci zajeb sa clang libovima
-
 #include "clang_patch.h"
 
 
@@ -8,14 +6,6 @@ void __aeabi_memset(void *dest, char c, size_t n)
 {
 	memset(dest, c, n);
 }
-
-// odjednom treba za USART_SendData(string)
-/*
-void __aeabi_memcpy(void *dest, char c, size_t n)
-{
-	memcpy(dest, c, n);
-}
-*/
 
 void __aeabi_memcpy(void *dest, const void *src, size_t n)
 {

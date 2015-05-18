@@ -19,7 +19,7 @@ void uart_init(uint8_t uart_number, uint32_t speed)
 			uart1_init(speed);
 			break;
 		case 2:
-			uart2_init(speed);
+			//uart2_init(speed);	TODO F1 
 			break;
 		case 3:
 		case 4:
@@ -41,72 +41,67 @@ void uart1_init(uint32_t speed)
 	USART_InitTypeDef	USART_InitStructure;
 	NVIC_InitTypeDef	NVIC_InitStructure;
 
-	// 1 RCC init
-	//RCC_APB2PeriphClockCmd(USART1_GPIO_RCC, ENABLE);	// F1	F4
+#if defined STM32F1 || defined STM32F10X_MD
+	// TODO
+	RCC_APB2PeriphClockCmd(UART1_GPIO_RCC, ENABLE);
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
+	RCC_APB2PeriphClockCmd(UART1_RCC, ENABLE);
 
+	GPIO_InitStructure.GPIO_Speed	= GPIO_Speed_50MHz;
+	//GPIO_InitStructure.GPIO_Speed 	= GPIO_Speed_2MHz;
+	GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_AF_PP;
 
-	// GPIO clock
-	//RCC_APB2PeriphClockCmd(USART1_RCC, ENABLE);	// F1
-	//RCC_AHB1PeriphClockCmd(USART1_RCC, ENABLE);	// F4	
+	GPIO_InitStructure.GPIO_Pin = UART1_TX_Pin;
+	GPIO_Init(UART1_GPIO, &GPIO_InitStructure);
+
+	GPIO_InitStructure.GPIO_Pin = UART1_RX_Pin;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;	// moze i IPD/IPU
+
+	GPIO_Init(UART1_GPIO, &GPIO_InitStructure);
+#endif
+
+#if defined STM32F4XX || defined STM32F4
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);
-	//RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
 
-	// 3 GPIO
+	GPIO_PinAFConfig(UART1_GPIO, UART1_TX_AF, GPIO_AF_USART1);
+	GPIO_PinAFConfig(UART1_GPIO, UART1_RX_AF, GPIO_AF_USART1);
 
-	GPIO_PinAFConfig(GPIOB, GPIO_PinSource6, GPIO_AF_USART1);
-	GPIO_PinAFConfig(GPIOB, GPIO_PinSource7, GPIO_AF_USART1);
-	//GPIO_PinAFConfig(GPIOA, GPIO_PinSource9, GPIO_AF_USART1);
-	//GPIO_PinAFConfig(GPIOA, GPIO_PinSource10, GPIO_AF_USART1);
+	GPIO_InitStructure.GPIO_Pin 	= UART1_RX_Pin | UART1_TX_Pin; 
+	GPIO_InitStructure.GPIO_Speed	= GPIO_Speed_50MHz;
+	GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_AF;
+	GPIO_InitStructure.GPIO_OType	= GPIO_OType_PP;
+	GPIO_InitStructure.GPIO_PuPd 	= GPIO_PuPd_UP;
 
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_7; // GPIOB
-	//GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9 | GPIO_Pin_10;	// GPIOA
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	//GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;	// F1
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;		// F4
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
-	//GPIO_Init(USART1_GPIO, &GPIO_InitStructure);
-	GPIO_Init(GPIOB, &GPIO_InitStructure);
-	//GPIO_Init(GPIOA, &GPIO_InitStructure);
-
-	//GPIO_InitStructure.GPIO_Pin = USART1_RX_Pin;
-	//GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;	// moze i IPD/IPU		// F1
-	////GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;						// F4
-	//GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;		// F4
-	//GPIO_Init(USART1_GPIO, &GPIO_InitStructure);
+	GPIO_Init(UART1_GPIO, &GPIO_InitStructure);
 
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);
+#endif
 
-	USART_InitStructure.USART_BaudRate = speed;
-	USART_InitStructure.USART_WordLength = USART_WordLength_8b;
-	USART_InitStructure.USART_StopBits = USART_StopBits_1;
-	USART_InitStructure.USART_Parity = USART_Parity_No;
+	USART_InitStructure.USART_BaudRate 		= speed;
+	USART_InitStructure.USART_WordLength 	= USART_WordLength_8b;
+	USART_InitStructure.USART_StopBits 		= USART_StopBits_1;
+	USART_InitStructure.USART_Parity 		= USART_Parity_No;
 	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
-	USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;		// CTS and RTS are not used
+	USART_InitStructure.USART_Mode 			= USART_Mode_Rx | USART_Mode_Tx;
 	USART_Init(USART1, &USART_InitStructure);
-	//USART_Cmd(USART1, ENABLE);				// Enable USART1
+	USART_Cmd(USART1, ENABLE);				// Enable USART1
 
 	USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
 	//USART_ITConfig(USART1, USART_IT_TXE, ENABLE);	// mora bit ispod USART1 ENABLE
 
-	// 2 NVIC
 	// Enable the USART1 Interrupt
-	NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQn;
-	//NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
-	//NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;
-	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_InitStructure.NVIC_IRQChannel 						= USART1_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority	= 0;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority 			= 0;
+	NVIC_InitStructure.NVIC_IRQChannelCmd 					= ENABLE;
 	NVIC_Init(&NVIC_InitStructure);
 
-	//void __enable_irq(void);
-
-	USART_Cmd(USART1, ENABLE);				// Enable USART1
 }
 
 /************************************************************************************************
 *  				UART2_init()							*
 *************************************************************************************************/
+/*
 void uart2_init(uint32_t speed)
 {
 	GPIO_InitTypeDef	GPIO_InitStructure;
@@ -154,6 +149,7 @@ void uart2_init(uint32_t speed)
 
 	USART_Cmd(USART2, ENABLE);
 }
+*/
 
 /************************************************************************************************
 *  				USART1_IRQHandler()						*
@@ -236,7 +232,6 @@ void uart_puts(uint8_t uart, char *string)
 /*************************************************************************************************
   				USART2 IRQ
 *************************************************************************************************/
-
 void USART2_IRQHandler(void)
 {
 	// samo kopira u globalni buffer

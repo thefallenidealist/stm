@@ -2,13 +2,15 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-#include "debug.h"
+//#include "debug.h"
 #include "newlib_stubs.h"
 #include "clang_patch.h"
 #include "uart.h"
 #include "gpio.h"
 #include "delay.h"
 #include "blinky.h"
+
+void main(void);
 
 //#include "rtc2.h"
 //#include "eeprom.h" 	// 3.3V
@@ -27,20 +29,21 @@
 //#include "wlan.h"
 //#include "rtc_ext.h"
 //#include "rom.h"
-//#include "nRF.h"
+#include "nRF.h"
 //#include "flash.h"
+//#include "cpu_id.h"
+//#include "pwm.h"
 
 void main(void)
 {
     //TODO enum npr TICK_EVERY_US i TICK_EVERY_MS da se moze definirat (i da delayevi rade kako treba bez rekonfiguracije)
 
 	delay_init();
-	//led_init("PA1");
 
-	uart1_init(115200);
+	uart_init(1, 115200);
 	uart_clear(1);
 
-	printf("\t\t\t\tSTM32 pocetak\n");
+	printf("\t\t\t\tSTM32 masni ARM\n");
 	printf("Na pocetku bješe štos.\n");
 	printf("________________________________________________________________________________\n");
 
@@ -59,8 +62,13 @@ void main(void)
 	gpio_init("PA0", IN);	// tipka
 
 #ifdef BLINKY_H
+#if defined STM32F4 || defined STM32F4XX
 	blinky_blinky_init(BLINKY_LED_ALL, 0);
 	//blinky_blinky_init(BLINKY_LED_BLUE, 0);
+#endif
+#if defined STM32F1 || defined STM32F10X_MD
+	//blinky
+#endif
 #endif
 
 #ifdef GLCD_H
@@ -83,6 +91,7 @@ void main(void)
 #endif
 #ifdef NRF_H
 	if (nRF_main() != 0)
+	//if (nRF_main2() != 0)
 	{
 		printf("%s(): nRF_main has failed\n", __func__);
 	}
@@ -93,7 +102,16 @@ void main(void)
 #endif
 
 	gpio_init("PA1", OUT);
-	gpio("PA1", 1);
+	gpio_write("PA1", 1);
+
+#ifdef CPU_ID_H
+	print_cpu_id();
+#endif
+
+
+#ifdef PWM_H
+	pwm_main();
+#endif 
 
 
 	printf("sad ide while\n");
@@ -103,12 +121,8 @@ void main(void)
 #ifdef BLINKY_H
 		blinky_blinky(50);
 #endif
-		//wii_read();
 
-		/*
-		gpio("PA1", 2);
-		delay_ms(40);
-		*/
+		//wii_read();
 
 		//printf("GPIO read: %d\n", gpio_read("PA0"));
 

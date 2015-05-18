@@ -20,7 +20,7 @@ void glcd_writeCmd(uint8_t data)
 	glcd_dc_low();
 	glcd_cs_low();
 	//spi_write(data);
-	spi_write_fast(data);
+	spi_write_fast(1, data);
 	//spi_rw(data);
 	glcd_cs_high();
 }
@@ -30,7 +30,7 @@ void glcd_writeData(uint8_t data)
 	glcd_dc_high();
 	glcd_cs_low();
 	//spi_write(data);
-	spi_write_fast(data);
+	spi_write_fast(1, data);
 	//spi_rw(data);
 	glcd_cs_high();
 }
@@ -48,7 +48,7 @@ void glcd_writeData16(uint16_t data)
 	spi_write_fast(dataH);
 	spi_write_fast(dataL);
 	*/
-	spi_write16_fast(data);
+	spi_write16_fast(1, data);
 	//spi_rw16(data);	// XXX razjebe
 	glcd_cs_high();
 }

@@ -21,7 +21,7 @@ void glcd_io_init(void)
 
 void glcd_spi_init(void)
 {
-	spi_init();
+	spi_init(1, 2);
 	//spi2_init();
 }
 

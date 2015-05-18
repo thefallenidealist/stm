@@ -14,6 +14,7 @@ int8_t nRF_hw_init(nRF_hw_t *nRF0)
 	{
 		//printf("%s(): cs: %s\n", __func__, cs);
 		gpio_init(cs, OUT);
+		gpio_write(cs, 1);
 	}
 	else
 	{
@@ -24,6 +25,7 @@ int8_t nRF_hw_init(nRF_hw_t *nRF0)
 	{
 		//printf("%s(): ce: %s\n", __func__, nRF0->ce);
 		gpio_init(ce, OUT);
+		gpio_write(ce, 0);
 	}
 	else
 	{
@@ -40,7 +42,6 @@ int8_t nRF_hw_init(nRF_hw_t *nRF0)
 		DEBUG_INFO("IRQ pin not connected\n");
 	}
 
-	//if (spi_init(1, prescaler))
 	if (spi_init(nRF0->spi_port, prescaler))
 	{
 		ERROR("SPI not initialized\n");

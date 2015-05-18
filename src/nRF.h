@@ -133,17 +133,20 @@ extern uint8_t nRF_TX_buffer[32];
 /*************************************************************************************************
 				private function prototypes
 *************************************************************************************************/
-static void 	ce				(nRF_hw_t *nRF0, state_t state);
+/*
+static void 	ce				(nRF_hw_t *nRF0, state_t state)	__attribute__((unused));
 static void 	cs				(nRF_hw_t *nRF0, state_t state);
 static uint8_t 	read_reg		(nRF_hw_t *nRF0, uint8_t reg);
 static void 	print_reg		(nRF_hw_t *nRF0, uint8_t reg);
 static uint8_t 	write_reg		(nRF_hw_t *nRF0, uint8_t reg);
-static uint8_t 	write_reg_full	(nRF_hw_t *nRF0, uint8_t reg, uint8_t value);
+*/
+static uint8_t 	write_reg_full	(nRF_hw_t *nRF0, uint8_t reg, uint8_t value)
+	__attribute__((unused));	// [-Wunused-function]
 
 /*************************************************************************************************
 				public function prototypes
 *************************************************************************************************/
-int8_t	nRF_main();
+int8_t	nRF_main(void);
 int8_t 	nRF_hw_init(nRF_hw_t *nRF0);
 
 void	nRF_set_address_width		(nRF_hw_t *nRF0, uint8_t width);
@@ -204,6 +207,20 @@ uint8_t*	nRF_read_payload	(nRF_hw_t *nRF0);
 void 		nRF_write_payload	(nRF_hw_t *nRF0, uint8_t *buffer, uint8_t length);
 
 void nRF_start_listening(nRF_hw_t *nRF0);
+void nRF_stop_listening(nRF_hw_t *nRF0);
+
+
+void nrf24_powerUpRx(nRF_hw_t *nRF0);
+void nrf24_powerUpTx(nRF_hw_t *nRF0);
+void nrf24_powerDown(nRF_hw_t *nRF0);
+
+void nRF_flush_TX(nRF_hw_t *nRF0);
+void nRF_flush_RX(nRF_hw_t *nRF0);
+
+
+int8_t nRF_main2(void);
+
+
 
 
 #endif

@@ -2,10 +2,14 @@
 #define SPI_H
 
 #ifdef STM32F10X_MD
+	#include "stm32f10x_rcc.h"
+	#include "stm32f10x_gpio.h"
 	#include "stm32f10x_spi.h"
 #endif
 
-#ifdef STM32F4XX
+#if defined STM32F4XX || defined STM32F4
+	#include "stm32f4xx_rcc.h"
+	#include "stm32f4xx_gpio.h"
 	#include "stm32f4xx_spi.h"
 	#include "stm32f4xx_dma.h"
 #endif

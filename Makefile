@@ -1,142 +1,96 @@
 # created 141129
 # ovo koristi FreeBSDov stdio.h, stdint.h, unistd.h i sl. newlib-ov printf je zakurac
 # -mthumb -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16
-
-# newlib mozda TODO sluzbena dokumentacija
-# -enable-newlib-io-c99-formats
-# 	--enable-newlib-mb		# multibyte support
-# `--enable-newlib-nano-malloc'
-		# gcc -nostdlib 		$(target_install_dir)/lib/crt0.o progname.c -I $(target_install_dir)/include -L $(target_install_dir)/lib -lc -lm -lgcc
-# static: gcc -nostdlib -static $(target_install_dir)/lib/crt0.o progname.c -I $(target_install_dir)/include -L $(target_install_dir)/lib -lc -lm
-
-# newlib TODO negdje sa neta
-#     --with-cpu=cortex-m4 --with-fpu=fpv4-sp-d16 --with-mode=thumb
-
-# newlib TODO
-# make all-target-newlib
-# make all-target-libgloss
-# make install-target-newlib
-# make install-target-libgloss
-# ./configure --target=arm-none-eabi --prefix=/usr/local/arm-none-eabi --enable-interwork --enable-multilib --disable-libssp --disable-nls --enable-newlib-io-long-long --enable-newlib-register-fini --disable-newlib-supplied-syscalls
-# make CFLAGS_FOR_TARGET="-D__IEEE_BIG_ENDIAN -D__IEEE_BYTES_LITTLE_ENDIAN -D__BUFSIZ__=64" && env "PATH=$PATH" make install || env "PATH=$PATH" make install
+# INFO primjer: gmake MCU=F4		MCU=F4 gg
 
 NAME	= main
-
-# To get really good code-size you need to look at options for getting rid of unused code aggressively like -ffunction-sections -fdata-sections --gc-sections in gcc or --split-sections in armcc.
 
 # promijenit i dolje COMMON_FLAGS
 CC  	= clang36
 #CC	= arm-none-eabi-gcc
-# ne moze se if koristit izvan recepta
-UNAME := $(shell uname -m)	# varijabla iz shella
 
-#DIR_TOOLS	= /usr/local/gcc-arm-embedded-*/
-# linker ne voli * nit tabovi nit komentare u bilo cemu sto ima varijablu za njega. Linker je pizda.
-# pkg: gcc-arm-embedded
-#DIR_TOOLS	= /usr/local/gcc-arm-embedded-4_8-2014q3-20140805
-# pkg: arm-none-eabi-{gcc,binutils}
-DIR_TOOLS	= /usr/local
-LD  	= $(DIR_TOOLS)/bin/arm-none-eabi-ld
-#LD	= ld.gold
-OBJCOPY = $(DIR_TOOLS)/bin/arm-none-eabi-objcopy
-SIZE	= $(DIR_TOOLS)/bin/arm-none-eabi-size
+DIR_TOOLS	= /usr/local/bin
+LD  		= $(DIR_TOOLS)/arm-none-eabi-ld
+OBJCOPY 	= $(DIR_TOOLS)/arm-none-eabi-objcopy
+SIZE		= $(DIR_TOOLS)/arm-none-eabi-size
 
-DIR_OBJ = ./obj
-DIR_BIN = ./bin
+DIR_OBJ 	= ./obj
+DIR_BIN 	= ./bin
 
-TARGET	= -target thumb-unknown-eabi
-#ARCH	= armv7-m		# nekoristeno nigdje
-CPU	= -mcpu=cortex-m3 
-# GCC V4 does not sopport the Cortex -M4
+TARGET	= -target thumb-unknown-eabi	# needed for clang
+CPU		= -mcpu=cortex-m3 
 #CPU	= -mcpu=cortex-m4 	# TODO
-#DEFINES	= -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER 
-DEFINES		= -DSTM32F4XX -DUSE_STDPERIPH_DRIVER 
+
+DEFINES		= -DUSE_STDPERIPH_DRIVER 
 #OPTS	= -O0 -g	# XXX ne radi
 #OPTS	= -O1 -g 
 #OPTS	= -O2 -g 
-OPTS	= -O2
+OPTS	= -O2 -g
 #OPTS	= -O3 -g
-DIRS 	=  -Isrc \
-	   -Isrc/lib/f4\
-	   -I.
 
-# INFO objasnjenja INFO
+DIRS 	=	-I src \
+			-I.
+
+ifeq ($(MCU), F4)
+	ARCH	= armv7e-m
+	DIRS	+= -I src/lib/f4
+	DEFINES += -DSTM32F4XX
+	LINKER_FILE		= src/lib/f4/stm32.ld
+	SRC_S	= $(wildcard src/lib/f4/*.s)
+endif
+ifeq ($(MCU), F1)
+	ARCH	= armv7-m
+	DIRS	+= -I src/lib/f1
+	DEFINES	+= -DSTM32F10X_MD
+	LINKER_FILE		= src/lib/f1/stm32.ld
+	SRC_S	= $(wildcard src/lib/f1/*.s)
+endif
+
+# INFO objasnjenja
 # -mno-thumb-interwork		# nemoj koristit ARM i Thumb zajedno	# default GCC
 # -mlittle-endian			# default GCC
 # -mtune=cortex-m4
-
-# clang
-#COMMON_FLAGS 	 = $(TARGET) $(CPU) $(OPTS) -nostdlib -mfloat-abi=soft -Wall
-#TODO -flto remove unused functions
-CLANG_FLAGS	 = $(TARGET) -Wformat
-# INFO ne radi sa sysroot iako ga usmjerim u folder gdje su headeri /usr/local/gcc-arm-embedded-4_8-2014q3-20140805/arm-none-eabi
-#CLANG_FLAGS	 = $(TARGET)  --sysroot /dev/null -I/usr/local/gcc-arm-embedded-4_8-2014q3-20140805/arm-none-eabi/include \
-#-I/usr/local/gcc-arm-embedded-4_8-2014q3-20140805/lib/gcc/arm-none-eabi/4.8.4/include
-#GCC_FLAGS 	 = -std=c99 -mthumb -mno-thumb-interwork -fno-common -fno-strict-aliasing -fmessage-length=0 -fno-builtin -Wp,-w 
-# -Wmissing-prototypes 
-# F1
-#COMMON_FLAGS 	 = $(CPU) $(OPTS) -nostdlib -nostdinc -I/usr/local/gcc-arm-embedded-4_8-2014q3-20140805/arm-none-eabi/include/ -I/usr/local/gcc-arm-embedded-4_8-2014q3-20140805/lib/gcc/arm-none-eabi/4.8.4/include -mfloat-abi=soft -Wall $(CLANG_FLAGS) 
-
-
-#COMMON_FLAGS 	 = $(CPU) $(OPTS) -nostdlib -mfloat-abi=soft -Wall $(CLANG_FLAGS) -DDEBUG
-#COMMON_FLAGS 	 = $(CPU) $(OPTS) -nostdlib -mfloat-abi=soft -Wall $(CLANG_FLAGS) -ffreestanding -fno-builtin -nostdinc
-COMMON_FLAGS 	 = $(CPU) $(OPTS) -nostdlib -mfloat-abi=soft -Wall $(CLANG_FLAGS) 
+# -ffunction-sections 		# smanji	nemaju nekog pretjeranog utjecaja te opcije
+# -fdata-sections 			# smanji
+# --gc-sections 			# nije za clang
+# -ffreestanding 			# da nema warning za void main(void)
+# -fno-short-enums 			# znalo posluzit sa starim GCCom i newlibom
 
 # ako je newlib sa hardFP INFO
 #COMMON_FLAGS 	 = $(CPU) $(OPTS) -nostdlib -mfloat-abi=hard -mfpu=fpv4-sp-d16 -Wall $(CLANG_FLAGS) 
-# F4
+#COMMON_FLAGS 	 = $(CPU) $(OPTS) -nostdlib -mfloat-abi=soft -Wall $(CLANG_FLAGS) -ffreestanding -fno-builtin -nostdinc
+COMMON_FLAGS 	 = $(CPU) $(OPTS) -nostdlib -mfloat-abi=soft -Wall $(CLANG_FLAGS)
+
+# clang
+#TODO -flto remove unused functions
+CLANG_FLAGS	 = $(TARGET) -Wformat -Wmissing-prototypes 
+# --sysroot /dev/null TODO
+#GCC_FLAGS 	 = -std=c99 -mthumb -mno-thumb-interwork -fno-common -fno-strict-aliasing -fmessage-length=0 -fno-builtin -Wp,-w 
+
+
 CCFLAGS 	 = $(COMMON_FLAGS) $(DEFINES) $(DIRS) \
-						-fno-short-enums \
-						-ffreestanding	# void main(void)
+						-ffreestanding 
 ASFLAGS 	 = $(COMMON_FLAGS) 
 
-# F1, F4
-#LD_DIRS		 = -L$(DIR_TOOLS)/lib/gcc/arm-none-eabi/4.8.4/armv7-m	#libgcc
-#LD_DIRS		+= -L$(DIR_TOOLS)/arm-none-eabi/lib/armv7-m 		# libc, libm
-#LD_DIRS		+= -L/usr/local/lib/gcc/arm-none-eabi/4.9.1/	# pkg: arm-none-eabi-*	libgcc
-LD_DIRS 		= -L src/lib/toolchain/armv7-m
+LD_DIRS 		= -L src/lib/toolchain/$(ARCH)		# libc, libm, libgcc
 
-LINKER_FILE		= src/lib/f4/stm32.ld
+LD_FLAGS 	 = -nostartfiles -nostdlib -nostartupfiles --gc-sections \
+				--no-enum-size-warning \
+				-Map $(DIR_BIN)/$(NAME).elf.map \
+				-T $(LINKER_FILE) \
+				$(LD_DIRS) $(OBJS) \
+				--start-group -lgcc -lc -lm --end-group 
 
-# -nostartupfiles	ne linka crt*.o objektne fajlove
-# --gc-sections ne smije bit za GCC
-#LD_FLAGS 	 = -nostartfiles -nostdlib -nostartupfiles --gc-sections 
-#LD_FLAGS 	 = -nostartfiles -nostdlib -nostartupfiles 
-LD_FLAGS 	 = -nostdlib \
-		   --no-enum-size-warning \
-		   -Map $(DIR_BIN)/$(NAME).elf.map  -T $(LINKER_FILE)  \
-		   $(LD_DIRS) $(OBJS) \
-             --start-group -lgcc -lc -lm --end-group 
-
-# mora bit izvan recepata
-# mora bit :=, valjda onda samo jednom pokrene i ne razjebe sve ostalo
-# nadji koji sve headeri trebaju mainu i uredi malo ispis
-# promijeni .c i .h u .x radi lakseg kasnije pretvaranja u .o
-# TODO napravit da ne $(NAME) ne mora bit u src nego da ga sam nadje bilo gdje u $(DIRS)
-# XXX razjebe se jer nema stm32f10x.c nego samo .h
-#DEPENDCIES := $(shell $(CC) $(DEFINES) $(DIRS) -MM src/$(NAME).c | sed 's/main.o: //g' | sed 's/\\//g' | sed 's/\../\.x/g' )
 
 # pronadji jel postoji .c fajl umjesto .x (nisu svi fajlovi u paru .h/.c)
-# XXX jebacki kludge
-DEPEND_C = $(shell ./skriptica.sh)
+# XXX kludge
+DEPEND_C = $(shell ./skriptica.sh $(MCU))
 
-#DEPEND_C = $(shell for i in $DEPENDCIES; do n=`echo $i | sed 's/\.h/\.c/g'` ; if [ -f $n ]; then echo $n | sed 's/\.c/\.x/g'; fi; done )
-#DEPEND_C = $(shell NAME=$(NAME) for VAR in $(DEPENDCIES); do echo $(NAME); done )	# XXX nece uopce ispisat $(VAR), al oce konstantu
-
-#SRC_S = $(wildcard src/lib/*.s)
-	# STM32F1
-	#SRC_S = $(wildcard src/lib/f1/*.s)
-# STM32F4
-SRC_S = $(wildcard src/lib/f4/*.s)
-#SRC_C = $(DEPEND_C:.x=.c) 	# ne smije ovo bit, inace duplicira OBJ
-#SRC_C += src/newlib_stubs.c
 
 # makni foldere, dodaj prefix, preimenuj .x u .o
-OBJS = $(addprefix $(DIR_OBJ)/, $(notdir $(DEPEND_C:.x=.o)))
-OBJS += $(addprefix $(DIR_OBJ)/, $(notdir  $(SRC_S:.s=.o)))	# assembler fajl nije nigdje stavljen, al treba
-OBJS += $(addprefix $(DIR_OBJ)/, $(notdir  $(SRC_C:.c=.o)))	# newlib fajl nije nigdje stavljen, al treba
-
-#@$(CC) -MM $(CCFLAGS) $< > $(DIR_OBJ)/$*.d
+OBJS  = $(addprefix $(DIR_OBJ)/, $(notdir $(DEPEND_C:.x=.o)))
+OBJS += $(addprefix $(DIR_OBJ)/, $(notdir  $(SRC_S:.s=.o)))	# assembler fajl nije nigdje stavljen,
+						#al treba, nece javit gresku ako je zakomentirano, al program nece radit
 
 $(NAME).elf: $(OBJS)
 	@printf "\t\t kompajler: $(CC)\n"
@@ -152,22 +106,25 @@ $(DIR_OBJ)/%.o: src/%.c
 	@printf "\t\t Kuvam src $<\n"
 	@$(CC) $(CCFLAGS) -c -o $@ $<
 
+ifeq ($(MCU), F1)
+$(DIR_OBJ)/%.o: src/lib/f1/%.c
+endif
+ifeq ($(MCU), F4)
 $(DIR_OBJ)/%.o: src/lib/f4/%.c
+endif
 	@printf "\t\t Kuvam lib $<\n"
 	@$(CC) $(CCFLAGS) -c -o $@ $<
 
-# STM32F4
+ifeq ($(MCU), F1)
+$(DIR_OBJ)/%.o: src/lib/f1/%.s
+endif
+ifeq ($(MCU), F4)
 $(DIR_OBJ)/%.o: src/lib/f4/%.s
+endif
 	@printf "\t\t Kuvam ass $<\n"
 	@$(CC) $(ASFLAGS) -o $@ -c $<
 
 env:
-	@echo UNAME:
-	@echo $(UNAME)
-	@echo SRC_C:
-	@echo $(SRC_C)
-	@echo ""
-
 	@echo SRC_S:
 	@echo $(SRC_S)
 	@echo ""
@@ -176,16 +133,11 @@ env:
 	@echo $(OBJS)
 	@echo ""
 
-	@echo DEPENDCIES:
-	@echo $(DEPENDCIES)
-	@echo ""
-
 	@echo DEPEND_C:
 	@echo $(DEPEND_C)
 	@echo TMP:
 	@echo $(TMP)
 	@echo ""
-	@echo $(PWD)
 
 clean:
 	@printf "\t\t Cleaning\n"

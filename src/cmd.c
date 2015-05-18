@@ -1,5 +1,5 @@
 #include "cmd.h"
-#include "rtc2.h"
+//#include "rtc2.h"
 #include "colors_ansi.h"
 #include "debug.h"
 
@@ -46,7 +46,7 @@ void uart_cmd(char *cmd, char *arg)
 	{
 		printf("LED PA1 toggle\n");
 		uint8_t state = (uint8_t) atoi(&arg[0]);
-		gpio("PA1", state);
+		gpio_write("PA1", state);
 		//glcd_test();
 	}
 

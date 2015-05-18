@@ -18,7 +18,7 @@ typedef struct
 RTC_data_t RTC_data;
 
 void rtc_set_time(uint8_t h, uint8_t m, uint8_t s);
-RTC_data_t *rtc_get_time();
+RTC_data_t *rtc_get_time(void);
 void rtc_main(void);
 
 #endif

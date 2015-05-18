@@ -2,6 +2,9 @@
 #ifndef I2C_H
 #define I2C_H
 
+// TODO izvuc pinout vamo
+// PB10, PB11	F4
+
 #include <stdio.h>
 #include <stdint.h>
 

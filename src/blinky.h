@@ -6,10 +6,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-//#include "stm32f4xx_rcc.h"
-//#include "stm32f4xx_gpio.h"
 #include "delay.h"
-//#include "led.h"
 #include "gpio.h"
 
 /*

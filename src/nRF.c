@@ -52,7 +52,8 @@ int8_t nRF_main()
 	//printf("nRF RX: %p\n", &rf_rx);
 
 	rf_tx.spi_port = 1;
-	rf_tx.spi_prescaler = 32;
+	//rf_tx.spi_prescaler = 32;
+	rf_tx.spi_prescaler = 64;	// pokusaj da bude iste SPI brzine kao tx
 	rf_tx.cs = "PA4";
 	rf_tx.ce = "PA3";
 	//rf_tx.irq = "";	// NC
@@ -79,41 +80,96 @@ int8_t nRF_main()
 		 return -1;
 	}
 
+	delay_ms(50);
+
+	/*
+	nRF_power_off(&rf_tx);
+	nRF_power_off(&rf_rx);
+	delay_ms(50);
+	*/
+
+	nrf24_powerUpTx(&rf_tx);
+	nrf24_powerUpRx(&rf_rx);
+	delay_ms(50);
+
+
+	/*
+	nRF_power_on(&rf_tx);
+	nRF_power_on(&rf_rx);
+	delay_ms(20);
+	delay_ms(50);
+	*/
+
+
+	/*
+	reg_tmp[PWR_UP] = 1;
+	reg_tmp[PRIM_RX] = 0;
+	write_reg(&rf_tx, REG_CONFIG);
+
+	reg_tmp[PWR_UP] = 1;
+	reg_tmp[PRIM_RX] = 1;
+	write_reg(&rf_rx, REG_CONFIG);
+	delay_ms(5);
+	delay_ms(50);
+	*/
+
+	nRF_flush_RX(&rf_tx);
+	nRF_flush_TX(&rf_tx);
+	nRF_flush_RX(&rf_rx);
+	nRF_flush_TX(&rf_rx);
+	delay_ms(5);
+
+	/*
 	nRF_set_mode(&rf_tx, TX);
 	nRF_set_mode(&rf_rx, RX);
+	delay_ms(5);
+	*/
 
 	nRF_clear_bits(&rf_tx);
 	nRF_clear_bits(&rf_rx);
+	delay_ms(5);
 
 	nRF_set_retransmit_count(&rf_tx, 15);
 	nRF_set_retransmit_count(&rf_rx, 15);
+	delay_ms(5);
 	nRF_set_retransmit_delay(&rf_tx, DELAY_1ms);
 	nRF_set_retransmit_delay(&rf_rx, DELAY_1ms);
+	delay_ms(5);
 
 	nRF_set_channel(&rf_tx, 0);
 	nRF_set_channel(&rf_rx, 0);
+	delay_ms(5);
 
 	nRF_set_output_power(&rf_tx, power_0dBm);
 	nRF_set_output_power(&rf_rx, power_0dBm);
+	delay_ms(5);
 
 	nRF_set_datarate(&rf_tx, datarate_1Mbps);
 	nRF_set_datarate(&rf_rx, datarate_1Mbps);
+	delay_ms(5);
 
 	nRF_enable_pipe(&rf_tx, P0);
 	nRF_enable_pipe(&rf_rx, P0);
+	delay_ms(5);
 
 	nRF_set_CRC_length(&rf_tx, CRC_LENGTH_1BTYE);
+	delay_ms(5);
 	nRF_set_CRC_length(&rf_rx, CRC_LENGTH_1BTYE);
+	delay_ms(5);
 	nRF_enable_CRC(&rf_tx);
+	delay_ms(5);
 	nRF_enable_CRC(&rf_rx);
+	delay_ms(5);
 
 	uint8_t addr[5] = "qwert";
 
 	nRF_set_address_width(&rf_tx, 5);
 	nRF_set_address_width(&rf_rx, 5);
+	delay_ms(5);
 	nRF_set_TX_address(&rf_tx, addr);
 	nRF_set_RX_address(&rf_tx, addr);
 	nRF_set_RX_address(&rf_rx, addr);
+	delay_ms(5);
 
 	printf("RF_RX address: %s\n", nRF_get_RX_address(&rf_rx));
 	printf("RF_TX address: %s\n", nRF_get_TX_address(&rf_tx));
@@ -132,8 +188,11 @@ int8_t nRF_main()
 	printf("\n");
 	*/
 
+	/*
 	nRF_clear_bits(&rf_tx);
 	nRF_clear_bits(&rf_rx);
+	delay_ms(5);
+	*/
 
 	// present
 	/*
@@ -152,6 +211,7 @@ int8_t nRF_main()
 
 	// start RX listening
 	nRF_start_listening(&rf_rx);
+	delay_ms(5);
 
 	print_reg(&rf_tx, 0x00);
 	print_reg(&rf_rx, 0x00);
@@ -427,4 +487,110 @@ void nRF_stop_listening(nRF_hw_t *nRF0)
 
 	nRF_flush_TX(nRF0);
 	nRF_flush_RX(nRF0);
+}
+
+
+void nrf24_powerUpRx(nRF_hw_t *nRF0)
+{
+	//nrf24_csn_digitalWrite(LOW);
+	//spi_transfer(FLUSH_RX);
+	//nrf24_csn_digitalWrite(HIGH);
+	nRF_flush_RX(nRF0);
+
+	//nrf24_configRegister(STATUS,(1<<RX_DR)|(1<<TX_DS)|(1<<MAX_RT));
+	//nrf24_ce_digitalWrite(LOW);
+	//nrf24_configRegister(CONFIG,nrf24_CONFIG|((1<<PWR_UP)|(1<<PRIM_RX)));
+	//nrf24_ce_digitalWrite(HIGH);
+
+	write_reg_full(nRF0, REG_STATUS, (1 << RX_DR) | (1 << TX_DS) | (1 << MAX_RT));
+	ce(nRF0, 0);
+	write_reg_full(nRF0, REG_CONFIG, (1 << PWR_UP) | (1 << PRIM_RX));
+	ce(nRF0, 1);
+}
+
+void nrf24_powerUpTx(nRF_hw_t *nRF0)
+{
+	//nrf24_configRegister(STATUS,(1<<RX_DR)|(1<<TX_DS)|(1<<MAX_RT));
+	//nrf24_configRegister(CONFIG,nrf24_CONFIG|((1<<PWR_UP)|(0<<PRIM_RX)));
+
+	write_reg_full(nRF0, REG_STATUS, (1 << RX_DR) | (1 << TX_DS) | (1 << MAX_RT));
+	write_reg_full(nRF0, REG_CONFIG, (1 << PWR_UP) | (0 << PRIM_RX));
+}
+
+void nrf24_powerDown(nRF_hw_t *nRF0)
+{
+	//nrf24_ce_digitalWrite(LOW);
+	//nrf24_configRegister(CONFIG,nrf24_CONFIG);
+	ce(nRF0, 0);
+	write_reg_full(nRF0, REG_CONFIG, 0b00000000);
+}
+
+/*************************************************************************************************
+				nRF_main()
+*************************************************************************************************/
+int8_t nRF_main2()
+{
+	printf("%s() pocetak\n", __func__);
+	nRF_hw_t rf_tx;
+	nRF_hw_t rf_rx;
+
+	rf_tx.spi_port = 1;
+	//rf_tx.spi_prescaler = 32;
+	rf_tx.spi_prescaler = 64;	// pokusaj da bude iste SPI brzine kao tx
+	rf_tx.cs = "PA4";
+	rf_tx.ce = "PA3";
+	//rf_tx.irq = "";	// NC
+
+	rf_rx.spi_port = 2;
+	rf_rx.spi_prescaler = 32;
+	rf_rx.cs = "PB5";
+	rf_rx.ce = "PB4";
+	//rf_rx.irq = "PB3";	// NC
+
+	delay_ms(11);	// 10.3 ms		// power on delay
+
+	if (nRF_hw_init(&rf_tx) != 0)
+	{
+		printf("RF_TX is not initialized\n");
+		 return -1;
+	}
+
+	if (nRF_hw_init(&rf_rx) != 0)
+	{
+		printf("RF_RX is not initialized\n");
+		 return -1;
+	}
+
+
+	////////////////// RX mode
+	ce(&rf_rx, 0);
+	//nRF24_WriteBuf(nRF24_CMD_WREG | nRF24_REG_RX_ADDR_P0,nRF24_RX_addr,nRF24_RX_ADDR_WIDTH); // Set static RX address
+	// TODO
+	//write_reg_full(&rf_rx, REG_RX_ADDR
+
+	//nRF24_RWReg(nRF24_CMD_WREG | nRF24_REG_EN_AA,0x01); // Enable ShockBurst for data pipe 0
+	write_reg_full(&rf_rx, REG_EN_AA, 0x01);
+
+	//nRF24_RWReg(nRF24_CMD_WREG | nRF24_REG_EN_RXADDR,0x01); // Enable data pipe 0
+	write_reg_full(&rf_rx, REG_EN_RXADDR, 0x01);
+
+	//nRF24_RWReg(nRF24_CMD_WREG | nRF24_REG_RF_CH,0x6E); // Set frequency channel 110 (2.510MHz)
+	write_reg_full(&rf_rx, REG_RF_CH, 0x6E);
+
+	//nRF24_RWReg(nRF24_CMD_WREG | nRF24_REG_RX_PW_P0,RX_PAYLOAD); // Set RX payload length (10 bytes)
+	write_reg_full(&rf_rx, REG_RX_PW_P0, 10);
+
+	//nRF24_RWReg(nRF24_CMD_WREG | nRF24_REG_RF_SETUP,0x06); // Setup: 1Mbps, 0dBm, LNA off
+	write_reg_full(&rf_rx, REG_RF_SETUP, 0x06);
+
+	//nRF24_RWReg(nRF24_CMD_WREG | nRF24_REG_CONFIG,0x0F); // Config: CRC on (2 bytes), Power UP, RX/TX ctl = PRX
+	write_reg_full(&rf_rx, REG_CONFIG, 0x0f);
+	ce(&rf_rx, 1);
+	// Delay_us(10); // Hold CE high at least 10us
+	delay_us(10);
+	////////////////// RX mode
+
+
+
+	return 0;
 }

@@ -12,7 +12,7 @@ static bool scan_done();
 /*************************************************************************************************
   				wlan_new()
 *************************************************************************************************/
-wlan_modul_t *wlan_new(uint8_t uart, uint16_t speed)
+wlan_modul_t *wlan_new(uint8_t uart, uint32_t speed)
 {
 	DEBUG_START;
 
@@ -29,8 +29,9 @@ wlan_modul_t *wlan_new(uint8_t uart, uint16_t speed)
 	static uint8_t wlan_hw_counter;
 
 	if (wlan_hw_counter < WLAN_MAX_HW)
-	{
-		memcpy(&wlan_moduls[wlan_hw_counter], &wlan0, sizeof(wlan_moduls[wlan_hw_counter]));	// spremi u globalno polje
+	{	
+		// spremi u globalno polje
+		memcpy(&wlan_moduls[wlan_hw_counter], &wlan0, sizeof(wlan_moduls[wlan_hw_counter]));
 	}
 	else
 	{

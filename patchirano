@@ -6,3 +6,7 @@ core_cm3.c
 # 754 linija
    __ASM volatile ("strexh %0, %2, [%1]" : "=&r" (result) : "r" (addr), "r" (value) );
 
+
+# src/lib/f4/stm32f4xx_conf.h
+# zakomentirao linije 34-60
+
