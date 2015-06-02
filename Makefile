@@ -67,7 +67,8 @@ endif
 #TODO -flto remove unused functions
 # --sysroot /dev/null TODO
 
-CLANG_FLAGS	 = $(TARGET) -Wformat -Wmissing-prototypes -ferror-limit=1 
+#CLANG_FLAGS	 = $(TARGET) -Wformat -Wmissing-prototypes -ferror-limit=1 
+CLANG_FLAGS	 = $(TARGET) -Wformat -Wmissing-prototypes
 #GCC_FLAGS 	 = -std=c99 -mthumb -mno-thumb-interwork -fno-common -fno-strict-aliasing -fmessage-length=0 -fno-builtin -Wp,-w 
 
 # ako je newlib sa hardFP INFO

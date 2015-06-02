@@ -88,8 +88,7 @@ void main(void)
 		#define NRF_RX
 	#endif
 
-	//nrf_main11();
-	nrf_main20();
+	nRF_main();
 	//printf("grf: \t0x%X\n", grf);
 #endif
 
@@ -104,7 +103,8 @@ void main(void)
 		blinky(BLINKY_F1);
 	#endif
 #endif
-		//delay_ms(500);
+		delay_ms(500);
+
 #ifdef EXTI_H
 		//printf("EXTI flag: %d\n", exti1_flag);
 		if (exti1_flag == 1)
@@ -122,7 +122,8 @@ void main(void)
 #ifdef NRF_TX
 		printf("nRF TX salje\n");
 		nRF_write_payload(grf, nRF_TX_buffer, nRF_get_payload_size(grf, P0));
-		delay_ms(500);
+		//delay_ms(500);
+		//delay_ms(5);
 #endif
 	}
 }

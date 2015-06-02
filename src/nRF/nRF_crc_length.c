@@ -1,7 +1,7 @@
 /*************************************************************************************************
 				nRF_set_CRC_length()
 *************************************************************************************************/
-int8_t nRF_set_CRC_length(nRF_hw_t *nRF0, crc_length_t crc_length)
+int8_t nRF_set_CRC_length(nRF_hw_t *nRF0, nRF_crc_length_t crc_length)
 {
 	if ( (crc_length < CRC_LENGTH_1BTYE) || (crc_length > CRC_LENGTH_2BTYE) )
 	{
@@ -20,11 +20,11 @@ int8_t nRF_set_CRC_length(nRF_hw_t *nRF0, crc_length_t crc_length)
 /*************************************************************************************************
 				nRF_get_CRC_length()
 *************************************************************************************************/
-crc_length_t nRF_get_CRC_length(nRF_hw_t *nRF0)
+nRF_crc_length_t nRF_get_CRC_length(nRF_hw_t *nRF0)
 {
 	{
 		uint8_t status = read_reg(nRF0, REG_CONFIG);
-		crc_length_t length = (status >> 2) & 1;
+		nRF_crc_length_t length = (status >> 2) & 1;
 		return length;
 	}
 }

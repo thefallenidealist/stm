@@ -1,7 +1,7 @@
 /*************************************************************************************************
 				nRF_set_output_power()
 *************************************************************************************************/
-void nRF_set_output_power(nRF_hw_t *nRF0, output_power_t power)		// reg 0x06
+void nRF_set_output_power(nRF_hw_t *nRF0, nRF_output_power_t power)		// reg 0x06
 {
 	if ( (power < power_minus_18dBm) || (power > power_0dBm) )
 	{

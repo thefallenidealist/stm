@@ -12,7 +12,7 @@ void nRF_set_channel(nRF_hw_t *nRF0, uint8_t ch)					// reg 0x05
 
 	// defaultni kanal 0 = 0000010
 
-	datarate_t datarate = nRF_get_datarate(nRF0);
+	nRF_datarate_t datarate = nRF_get_datarate(nRF0);
 	uint8_t max_ch = 0;
 
 	if (datarate == datarate_1Mbps)

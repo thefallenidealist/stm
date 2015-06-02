@@ -1,7 +1,7 @@
 /*************************************************************************************************
 				nRF_set_payload_size()
 *************************************************************************************************/
-int8_t nRF_set_payload_size(nRF_hw_t *nRF0, pipe_t pipe, uint8_t payload_size)	// reg 0x{11,12,13,14,15,16}
+int8_t nRF_set_payload_size(nRF_hw_t *nRF0, nRF_pipe_t pipe, uint8_t payload_size)	// reg 0x{11,12,13,14,15,16}
 {
 	// broj bajtova koje zelimo slat i primat za odredjeni pajp
 
@@ -40,7 +40,7 @@ int8_t nRF_set_payload_size(nRF_hw_t *nRF0, pipe_t pipe, uint8_t payload_size)	/
 /*************************************************************************************************
 				nRF_get_payload_size()
 *************************************************************************************************/
-int8_t nRF_get_payload_size(nRF_hw_t *nRF0, pipe_t pipe)			// reg 0x{11,12,13,14,15,16}
+int8_t nRF_get_payload_size(nRF_hw_t *nRF0, nRF_pipe_t pipe)			// reg 0x{11,12,13,14,15,16}
 {
 	if (pipe > 5)
 	{

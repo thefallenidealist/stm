@@ -1,7 +1,7 @@
 /*************************************************************************************************
 				nRF_enable_pipe()
 *************************************************************************************************/
-int8_t nRF_enable_pipe(nRF_hw_t *nRF0, pipe_t pipe)					// reg 0x02
+int8_t nRF_enable_pipe(nRF_hw_t *nRF0, nRF_pipe_t pipe)					// reg 0x02
 {
 
 	//printf("%s(): argument: %d\n", __func__, pipe);

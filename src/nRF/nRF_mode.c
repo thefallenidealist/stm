@@ -15,48 +15,11 @@ void nRF_set_mode(nRF_hw_t *nRF0, nRF_mode_t mode)
 	}
 	else
 	{
-		/*
-		if (nRF_powered(nRF0) == 1)
-		{
-			// treba ga ugasit prije stimanja moda
-			// XXX	moguce da ga ovdje sjebe pa nakon ARM reseta se zablokira
-			printf("Gasim pizdariju\n");
-			nRF_power_off(nRF0);
-		}
-		*/
-
-		/*
-		printf("Gasim pizdariju za svaki slucaj: %p\n", nRF0);
-		nRF_power_off(nRF0);
-		delay_ms(50);	// bezveze
-		// moguce da ga ovaj delay i ovi dolje od 100 ms poprave, TODO provjerit nekako
-		*/
-
-		/*
-		if (mode == RX)
-		{
-			reg_tmp[PRIM_RX] = mode;
-			write_reg(nRF0, REG_CONFIG);
-
-			//printf("Palim pizdariju: %p, mode: RX\n", nRF0);
-			//nRF_power_on(nRF0);
-			//delay_ms(100);	//
-		}
-		else if (mode == TX)
-		{
-			reg_tmp[PRIM_RX] = mode;
-			write_reg(nRF0, REG_CONFIG);
-
-			//printf("Palim pizdariju: %p, mode: TX\n", nRF0);
-			//nRF_power_on(nRF0);
-			//delay_ms(100);	//
-
-		}
-		*/
 		if ( (mode == RX) || (mode == TX) )
 		{
 			reg_tmp[PRIM_RX] = mode;
 			write_reg(nRF0, REG_CONFIG);
+			delay_us(130);	// TX/RX settling, datasheet page 22
 			// zapisi i u objekt
 			nRF0->mode = mode;
 		}

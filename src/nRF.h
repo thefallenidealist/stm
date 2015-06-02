@@ -31,6 +31,7 @@ typedef struct
 {
 	uint8_t spi_port;
 	//uint8_t spi_speed_MHz;	// TODO
+	// max 10 MHz SPI
 	uint16_t spi_prescaler;
 	char	*cs;
 	char	*ce;
@@ -44,19 +45,9 @@ typedef struct
 	uint8_t address_width;
 	uint8_t	rx_address[6][6];	// 6 pipes with max 5 bytes of address (+ NULL)
 	uint8_t tx_address[6];
-	//uint8_t rx_payload_size[6];
-	nRF_mode_t	mode;
+	//uint8_t rx_payload_size[6];	// procita direktno sa divajsa, valjda
+	nRF_mode_t	mode;	// RX or TX
 } nRF_hw_t;
-
-/*
-typedef struct
-{
-	nRF_hw_t 	hw;
-	nRF_mode_t	type;
-	char		*address;
-} nRF_t;
-*/
-
 
 typedef enum
 {
@@ -80,15 +71,14 @@ typedef enum
 	DELAY_3750us = 14,
 	DELAY_4000us = 15,
 	DELAY_4ms    = 15
-} delay_t;
-// TODO nRF_ prefiks ispreda datatypeova
+} nRF_delay_t;
 
 typedef enum
 {
 	datarate_1Mbps = 0,
 	datarate_2Mbps = 1,
 	datarate_250kbps = 3	// INFO not implemented
-} datarate_t;
+} nRF_datarate_t;
 
 typedef enum
 {
@@ -96,43 +86,51 @@ typedef enum
 	power_minus_12dBm = 1,
 	power_minus_6dBm  = 2,
 	power_0dBm        = 3
-} output_power_t;
+} nRF_output_power_t;
 
-// reg 0x06
-// TODO preimenovat ovo
 typedef enum
 {
-	avaible_pipe0 = 0,
-	avaible_pipe1 = 1,
-	avaible_pipe2 = 2,
-	avaible_pipe3 = 3,
-	avaible_pipe4 = 4,
-	avaible_pipe5 = 5,
+	/*
+	   ne smiju se zvat jednako kao oni ispod 
+	P0 = 0,
+	P1 = 1,
+	P2 = 2,
+	P3 = 3,
+	P4 = 4,
+	P5 = 5,
+	*/
+	payload_pipe0 = 0,
+	payload_pipe1 = 1,
+	payload_pipe2 = 2,
+	payload_pipe3 = 3,
+	payload_pipe4 = 4,
+	payload_pipe5 = 5,
 	pipe_not_used = 6,
 	RX_FIFO_empty = 7
-} datapipe_t;
+} nRF_payload_pipe_t;
 
 typedef enum
 {
-	// INFO pipe2 je vec zauzeto u unistd.h
+	// INFO pipe2 je vec zauzeto u unistd.h pa zato P2
 	P0 = 0,
 	P1 = 1,
 	P2 = 2,
 	P3 = 3,
 	P4 = 4,
 	P5 = 5
-} pipe_t;
-// TODO preimenovat u NRF_PIPE0
+} nRF_pipe_t;
 
 typedef enum
 {
 	CRC_LENGTH_1BTYE = 0,
 	CRC_LENGTH_2BTYE = 1
-} crc_length_t;
+} nRF_crc_length_t;
 
+// ova 3 ispod vjerojatno ne trebaju bit javni
 extern uint8_t reg_tmp[8];
-extern uint8_t nRF_RX_buffer[32];
-extern uint8_t nRF_TX_buffer[32];
+extern uint8_t nRF_RX_buffer[32];	// treba
+extern uint8_t nRF_TX_buffer[32];	// vjerojatno nije potreban
+extern nRF_hw_t *grf;
 
 /*************************************************************************************************
 				private function prototypes
@@ -158,7 +156,7 @@ void nRF_clear_RX_data_ready(nRF_hw_t *nRF0);
 void	nRF_set_address_width		(nRF_hw_t *nRF0, uint8_t width);
 uint8_t nRF_get_address_width		(nRF_hw_t *nRF0);
 
-int8_t	nRF_set_retransmit_delay	(nRF_hw_t *nRF0, delay_t delay);
+int8_t	nRF_set_retransmit_delay	(nRF_hw_t *nRF0, nRF_delay_t delay);
 uint8_t nRF_get_retransmit_delay	(nRF_hw_t *nRF0);
 void 	nRF_set_retransmit_count	(nRF_hw_t *nRF0, uint8_t count);
 uint8_t nRF_get_retransmit_count	(nRF_hw_t *nRF0);
@@ -168,8 +166,8 @@ uint8_t nRF_get_retransmitted_packets	(nRF_hw_t *nRF0);
 void 	nRF_set_channel		(nRF_hw_t *nRF0, uint8_t ch);
 uint8_t nRF_get_channel		(nRF_hw_t *nRF0);
 
-void 		nRF_set_datarate	(nRF_hw_t *nRF0, datarate_t datarate);
-datarate_t	nRF_get_datarate	(nRF_hw_t *nRF0);
+void 		nRF_set_datarate	(nRF_hw_t *nRF0, nRF_datarate_t datarate);
+nRF_datarate_t	nRF_get_datarate	(nRF_hw_t *nRF0);
 
 
 bool 	nRF_is_RX_data_ready	(nRF_hw_t *nRF0);
@@ -180,11 +178,10 @@ bool 	nRF_is_TX_empty			(nRF_hw_t *nRF0);
 bool	nRF_is_RX_empty2		(nRF_hw_t *nRF0);
 bool 	nRF_is_RX_empty			(nRF_hw_t *nRF0);
 bool 	nRF_is_RX_full			(nRF_hw_t *nRF0);
-
 bool	nRF_is_present			(nRF_hw_t *nRF0);
 
-int8_t  	nRF_enable_pipe		(nRF_hw_t *nRF0, pipe_t pipe);
-datapipe_t 	nRF_get_payload_pipe(nRF_hw_t *nRF0);
+int8_t  	nRF_enable_pipe		(nRF_hw_t *nRF0, nRF_pipe_t pipe);
+nRF_payload_pipe_t 	nRF_get_payload_pipe(nRF_hw_t *nRF0);
 
 void 	nRF_clear_bits(nRF_hw_t *nRF0);
 
@@ -193,48 +190,36 @@ uint8_t*	nRF_get_RX_address	(nRF_hw_t *nRF0);
 int8_t		nRF_set_TX_address	(nRF_hw_t *nRF0, uint8_t address[]);
 uint8_t*	nRF_get_TX_address	(nRF_hw_t *nRF0);	
 
-int8_t		nRF_set_payload_size	(nRF_hw_t *nRF0, pipe_t pipe, uint8_t payload_size);
-int8_t		nRF_get_payload_size	(nRF_hw_t *nRF0, pipe_t pipe);
+int8_t		nRF_set_payload_size	(nRF_hw_t *nRF0, nRF_pipe_t pipe, uint8_t payload_size);
+int8_t		nRF_get_payload_size	(nRF_hw_t *nRF0, nRF_pipe_t pipe);
 
 void 		nRF_power_on			(nRF_hw_t *nRF0);
 void 		nRF_power_off			(nRF_hw_t *nRF0);
 bool 		nRF_is_powered			(nRF_hw_t *nRF0);
-void 		nRF_set_output_power	(nRF_hw_t *nRF0, output_power_t power);
+void 		nRF_set_output_power	(nRF_hw_t *nRF0, nRF_output_power_t power);
 
 void 		nRF_set_mode(nRF_hw_t *nRF0, nRF_mode_t mode);
 nRF_mode_t 	nRF_get_mode(nRF_hw_t *nRF0);
 
-int8_t 			nRF_set_CRC_length(nRF_hw_t *nRF0, crc_length_t crc_length);
-crc_length_t 	nRF_get_CRC_length(nRF_hw_t *nRF0);
+int8_t 			nRF_set_CRC_length(nRF_hw_t *nRF0, nRF_crc_length_t crc_length);
+nRF_crc_length_t 	nRF_get_CRC_length(nRF_hw_t *nRF0);
 void 			nRF_enable_CRC(nRF_hw_t *nRF0);
 void 			nRF_disable_CRC(nRF_hw_t *nRF0);
 
-uint8_t*	nRF_read_payload	(nRF_hw_t *nRF0);
+//uint8_t*	nRF_read_payload	(nRF_hw_t *nRF0);
+bool	nRF_read_payload	(nRF_hw_t *nRF0);	// 1 ako je zapisao novo u buffer, 0 ako nije
 void 		nRF_write_payload	(nRF_hw_t *nRF0, uint8_t *buffer, uint8_t length);
 
 void nRF_start_listening(nRF_hw_t *nRF0);
 void nRF_stop_listening(nRF_hw_t *nRF0);
 
 
-void nrf24_powerUpRx(nRF_hw_t *nRF0);
-void nrf24_powerUpTx(nRF_hw_t *nRF0);
-void nrf24_powerDown(nRF_hw_t *nRF0);
-
 void nRF_flush_TX(nRF_hw_t *nRF0);
 void nRF_flush_RX(nRF_hw_t *nRF0);
 
-
-int8_t nRF_main2(void);
-void nrf_debug(void);
-void nrf_main10(void);
-void nrf_main11(void);
-void nrf_main20(void);
-void nrf_check(void);
-
-//extern volatile nRF_hw_t *grf;
-extern nRF_hw_t *grf;
-datapipe_t nRF_get_pipe(nRF_hw_t *nRF0);
-
+nRF_pipe_t nRF_get_enabled_pipe(nRF_hw_t *nRF0);
+void nRF_enable_aa(nRF_hw_t *nRF0, nRF_pipe_t pipe);
+void nRF_disable_aa(nRF_hw_t *nRF0, nRF_pipe_t pipe);
 
 
 

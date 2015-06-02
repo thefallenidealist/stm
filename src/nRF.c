@@ -36,6 +36,8 @@
 #include "src/nRF/nRF_enable_pipe.c"
 #include "src/nRF/nRF_mode.c"
 #include "src/nRF/nRF_crc_length.c"
+#include "src/nRF/nRF_payload.c"
+#include "src/nRF/nRF_aa.c"
 
 // mora ici vamo jer se kompajlira modul po modul, nije sve jedan veliki main.c
 #define NRF_SPI	1				// F1, F4
@@ -63,7 +65,9 @@ uint8_t addr[5] = "qwert";
 nRF_hw_t rf_modul;
 nRF_hw_t *grf = &rf_modul;
 
-#include "src/nRF/nRF_payload.c"
+#define NRF_FIFO_SIZE	32
+uint8_t nRF_TX_buffer[NRF_FIFO_SIZE];
+uint8_t nRF_RX_buffer[NRF_FIFO_SIZE];
 
 /*************************************************************************************************
 				nRF_is_present()
@@ -78,8 +82,7 @@ bool nRF_is_present(nRF_hw_t *nRF0)
 *************************************************************************************************/
 void nRF_start_listening(nRF_hw_t *nRF0)
 {
-	// moglo bi se dodat i paljenje i set mode
-	nRF_flush_TX(nRF0);
+	//nRF_flush_TX(nRF0);
 	nRF_flush_RX(nRF0);
 
 	ce(nRF0, 1);
@@ -97,14 +100,7 @@ void nRF_stop_listening(nRF_hw_t *nRF0)
 	nRF_flush_RX(nRF0);
 }
 
-void nrf_main10(void)
-{
-
-
-
-
-}
-
+/*
 void nrf_check(void)
 {
 #ifdef NRF_TX
@@ -124,22 +120,20 @@ void nrf_check(void)
 	}
 #endif
 }
+*/
 
 
 /*************************************************************************************************
 				nRF_main()
 *************************************************************************************************/
-uint8_t nRF_TX_buffer[32];
-uint8_t nRF_RX_buffer[32];
-
-void nrf_main20(void)
+int8_t nRF_main(void)
 {
 	// moj pokusaj
 	printf("%s() kaze zdravo\n", __func__);
 	uint8_t payload_size = 8;
 
 	// popuni buffere
-	for (int i=0; i<32; i++)
+	for (int i=0; i<NRF_FIFO_SIZE; i++)
 	{
 		nRF_TX_buffer[i] = 'a' + i;
 		nRF_RX_buffer[i] = 0;
@@ -153,17 +147,17 @@ void nrf_main20(void)
 	rf_modul.ce 		= NRF_CE;
 	rf_modul.irq		= NRF_IRQ;
 
-	delay_ms(11);	// 10.3 ms		// power on delay
 
 	if (nRF_hw_init(&rf_modul) != 0)
 	{
 		printf("RF module is not initialized\n");
-		 //return -1;
+		return -1;	// TODO not hardcoded
 	}
 	gpio_write(rf_modul.ce, 0);
 	gpio_write(rf_modul.cs, 1);
 
-	delay_ms(50);	// mirf tako kaze
+	//delay_ms(11);	// 10.3 ms		// power on delay
+	delay_ms(100);	// datasheet page 22		Power on reset
 	// end of hw init
 
 #ifdef NRF_TX
@@ -185,15 +179,12 @@ void nrf_main20(void)
 		printf("Krivi mod: %d\n", rf_modul.mode);
 	}
 
-
-
-
 	nRF_set_output_power(&rf_modul, power_0dBm);
 	nRF_set_datarate	(&rf_modul, datarate_1Mbps);
 	nRF_set_payload_size(&rf_modul, 0, payload_size);
 	nRF_set_channel		(&rf_modul, 0);
 
-	nRF_enable_pipe(&rf_modul, 0);
+	nRF_enable_pipe		(&rf_modul, 0);
 	nRF_set_address_width(&rf_modul, NRF_ADDRESS_WIDTH);
 
 	uint8_t mode = nRF_get_mode(&rf_modul);
@@ -211,37 +202,25 @@ void nrf_main20(void)
 	printf("RF_TX address: %s\n", nRF_get_TX_address(&rf_modul));
 	printf("RF_RX address: %s\n", nRF_get_RX_address(&rf_modul));
 
+	nRF_enable_CRC(&rf_modul);
+	nRF_set_CRC_length(&rf_modul, CRC_LENGTH_2BTYE);
 
 #ifdef NRF_TX
-	// RF_WriteRegister(RF24_EN_AA, RF24_EN_AA_ENAA_P0); /* enable auto acknowledge. RX_ADDR_P0 needs to be equal to TX_ADDR! */
 	// TODO u posebnu funkciju
 	//write_reg(&rf_modul, (1 << ENAA_P0);	
 	reg_tmp[ENAA_P0] = 1;
 	write_reg(&rf_modul, REG_EN_AA);
 
-	// RF_WriteRegister(RF24_SETUP_RETR, RF24_SETUP_RETR_ARD_750|RF24_SETUP_RETR_ARC_15); /* Important: need 750 us delay between every retry */
 	nRF_set_retransmit_delay(&rf_modul, DELAY_750us);
 	nRF_set_retransmit_count(&rf_modul, 15);
-	// TX_POWERUP();  /* Power up in transmitting mode */
-	// #define TX_POWERUP()   RF_WriteRegister(RF24_CONFIG, RF24_EN_CRC|RF24_CRCO|RF24_PWR_UP|RF24_PRIM_TX) /* enable 2 byte CRC, power up and set as PTX */
-	nRF_enable_CRC(&rf_modul);
-	nRF_set_CRC_length(&rf_modul, CRC_LENGTH_2BTYE);
-	nRF_set_mode(&rf_modul, PTX);
-	reg_tmp[PWR_UP] = 1;
-	write_reg(&rf_modul, REG_CONFIG);
-	delay_ms(2);
 
+	nRF_power_on(&rf_modul);
 	ce(&rf_modul, 0);	// nije RX, ne slusa
+	// ce je po defaultu vec nula, al ajde
 #endif
 
 #ifdef NRF_RX
-	nRF_enable_CRC(&rf_modul);
-	nRF_set_CRC_length(&rf_modul, CRC_LENGTH_2BTYE);
-	nRF_set_mode(&rf_modul, PRX);
-	reg_tmp[PWR_UP] = 1;
-	write_reg(&rf_modul, REG_CONFIG);
-	delay_ms(2);
-
+	nRF_power_on(&rf_modul);
 	nRF_start_listening(&rf_modul);
 #endif
 
@@ -286,4 +265,22 @@ void nrf_main20(void)
 		print_reg(&rf_modul, i);
 	}
 	print_reg(&rf_modul, 0x11);
+
+	printf("\t\t igranje sa AA\n");
+	// ugasi sve AA da se mozemo igrat
+	nRF_disable_aa(&rf_modul, P0);
+	nRF_disable_aa(&rf_modul, P1);
+	nRF_disable_aa(&rf_modul, P2);
+	nRF_disable_aa(&rf_modul, P3);
+	nRF_disable_aa(&rf_modul, P4);
+	nRF_disable_aa(&rf_modul, P5);
+
+	nRF_enable_aa(&rf_modul, P0);
+	nRF_enable_aa(&rf_modul, P2);
+	print_reg(&rf_modul, REG_EN_AA);
+
+
+
 }
+
+// TODO nRF_send_payload_wait_ack()

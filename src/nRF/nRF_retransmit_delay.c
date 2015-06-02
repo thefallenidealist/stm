@@ -1,7 +1,7 @@
 /*************************************************************************************************
 				nRF_set_retransmit_delay()
 *************************************************************************************************/
-int8_t nRF_set_retransmit_delay(nRF_hw_t *nRF0, delay_t delay)			// reg 0x04
+int8_t nRF_set_retransmit_delay(nRF_hw_t *nRF0, nRF_delay_t delay)			// reg 0x04
 {
 	/*
 			datasheet, page 63
@@ -40,4 +40,5 @@ uint8_t nRF_get_retransmit_delay(nRF_hw_t *nRF0)
 	uint8_t status = read_reg(nRF0, REG_SETUP_RETR);
 	uint8_t delay = (status >> 4) & 0b1111;
 	return delay;
+	// TODO return nRF_delay_t
 }
