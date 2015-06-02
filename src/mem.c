@@ -1,15 +1,22 @@
 #include "mem.h"
 
+#ifdef STM32F1
+// TODO napravit za mali ARM
+#error mem_info() not implemented for STM32F1
+#endif
+
 // #defined in linker script
-extern int _estack;
 extern int _ebss;
 extern int _sbss;
-extern int _text;
 extern int _etext;
 extern int _sdata;
 extern int _edata;
 //extern int sram;
-extern int flash_used_size;
+#ifdef STM32F4
+	extern int _estack;	// F4
+	extern int _text;	// F4
+	extern int flash_used_size;	// F4
+#endif
 
 void mem_info()
 {

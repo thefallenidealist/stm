@@ -72,23 +72,21 @@
 void uart1_init(uint32_t speed);
 void uart2_init(uint32_t speed);
 void uart1_parse(void);
-void uart_puts(uint8_t uart, char *string);
 void uart_clear(uint8_t uart);
 void USART1_IRQHandler(void);    // javno zbog debugiranja/igranja
 void USART2_IRQHandler(void);    // javno zbog debugiranja/igranja
-void uart_puts(uint8_t uart, char *string);
+void uart_write_string(uint8_t uart, char *arg);
 void uart_init(uint8_t uart_number, uint32_t speed);
-
-
 
 // *************************************** variables **********************************************
 typedef enum
 {
-	RX_IN_PROGRESS,		// 0
-	RX_DONE,		// 1
-	RX_PRINTED,		// 2
+	RX_IN_PROGRESS = 0,
+	RX_DONE,
+	RX_PRINTED,
     RX_OVERFLOW
 } rx_event_t;
+
 extern volatile rx_event_t uart1_rx_event;
 extern volatile rx_event_t uart2_rx_event;
 extern volatile char uart1_rx_string_arr[UART_MAX_LENGTH];
@@ -97,9 +95,6 @@ extern volatile char uart2_rx_string_arr[MAX_WLAN_BUFFER];
 
 void uart_clear(uint8_t uart);
 
-
-
 extern uint16_t uart2_rx_position;
-
 
 #endif

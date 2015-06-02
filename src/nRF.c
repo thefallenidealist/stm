@@ -37,432 +37,40 @@
 #include "src/nRF/nRF_mode.c"
 #include "src/nRF/nRF_crc_length.c"
 
-/*************************************************************************************************
-				nRF_main()
-*************************************************************************************************/
-int8_t nRF_main()
-{
-	DEBUG_START;
-	printf("nRF_main() start\n");
-
-	nRF_hw_t rf_tx;
-	nRF_hw_t rf_rx;
-
-	//printf("nRF TX: %p\n", &rf_tx);
-	//printf("nRF RX: %p\n", &rf_rx);
-
-	rf_tx.spi_port = 1;
-	//rf_tx.spi_prescaler = 32;
-	rf_tx.spi_prescaler = 64;	// pokusaj da bude iste SPI brzine kao tx
-	rf_tx.cs = "PA4";
-	rf_tx.ce = "PA3";
-	//rf_tx.irq = "";	// NC
-
-	rf_rx.spi_port = 2;
-	rf_rx.spi_prescaler = 32;
-	rf_rx.cs = "PB5";
-	rf_rx.ce = "PB4";
-	//rf_rx.irq = "PB3";	// NC
-
-	delay_ms(11);	// 10.3 ms		// power on delay
-	delay_ms(11);	// 10.3 ms		// power on delay
-	delay_ms(11);	// 10.3 ms		// power on delay
-
-	if (nRF_hw_init(&rf_tx) != 0)
-	{
-		printf("RF_TX is not initialized\n");
-		 return -1;
-	}
-
-	if (nRF_hw_init(&rf_rx) != 0)
-	{
-		printf("RF_RX is not initialized\n");
-		 return -1;
-	}
-
-	delay_ms(50);
-
-	/*
-	nRF_power_off(&rf_tx);
-	nRF_power_off(&rf_rx);
-	delay_ms(50);
-	*/
-
-	nrf24_powerUpTx(&rf_tx);
-	nrf24_powerUpRx(&rf_rx);
-	delay_ms(50);
-
-
-	/*
-	nRF_power_on(&rf_tx);
-	nRF_power_on(&rf_rx);
-	delay_ms(20);
-	delay_ms(50);
-	*/
-
-
-	/*
-	reg_tmp[PWR_UP] = 1;
-	reg_tmp[PRIM_RX] = 0;
-	write_reg(&rf_tx, REG_CONFIG);
-
-	reg_tmp[PWR_UP] = 1;
-	reg_tmp[PRIM_RX] = 1;
-	write_reg(&rf_rx, REG_CONFIG);
-	delay_ms(5);
-	delay_ms(50);
-	*/
-
-	nRF_flush_RX(&rf_tx);
-	nRF_flush_TX(&rf_tx);
-	nRF_flush_RX(&rf_rx);
-	nRF_flush_TX(&rf_rx);
-	delay_ms(5);
-
-	/*
-	nRF_set_mode(&rf_tx, TX);
-	nRF_set_mode(&rf_rx, RX);
-	delay_ms(5);
-	*/
-
-	nRF_clear_bits(&rf_tx);
-	nRF_clear_bits(&rf_rx);
-	delay_ms(5);
-
-	nRF_set_retransmit_count(&rf_tx, 15);
-	nRF_set_retransmit_count(&rf_rx, 15);
-	delay_ms(5);
-	nRF_set_retransmit_delay(&rf_tx, DELAY_1ms);
-	nRF_set_retransmit_delay(&rf_rx, DELAY_1ms);
-	delay_ms(5);
-
-	nRF_set_channel(&rf_tx, 0);
-	nRF_set_channel(&rf_rx, 0);
-	delay_ms(5);
-
-	nRF_set_output_power(&rf_tx, power_0dBm);
-	nRF_set_output_power(&rf_rx, power_0dBm);
-	delay_ms(5);
-
-	nRF_set_datarate(&rf_tx, datarate_1Mbps);
-	nRF_set_datarate(&rf_rx, datarate_1Mbps);
-	delay_ms(5);
-
-	nRF_enable_pipe(&rf_tx, P0);
-	nRF_enable_pipe(&rf_rx, P0);
-	delay_ms(5);
-
-	nRF_set_CRC_length(&rf_tx, CRC_LENGTH_1BTYE);
-	delay_ms(5);
-	nRF_set_CRC_length(&rf_rx, CRC_LENGTH_1BTYE);
-	delay_ms(5);
-	nRF_enable_CRC(&rf_tx);
-	delay_ms(5);
-	nRF_enable_CRC(&rf_rx);
-	delay_ms(5);
-
-	uint8_t addr[5] = "qwert";
-
-	nRF_set_address_width(&rf_tx, 5);
-	nRF_set_address_width(&rf_rx, 5);
-	delay_ms(5);
-	nRF_set_TX_address(&rf_tx, addr);
-	nRF_set_RX_address(&rf_tx, addr);
-	nRF_set_RX_address(&rf_rx, addr);
-	delay_ms(5);
-
-	printf("RF_RX address: %s\n", nRF_get_RX_address(&rf_rx));
-	printf("RF_TX address: %s\n", nRF_get_TX_address(&rf_tx));
-
-	//nRF_flush_TX(&rf_tx);
-	/*
-	print_reg(&rf_tx, REG_FIFO_STATUS);
-	printf("TX FIFO full:  %d\n", nRF_is_TX_full(&rf_tx));
-	printf("TX FIFO full2: %d\n", nRF_is_TX_full2(&rf_tx));
-	printf("TX FIFO empty: %d\n", nRF_is_TX_empty(&rf_tx));
-	printf("\n");
-	print_reg(&rf_rx, REG_FIFO_STATUS);
-	printf("RX FIFO full:  %d\n", nRF_is_RX_full(&rf_rx));
-	printf("RX FIFO empty: %d\n", nRF_is_RX_empty(&rf_rx));
-	printf("RX FIFO empty2 %d\n", nRF_is_RX_empty2(&rf_rx));
-	printf("\n");
-	*/
-
-	/*
-	nRF_clear_bits(&rf_tx);
-	nRF_clear_bits(&rf_rx);
-	delay_ms(5);
-	*/
-
-	// present
-	/*
-	int8_t present_tx = nRF_is_present(&rf_tx);
-	int8_t present_rx = nRF_is_present(&rf_rx);
-	printf("TX present: %d\n", present_tx);
-	printf("RX present: %d\n", present_rx);
-	if ( (present_tx == 0) || (present_rx == 0) )
-	{
-		return -1;
-	}
-	*/
-
-	//printf("RF_TX datarate: %d\n", nRF_get_datarate(&rf_tx));
-	//printf("RF_RX datarate: %d\n", nRF_get_datarate(&rf_rx));
-
-	// start RX listening
-	nRF_start_listening(&rf_rx);
-	delay_ms(5);
-
-	print_reg(&rf_tx, 0x00);
-	print_reg(&rf_rx, 0x00);
-	/*
-	printf("\n");
-	printf("Registri, 1TX, 2RX\n");
-	print_reg(&rf_tx, 0x00);
-	print_reg(&rf_rx, 0x00);
-
-
-	print_reg(&rf_tx, 0x01);
-	print_reg(&rf_rx, 0x01);
-
-	//print_reg(&rf_tx, 0x02);
-	//print_reg(&rf_tx, 0x03);
-
-	print_reg(&rf_tx, 0x04);
-	print_reg(&rf_rx, 0x04);
-
-	//print_reg(&rf_tx, 0x05);
-
-	print_reg(&rf_tx, 0x06);
-	print_reg(&rf_rx, 0x06);
-
-	print_reg(&rf_tx, 0x07);
-	print_reg(&rf_rx, 0x07);
-
-	print_reg(&rf_tx, 0x08);
-	print_reg(&rf_rx, 0x08);
-
-	//print_reg(&rf_tx, 0x11);
-	//print_reg(&rf_rx, 0x11);
-
-	//print_reg(&rf_tx, 0x12);
-	//print_reg(&rf_rx, 0x12);
-
-	print_reg(&rf_tx, 0x0A);
-	print_reg(&rf_rx, 0x0A);
-	*/
-
-	printf("Is data sent: %d\n", nRF_is_TX_data_sent(&rf_tx));
-
-	printf("\t\t\t\tSaljem teret\n");
-	nRF_clear_bits(&rf_tx);
-
-	uint8_t payloadTX_size = 8;
-	memcpy(nRF_TX_buffer, " ovo je neki tekst za poslat koji je malo duzi nego sto treba bit", 32);
-
-	rtc_get_time();
-	nRF_TX_buffer[0] = 48+RTC_data.seconds;
-	printf("\t\t\t\t\t%s\n", nRF_TX_buffer);
-
-	nRF_set_payload_size(&rf_tx, P0, payloadTX_size);
-	nRF_set_payload_size(&rf_rx, P0, payloadTX_size);
-	nRF_write_payload(&rf_tx, nRF_TX_buffer, payloadTX_size);
-
-	printf("TX: Lost packets: %d\n", 			nRF_get_lost_packets			(&rf_tx));
-	printf("TX: Retransmitted packets: %d\n", 	nRF_get_retransmitted_packets	(&rf_tx));
-
-	printf("\n");
-	print_reg(&rf_tx, REG_CONFIG);
-	printf("TX: Is data sent: %d\n", nRF_is_TX_data_sent(&rf_tx));
-
-	/*
-	ce(&rf_rx, 0);		// radi i bez ovoga
-	delay_ms(10);
-	*/
-
-
-	if (nRF_read_payload(&rf_rx) != NULL)
-	{
-		printf("nRF_read_payload() je uspjesno odradio svoje\n");
-	}
-
-	//printf("TX Retransmit count: %d\n", nRF_get_retransmit_count(&rf_tx));
-	//printf("RX Retransmit count: %d\n", nRF_get_retransmit_count(&rf_rx));
-	//printf("TX Retransmit delay: %d\n", nRF_get_retransmit_delay(&rf_tx));
-	//printf("RX Retransmit delay: %d\n", nRF_get_retransmit_delay(&rf_rx));
-
-	return 0;
-	DEBUG_END;
-}
-
-
-uint8_t nRF_TX_buffer[32];
-/*************************************************************************************************
-				nRF_write_payload()
-*************************************************************************************************/
-void nRF_write_payload(nRF_hw_t *nRF0, uint8_t *buffer, uint8_t length)
-{
-#define TX_TIMEOUT 60			// INFO max time before fail: retry counts * retry delay = 15 * 4ms = 60 ms
-#define TX_SINGLE_TIMEOUT 10	// 10 ms
-	uint8_t spi_port = nRF0->spi_port;
-
-	/*
-	   // djeluje nepotrebno
-	//nRF_flush_TX(nRF0);	
-
-	reg_tmp[PWR_UP] = 1;
-	reg_tmp[PRIM_RX] = 0;
-	write_reg(nRF0, REG_CONFIG);
-	delay_us(150);	// TODO datasheet, page X
-					// vjerojatno kopirano odnegdje sa neta
-	*/
-
-	cs(nRF0, 0);
-	spi_rw(spi_port, CMD_W_TX_PAYLOAD);
-	while (length--)
-	{
-		spi_rw(spi_port, *buffer++);
-	}
-	cs(nRF0, 1);
-
-	// CE pulse for 10us to send payload
-	ce(nRF0, 1);
-	delay_us(10);
-	ce(nRF0, 0);
-
-	while (nRF_is_TX_data_sent(nRF0) == 0)
-	{
-		if (nRF_get_retransmitted_packets(nRF0) == 15)
-		{
-			printf("Dosli smo do maximalno retransmitanih paketa, izlazim\n");
-			return;
-		}
-		printf("TX Still sending payload: %d\n", nRF_is_TX_data_sent(nRF0));
-
-		static uint8_t counter;
-
-		// za slucaj kad TX modul popizdi
-		if (counter >= TX_TIMEOUT/TX_SINGLE_TIMEOUT)
-		{
-			printf("TX timeout, exiting\n");
-			return;
-		}
-		delay_ms(TX_SINGLE_TIMEOUT);
-		counter++;
-	}
-}
-
-
-uint8_t nRF_RX_buffer[32];
-/*************************************************************************************************
-				nRF_read_payload()
-*************************************************************************************************/
-uint8_t *nRF_read_payload(nRF_hw_t *nRF0)
-{
-#define RX_TIMEOUT 60			// INFO max time before fail: retry counts * retry delay = 15 * 4ms = 60 ms
-#define RX_SINGLE_TIMEOUT 10	// 10 ms
-	// izgleda da nije potrebno rucno spustit CE
-
-	uint8_t spi_port = nRF0->spi_port;
-
-	while (nRF_is_RX_data_ready(nRF0) == 0)	// wait for receive to complete
-	{
-		static uint8_t counter;
-		printf("RX still waiting for data, counter: %d\n", counter); 
-
-
-		if (counter >= RX_TIMEOUT/RX_SINGLE_TIMEOUT)
-		{
-			printf("RX timeout, exiting\n");
-			return NULL;
-		}
-		delay_ms(RX_SINGLE_TIMEOUT);
-		counter++;
-	}
-
-	if (nRF_is_RX_data_ready(nRF0) == 1)		// there is something in RX FIFO
-	{
-		uint8_t pipe		 = nRF_get_payload_pipe(nRF0);
-		uint8_t payload_size = nRF_get_payload_size(nRF0, pipe);
-
-		printf("pipe: %d, payload_size: %d\n", pipe, payload_size);
-
-		// reading RX FIFO
-		cs(nRF0, 0);
-		spi_rw(spi_port, CMD_R_RX_PAYLOAD);
-
-		for (uint8_t i=0; i<payload_size; i++)
-		{
-			nRF_RX_buffer[i] = spi_rw(spi_port, CMD_NOP);
-		}
-		cs(nRF0, 1);
-
-		// printing RF FIFO
-		printf("Printamo buffer: \n\t\t\t\t\t");
-		for (uint8_t i=0; i<payload_size; i++)
-		{
-			//printf("[%d]: %c %d\n", i, nRF_RX_buffer[i], nRF_RX_buffer[i]);
-			printf("%c", nRF_RX_buffer[i]);
-		}
-		printf("\n");
-
-		nRF_clear_bits(nRF0);
-	}
-	else
-	{
-		printf("No RX data\n");
-	}
-
-	return nRF_RX_buffer;
-}
-
+// mora ici vamo jer se kompajlira modul po modul, nije sve jedan veliki main.c
+#define NRF_SPI	1				// F1, F4
+
+#ifdef STM32F1
+		#define NRF_RX
+		//#define NRF_TX
+	#define NRF_SPI_PRESCALER 32
+	#define NRF_CS	"PB0"
+	#define NRF_CE	"PB2"
+	#define NRF_IRQ	"PB1"	// EXTI1
+#endif
+#ifdef STM32F4
+		#define NRF_TX
+		//#define NRF_RX
+	#define NRF_SPI_PRESCALER 64
+	#define NRF_CS	"PA4"
+	#define NRF_CE	"PA3"
+	#define NRF_IRQ	"PA5"	// XXX, NC, treba lemit
+#endif
+
+uint8_t addr[5] = "qwert";
+#define NRF_ADDRESS_WIDTH	5
+
+nRF_hw_t rf_modul;
+nRF_hw_t *grf = &rf_modul;
+
+#include "src/nRF/nRF_payload.c"
 
 /*************************************************************************************************
 				nRF_is_present()
 *************************************************************************************************/
 bool nRF_is_present(nRF_hw_t *nRF0)
 {
-	int8_t ret;
-
-	uint8_t *needed_address = nRF0->rx_address[0];		// pipe0
-	uint8_t *real_address 	= nRF_get_RX_address(nRF0);
-	uint8_t length 			= nRF0->address_width;
-	/*
-	uint8_t *needed_address = 0;
-	uint8_t *real_address 	= 0;
-	uint8_t length 			= 0;
-	*needed_address = nRF0->rx_address[0];		// pipe0
-	*real_address 	= nRF_get_RX_address(nRF0);
-	length 			= nRF0->address_width;
-	*/
-
-	printf("addr: %s, addr: %s, length: %d\n", needed_address, real_address, length);
-	printf("addr: %p, addr: %p, length: %d\n", needed_address, real_address, length);
-
-	if (real_address[0] == 0)	// za slucaj da je prazno polje
-	{
-		printf("zajeb\n");
-		return 0;
-	}
-
-	if (length > 5)
-	{
-		return 0;
-	}
-
-	ret = memcmp(needed_address, real_address, length);	// XXX
-	if (ret == 0)
-	{
-		DEBUG_INFO("nRF module is present\n");
-		//printf("nRF module is present\n");
-		return 1;
-	}
-	else
-	{
-		ERROR("nRF module is not present\n");
-		printf("nRF module is not present\n");
-		return 0;
-	}
+	return 0;
 }
 
 /*************************************************************************************************
@@ -489,108 +97,193 @@ void nRF_stop_listening(nRF_hw_t *nRF0)
 	nRF_flush_RX(nRF0);
 }
 
-
-void nrf24_powerUpRx(nRF_hw_t *nRF0)
+void nrf_main10(void)
 {
-	//nrf24_csn_digitalWrite(LOW);
-	//spi_transfer(FLUSH_RX);
-	//nrf24_csn_digitalWrite(HIGH);
-	nRF_flush_RX(nRF0);
 
-	//nrf24_configRegister(STATUS,(1<<RX_DR)|(1<<TX_DS)|(1<<MAX_RT));
-	//nrf24_ce_digitalWrite(LOW);
-	//nrf24_configRegister(CONFIG,nrf24_CONFIG|((1<<PWR_UP)|(1<<PRIM_RX)));
-	//nrf24_ce_digitalWrite(HIGH);
 
-	write_reg_full(nRF0, REG_STATUS, (1 << RX_DR) | (1 << TX_DS) | (1 << MAX_RT));
-	ce(nRF0, 0);
-	write_reg_full(nRF0, REG_CONFIG, (1 << PWR_UP) | (1 << PRIM_RX));
-	ce(nRF0, 1);
+
+
 }
 
-void nrf24_powerUpTx(nRF_hw_t *nRF0)
+void nrf_check(void)
 {
-	//nrf24_configRegister(STATUS,(1<<RX_DR)|(1<<TX_DS)|(1<<MAX_RT));
-	//nrf24_configRegister(CONFIG,nrf24_CONFIG|((1<<PWR_UP)|(0<<PRIM_RX)));
+#ifdef NRF_TX
+	while (nRF_is_TX_data_sent(grf) == 0)
+	{
+		if (nRF_get_retransmitted_packets(grf) == 15)
+		{
+			printf("Dosli smo do maximalno retransmitanih paketa, izlazim\n");
+			return;
+		}
+		printf("TX Still sending payload: %d\n", nRF_is_TX_data_sent(grf));
 
-	write_reg_full(nRF0, REG_STATUS, (1 << RX_DR) | (1 << TX_DS) | (1 << MAX_RT));
-	write_reg_full(nRF0, REG_CONFIG, (1 << PWR_UP) | (0 << PRIM_RX));
+		static uint8_t counter;
+
+		delay_ms(TX_SINGLE_TIMEOUT);
+		counter++;
+	}
+#endif
 }
 
-void nrf24_powerDown(nRF_hw_t *nRF0)
-{
-	//nrf24_ce_digitalWrite(LOW);
-	//nrf24_configRegister(CONFIG,nrf24_CONFIG);
-	ce(nRF0, 0);
-	write_reg_full(nRF0, REG_CONFIG, 0b00000000);
-}
 
 /*************************************************************************************************
 				nRF_main()
 *************************************************************************************************/
-int8_t nRF_main2()
+uint8_t nRF_TX_buffer[32];
+uint8_t nRF_RX_buffer[32];
+
+void nrf_main20(void)
 {
-	printf("%s() pocetak\n", __func__);
-	nRF_hw_t rf_tx;
-	nRF_hw_t rf_rx;
+	// moj pokusaj
+	printf("%s() kaze zdravo\n", __func__);
+	uint8_t payload_size = 8;
 
-	rf_tx.spi_port = 1;
-	//rf_tx.spi_prescaler = 32;
-	rf_tx.spi_prescaler = 64;	// pokusaj da bude iste SPI brzine kao tx
-	rf_tx.cs = "PA4";
-	rf_tx.ce = "PA3";
-	//rf_tx.irq = "";	// NC
+	// popuni buffere
+	for (int i=0; i<32; i++)
+	{
+		nRF_TX_buffer[i] = 'a' + i;
+		nRF_RX_buffer[i] = 0;
+	}
 
-	rf_rx.spi_port = 2;
-	rf_rx.spi_prescaler = 32;
-	rf_rx.cs = "PB5";
-	rf_rx.ce = "PB4";
-	//rf_rx.irq = "PB3";	// NC
+
+	// hw init
+	rf_modul.spi_port 	= NRF_SPI;
+	rf_modul.spi_prescaler = NRF_SPI_PRESCALER;
+	rf_modul.cs 		= NRF_CS;
+	rf_modul.ce 		= NRF_CE;
+	rf_modul.irq		= NRF_IRQ;
 
 	delay_ms(11);	// 10.3 ms		// power on delay
 
-	if (nRF_hw_init(&rf_tx) != 0)
+	if (nRF_hw_init(&rf_modul) != 0)
 	{
-		printf("RF_TX is not initialized\n");
-		 return -1;
+		printf("RF module is not initialized\n");
+		 //return -1;
+	}
+	gpio_write(rf_modul.ce, 0);
+	gpio_write(rf_modul.cs, 1);
+
+	delay_ms(50);	// mirf tako kaze
+	// end of hw init
+
+#ifdef NRF_TX
+	nRF_set_mode(&rf_modul, TX);
+#endif
+#ifdef NRF_RX
+	nRF_set_mode(&rf_modul, RX);
+#endif
+	if (nRF_get_mode(&rf_modul) == RX)
+	{
+		printf("Ovo je RX modul.\n");
+	}
+	else if (nRF_get_mode(&rf_modul) == TX)
+	{
+		printf("Ovo je TX modul.\n");
+	}
+	else
+	{
+		printf("Krivi mod: %d\n", rf_modul.mode);
 	}
 
-	if (nRF_hw_init(&rf_rx) != 0)
+
+
+
+	nRF_set_output_power(&rf_modul, power_0dBm);
+	nRF_set_datarate	(&rf_modul, datarate_1Mbps);
+	nRF_set_payload_size(&rf_modul, 0, payload_size);
+	nRF_set_channel		(&rf_modul, 0);
+
+	nRF_enable_pipe(&rf_modul, 0);
+	nRF_set_address_width(&rf_modul, NRF_ADDRESS_WIDTH);
+
+	uint8_t mode = nRF_get_mode(&rf_modul);
+	if (mode == TX)
 	{
-		printf("RF_RX is not initialized\n");
-		 return -1;
+		nRF_set_TX_address	(&rf_modul, addr);
+		nRF_set_RX_address	(&rf_modul, addr);
+		// TX modul treba i RX adresu zbog ACK
+	}
+	else if (mode == RX)
+	{
+		nRF_set_RX_address	(&rf_modul, addr);
 	}
 
-
-	////////////////// RX mode
-	ce(&rf_rx, 0);
-	//nRF24_WriteBuf(nRF24_CMD_WREG | nRF24_REG_RX_ADDR_P0,nRF24_RX_addr,nRF24_RX_ADDR_WIDTH); // Set static RX address
-	// TODO
-	//write_reg_full(&rf_rx, REG_RX_ADDR
-
-	//nRF24_RWReg(nRF24_CMD_WREG | nRF24_REG_EN_AA,0x01); // Enable ShockBurst for data pipe 0
-	write_reg_full(&rf_rx, REG_EN_AA, 0x01);
-
-	//nRF24_RWReg(nRF24_CMD_WREG | nRF24_REG_EN_RXADDR,0x01); // Enable data pipe 0
-	write_reg_full(&rf_rx, REG_EN_RXADDR, 0x01);
-
-	//nRF24_RWReg(nRF24_CMD_WREG | nRF24_REG_RF_CH,0x6E); // Set frequency channel 110 (2.510MHz)
-	write_reg_full(&rf_rx, REG_RF_CH, 0x6E);
-
-	//nRF24_RWReg(nRF24_CMD_WREG | nRF24_REG_RX_PW_P0,RX_PAYLOAD); // Set RX payload length (10 bytes)
-	write_reg_full(&rf_rx, REG_RX_PW_P0, 10);
-
-	//nRF24_RWReg(nRF24_CMD_WREG | nRF24_REG_RF_SETUP,0x06); // Setup: 1Mbps, 0dBm, LNA off
-	write_reg_full(&rf_rx, REG_RF_SETUP, 0x06);
-
-	//nRF24_RWReg(nRF24_CMD_WREG | nRF24_REG_CONFIG,0x0F); // Config: CRC on (2 bytes), Power UP, RX/TX ctl = PRX
-	write_reg_full(&rf_rx, REG_CONFIG, 0x0f);
-	ce(&rf_rx, 1);
-	// Delay_us(10); // Hold CE high at least 10us
-	delay_us(10);
-	////////////////// RX mode
+	printf("RF_TX address: %s\n", nRF_get_TX_address(&rf_modul));
+	printf("RF_RX address: %s\n", nRF_get_RX_address(&rf_modul));
 
 
+#ifdef NRF_TX
+	// RF_WriteRegister(RF24_EN_AA, RF24_EN_AA_ENAA_P0); /* enable auto acknowledge. RX_ADDR_P0 needs to be equal to TX_ADDR! */
+	// TODO u posebnu funkciju
+	//write_reg(&rf_modul, (1 << ENAA_P0);	
+	reg_tmp[ENAA_P0] = 1;
+	write_reg(&rf_modul, REG_EN_AA);
 
-	return 0;
+	// RF_WriteRegister(RF24_SETUP_RETR, RF24_SETUP_RETR_ARD_750|RF24_SETUP_RETR_ARC_15); /* Important: need 750 us delay between every retry */
+	nRF_set_retransmit_delay(&rf_modul, DELAY_750us);
+	nRF_set_retransmit_count(&rf_modul, 15);
+	// TX_POWERUP();  /* Power up in transmitting mode */
+	// #define TX_POWERUP()   RF_WriteRegister(RF24_CONFIG, RF24_EN_CRC|RF24_CRCO|RF24_PWR_UP|RF24_PRIM_TX) /* enable 2 byte CRC, power up and set as PTX */
+	nRF_enable_CRC(&rf_modul);
+	nRF_set_CRC_length(&rf_modul, CRC_LENGTH_2BTYE);
+	nRF_set_mode(&rf_modul, PTX);
+	reg_tmp[PWR_UP] = 1;
+	write_reg(&rf_modul, REG_CONFIG);
+	delay_ms(2);
+
+	ce(&rf_modul, 0);	// nije RX, ne slusa
+#endif
+
+#ifdef NRF_RX
+	nRF_enable_CRC(&rf_modul);
+	nRF_set_CRC_length(&rf_modul, CRC_LENGTH_2BTYE);
+	nRF_set_mode(&rf_modul, PRX);
+	reg_tmp[PWR_UP] = 1;
+	write_reg(&rf_modul, REG_CONFIG);
+	delay_ms(2);
+
+	nRF_start_listening(&rf_modul);
+#endif
+
+
+	/*
+	printf("nRF pipe0 payload size: %d\n", 	nRF_get_payload_size(grf, 0));
+	printf("nRF_is_RX_data_ready: %d\n", nRF_is_RX_data_ready(grf));
+	printf("nRF_is_RX_data_ready: %d\n", nRF_is_RX_data_ready(&rf_modul));
+
+	printf("nRF address width: %d\n", nRF_get_address_width(grf));
+	printf("nRF get retransmit delay: %d\n", nRF_get_retransmit_delay(grf));
+	printf("nRF get retransmit count: %d\n", nRF_get_retransmit_count(grf));
+	printf("nRF get channel: %d\n", nRF_get_channel(grf));
+	printf("nRF get datarate: %d\n", nRF_get_datarate(grf));
+	printf("nRF get payload pipe: %d\n", nRF_get_payload_pipe(grf));
+	printf("nRF get pipe: %d\n", nRF_get_pipe(grf));
+
+	printf("nRF get RX address: %s\n", nRF_get_RX_address(grf));	// ptr
+	printf("nRF get TX address: %s\n", nRF_get_TX_address(grf));	// ptr
+	printf("nRF get payload size: %d\n", nRF_get_payload_size(grf, 0));
+	printf("nRF get mode [0: TX, 1: RX]: %d\n", nRF_get_mode(grf));
+	printf("nRF get CRC length: %d\n", nRF_get_CRC_length(grf));
+
+	printf("nRF pipe0 payload size: %d\n", 	nRF_get_payload_size(grf, 0));
+	delay_ms(500);
+	printf("nRF_is_RX_data_ready: %d\n", nRF_is_RX_data_ready(&rf_modul));
+	*/
+
+
+
+
+
+
+
+
+
+
+
+	// DEBUG oprintaj koji registar
+	for (int i=0; i<12; i++)
+	{
+		print_reg(&rf_modul, i);
+	}
+	print_reg(&rf_modul, 0x11);
 }

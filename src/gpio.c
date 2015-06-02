@@ -35,7 +35,18 @@ static int8_t gpio_real_init(gpio_hw_t *gpio0, direction_t direction)
 			GPIO_InitStruct.GPIO_Mode  = GPIO_Mode_IN;
 			GPIO_InitStruct.GPIO_OType = GPIO_OType_PP;
 			GPIO_InitStruct.GPIO_PuPd  = GPIO_PuPd_NOPULL;	
-			//GPIO_InitStruct.GPIO_PuPd  = GPIO_PuPd_DOWN;
+		}
+		else if (direction == IN_PU)
+		{
+			GPIO_InitStruct.GPIO_Mode  = GPIO_Mode_IN;
+			GPIO_InitStruct.GPIO_OType = GPIO_OType_PP;
+			GPIO_InitStruct.GPIO_PuPd  = GPIO_PuPd_UP;
+		}
+		else if (direction == IN_PD)
+		{
+			GPIO_InitStruct.GPIO_Mode  = GPIO_Mode_IN;
+			GPIO_InitStruct.GPIO_OType = GPIO_OType_PP;
+			GPIO_InitStruct.GPIO_PuPd  = GPIO_PuPd_DOWN;
 		}
 		else
 		{
@@ -43,16 +54,22 @@ static int8_t gpio_real_init(gpio_hw_t *gpio0, direction_t direction)
 			return EXIT_GPIO_WRONG_DIRECTION;
 		}
 
-		//RCC_APB2PeriphClockCmd(gpio0->rcc, ENABLE);	// mali ARM
 		RCC_AHB1PeriphClockCmd(gpio0->rcc, ENABLE);	// masni ARM
 #endif
 #ifdef STM32F1
 		if (direction == OUT)
 		{
 			GPIO_InitStruct.GPIO_Mode = GPIO_Mode_Out_PP;
-
 		}
 		else if (direction == IN)
+		{
+			GPIO_InitStruct.GPIO_Mode  = GPIO_Mode_IN_FLOATING;
+		}
+		else if (direction == IN_PU)
+		{
+			GPIO_InitStruct.GPIO_Mode  = GPIO_Mode_IPU;
+		}
+		else if (direction == IN_PD)
 		{
 			GPIO_InitStruct.GPIO_Mode  = GPIO_Mode_IPD;
 		}

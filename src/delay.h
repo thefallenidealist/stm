@@ -29,14 +29,28 @@
 // TODO uptime u novi header
 // TODO AVR uptime?
 
-void delay_init(void);
+typedef enum
+{
+	// djelitelji za SysTick_Config()
+	TICK_EVERY_NS 		= 1000000000,
+	TICK_EVERY_100NS 	= 10000000,
+	TICK_EVERY_US 		= 1000000,
+	TICK_EVERY_MS 		= 1000
+} systick_divider_t;
+
+//void delay_init(void);
+uint32_t delay_get_divider(void);
+void delay_init(systick_divider_t divider);
+void delay_ns(uint32_t ns);
 void delay_us(uint32_t us);
 void delay_ms(uint32_t ms);
 void delay_s(uint32_t s);
+
 uint32_t get_uptime_us(void);
 uint32_t get_uptime_ms(void);
 uint32_t get_uptime_s(void);
 const char *get_uptime(void);
+
 void SysTick_Handler(void);     // javni samo zbog debuga/igranja
 
 #endif

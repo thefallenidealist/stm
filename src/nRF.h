@@ -11,7 +11,10 @@
 #include "spi.h"
 #include "delay.h"
 #include "convert.h"
+
+#if defined STM32F4 || defined STM32F4XX
 #include "rtc2.h"
+#endif
 
 // TODO zasad napravljeno da samo koristi pipe0
 
@@ -119,6 +122,7 @@ typedef enum
 	P4 = 4,
 	P5 = 5
 } pipe_t;
+// TODO preimenovat u NRF_PIPE0
 
 typedef enum
 {
@@ -148,6 +152,8 @@ static uint8_t 	write_reg_full	(nRF_hw_t *nRF0, uint8_t reg, uint8_t value)
 *************************************************************************************************/
 int8_t	nRF_main(void);
 int8_t 	nRF_hw_init(nRF_hw_t *nRF0);
+
+void nRF_clear_RX_data_ready(nRF_hw_t *nRF0);
 
 void	nRF_set_address_width		(nRF_hw_t *nRF0, uint8_t width);
 uint8_t nRF_get_address_width		(nRF_hw_t *nRF0);
@@ -219,6 +225,15 @@ void nRF_flush_RX(nRF_hw_t *nRF0);
 
 
 int8_t nRF_main2(void);
+void nrf_debug(void);
+void nrf_main10(void);
+void nrf_main11(void);
+void nrf_main20(void);
+void nrf_check(void);
+
+//extern volatile nRF_hw_t *grf;
+extern nRF_hw_t *grf;
+datapipe_t nRF_get_pipe(nRF_hw_t *nRF0);
 
 
 

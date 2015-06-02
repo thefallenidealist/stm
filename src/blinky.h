@@ -27,5 +27,6 @@ enum
 
 void blinky_blinky_init(uint8_t leds, bool arg);
 void blinky_blinky(uint8_t arg);
+void blinky(const char *arg);
 
 #endif

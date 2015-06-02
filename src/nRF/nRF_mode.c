@@ -25,29 +25,40 @@ void nRF_set_mode(nRF_hw_t *nRF0, nRF_mode_t mode)
 		}
 		*/
 
+		/*
 		printf("Gasim pizdariju za svaki slucaj: %p\n", nRF0);
 		nRF_power_off(nRF0);
 		delay_ms(50);	// bezveze
 		// moguce da ga ovaj delay i ovi dolje od 100 ms poprave, TODO provjerit nekako
+		*/
 
+		/*
 		if (mode == RX)
 		{
 			reg_tmp[PRIM_RX] = mode;
 			write_reg(nRF0, REG_CONFIG);
 
-			printf("Palim pizdariju: %p, mode: RX\n", nRF0);
-			nRF_power_on(nRF0);
-			delay_ms(100);	//
+			//printf("Palim pizdariju: %p, mode: RX\n", nRF0);
+			//nRF_power_on(nRF0);
+			//delay_ms(100);	//
 		}
 		else if (mode == TX)
 		{
 			reg_tmp[PRIM_RX] = mode;
 			write_reg(nRF0, REG_CONFIG);
 
-			printf("Palim pizdariju: %p, mode: TX\n", nRF0);
-			nRF_power_on(nRF0);
-			delay_ms(100);	//
+			//printf("Palim pizdariju: %p, mode: TX\n", nRF0);
+			//nRF_power_on(nRF0);
+			//delay_ms(100);	//
 
+		}
+		*/
+		if ( (mode == RX) || (mode == TX) )
+		{
+			reg_tmp[PRIM_RX] = mode;
+			write_reg(nRF0, REG_CONFIG);
+			// zapisi i u objekt
+			nRF0->mode = mode;
 		}
 		else
 		{

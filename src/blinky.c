@@ -141,3 +141,7 @@ void blinky_blinky(uint8_t arg)
 }
 
 //void blinky_init
+void blinky(const char *arg)
+{
+	gpio_write(arg, TOGGLE);
+}

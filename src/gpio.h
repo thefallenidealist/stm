@@ -67,7 +67,9 @@ typedef enum
 	DIGITAL_IN 	= 0,
 	DIGITAL_OUT = 1,
 	ANALOG_IN 	= 2,
-	ANALOG_OUT 	= 3
+	ANALOG_OUT 	= 3,
+	IN_PU,
+	IN_PD
 } direction_t;
 
 /********************		anonymous		********************/

@@ -22,6 +22,8 @@ void nRF_set_address_width(nRF_hw_t *nRF0, uint8_t width)				// reg 0x03
 
 		// write into object
 		nRF0->address_width = width;
+		//printf("%s(): address width is: %d\n", __func__, nRF0->address_width);
+		//printf("%s(): address width is: %d\n", __func__, width);
 	}
 }
 
@@ -30,12 +32,17 @@ void nRF_set_address_width(nRF_hw_t *nRF0, uint8_t width)				// reg 0x03
 *************************************************************************************************/
 uint8_t nRF_get_address_width(nRF_hw_t *nRF0)							// reg 0x03
 {
-	uint8_t width = read_reg(nRF0, REG_SETUP_AW) + 2; // jer mu je "0b01" zapravo 3
-	//printf("\t\t\t\twidth: %d\n", width);
+	//uint8_t width = read_reg(nRF0, REG_SETUP_AW) + 2; // jer mu je "0b01" zapravo 3	// XXX ovo
+	//se sjebe na RX modulu, iako na TX radi
+
+	uint8_t width = nRF0->address_width;
 
 	if ( (width < 3) || (width > 5) )
 	{
 		ERROR("Width should be 3, 4 or 5\n");
 	}
+
+	//printf("%s(): address width: %d\n", __func__, width);
+
 	return width;
 }

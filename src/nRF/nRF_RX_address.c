@@ -32,6 +32,8 @@ int8_t nRF_set_RX_address(nRF_hw_t *nRF0, uint8_t address[])	// reg 0x0A
 		// 40 bits, 8bit reads
 		spi_rw(spi_port, (BASE_PIPE+pipe) + CMD_W_REGISTER);	// 0x0A+pipe
 
+		//printf("%s(): address width: %d\n", __func__, width);
+
 		for (uint8_t i=0; i<width; i++)
 		{
 			spi_rw(spi_port, address[i]);

@@ -1,4 +1,5 @@
 # created 141129
+# 150518	sredjeno multiarch za ARM (F1 i F4)
 # ovo koristi FreeBSDov stdio.h, stdint.h, unistd.h i sl. newlib-ov printf je zakurac
 # -mthumb -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16
 # INFO primjer: gmake MCU=F4		MCU=F4 gg
@@ -20,8 +21,7 @@ DIR_BIN 	= ./bin
 TARGET	= -target thumb-unknown-eabi	# needed for clang
 CPU		= -mcpu=cortex-m3 
 #CPU	= -mcpu=cortex-m4 	# TODO
-
-DEFINES		= -DUSE_STDPERIPH_DRIVER 
+DEFINES	= -DUSE_STDPERIPH_DRIVER 
 #OPTS	= -O0 -g	# XXX ne radi
 #OPTS	= -O1 -g 
 #OPTS	= -O2 -g 
@@ -34,16 +34,18 @@ DIRS 	=	-I src \
 ifeq ($(MCU), F4)
 	ARCH	= armv7e-m
 	DIRS	+= -I src/lib/f4
-	DEFINES += -DSTM32F4XX
+	DEFINES += -DSTM32F4XX -DSTM32F4
 	LINKER_FILE		= src/lib/f4/stm32.ld
 	SRC_S	= $(wildcard src/lib/f4/*.s)
+	OPENOCD = openocd -f openocd4.cfg -c init -c targets -c "reset halt" -c "flash erase_check 0" -c " flash write_image erase bin/main.bin 0x08000000" -c "reset run" -c "shutdown"
 endif
 ifeq ($(MCU), F1)
 	ARCH	= armv7-m
 	DIRS	+= -I src/lib/f1
-	DEFINES	+= -DSTM32F10X_MD
+	DEFINES	+= -DSTM32F10X_MD -DSTM32F1
 	LINKER_FILE		= src/lib/f1/stm32.ld
 	SRC_S	= $(wildcard src/lib/f1/*.s)
+	OPENOCD = openocd -f openocd1.cfg -c init -c targets -c "reset halt" -c "flash write_image erase bin/main.bin 0x08000000" -c "reset run" -c "shutdown"
 endif
 
 # INFO objasnjenja
@@ -54,19 +56,24 @@ endif
 # -fdata-sections 			# smanji
 # --gc-sections 			# nije za clang
 # -ffreestanding 			# da nema warning za void main(void)
+# -ffreestanding			# Indicated that the file should be compiled for a freestanding enviroment (like a kernel), not a hosted (userspace), environment.
 # -fno-short-enums 			# znalo posluzit sa starim GCCom i newlibom
+# -fno-builtin				# Disable special handling and optimizations of builtin functions like strlen and malloc.
+# -nostdlib					# Disables standard library
+# -nostdinc					# Makes sure the standard library headers are not included.
+# -nostdinc++				# Makes sure the standard C++ library headers are not included. This makes sense if you build a custom version of libc++ and want to avoid including system one. 
+# -ferror-limit=1 			# da stane nakon prvog #error
+# -pedantic					# Warn on language extensions.			my code isn't ready yet for this
+#TODO -flto remove unused functions
+# --sysroot /dev/null TODO
+
+CLANG_FLAGS	 = $(TARGET) -Wformat -Wmissing-prototypes -ferror-limit=1 
+#GCC_FLAGS 	 = -std=c99 -mthumb -mno-thumb-interwork -fno-common -fno-strict-aliasing -fmessage-length=0 -fno-builtin -Wp,-w 
 
 # ako je newlib sa hardFP INFO
 #COMMON_FLAGS 	 = $(CPU) $(OPTS) -nostdlib -mfloat-abi=hard -mfpu=fpv4-sp-d16 -Wall $(CLANG_FLAGS) 
 #COMMON_FLAGS 	 = $(CPU) $(OPTS) -nostdlib -mfloat-abi=soft -Wall $(CLANG_FLAGS) -ffreestanding -fno-builtin -nostdinc
 COMMON_FLAGS 	 = $(CPU) $(OPTS) -nostdlib -mfloat-abi=soft -Wall $(CLANG_FLAGS)
-
-# clang
-#TODO -flto remove unused functions
-CLANG_FLAGS	 = $(TARGET) -Wformat -Wmissing-prototypes 
-# --sysroot /dev/null TODO
-#GCC_FLAGS 	 = -std=c99 -mthumb -mno-thumb-interwork -fno-common -fno-strict-aliasing -fmessage-length=0 -fno-builtin -Wp,-w 
-
 
 CCFLAGS 	 = $(COMMON_FLAGS) $(DEFINES) $(DIRS) \
 						-ffreestanding 
@@ -81,16 +88,15 @@ LD_FLAGS 	 = -nostartfiles -nostdlib -nostartupfiles --gc-sections \
 				$(LD_DIRS) $(OBJS) \
 				--start-group -lgcc -lc -lm --end-group 
 
-
 # pronadji jel postoji .c fajl umjesto .x (nisu svi fajlovi u paru .h/.c)
 # XXX kludge
 DEPEND_C = $(shell ./skriptica.sh $(MCU))
+# $(patsubst %.c,%.o,$(wildcard *.c))
+DEPEND_C2 = $(patsubst %.x,%.c,$(DEPEND_C))	# replace .x with .c
 
-
-# makni foldere, dodaj prefix, preimenuj .x u .o
+# makni foldere, dodaj prefix, preimenuj .x u .o	npr: ./obj/main.o, ./obj/newlib_stubs.o
 OBJS  = $(addprefix $(DIR_OBJ)/, $(notdir $(DEPEND_C:.x=.o)))
-OBJS += $(addprefix $(DIR_OBJ)/, $(notdir  $(SRC_S:.s=.o)))	# assembler fajl nije nigdje stavljen,
-						#al treba, nece javit gresku ako je zakomentirano, al program nece radit
+OBJS += $(addprefix $(DIR_OBJ)/, $(notdir $(SRC_S:.s=.o)))	# dodaj i assembler startup file
 
 $(NAME).elf: $(OBJS)
 	@printf "\t\t kompajler: $(CC)\n"
@@ -125,18 +131,25 @@ endif
 	@$(CC) $(ASFLAGS) -o $@ -c $<
 
 env:
+	@echo Debug pizdarije
 	@echo SRC_S:
 	@echo $(SRC_S)
+	@echo ""
+
+	@echo DEPEND_C:
+	@echo $(DEPEND_C)
+	@echo ""
+
+	@echo DEPEND_C2:
+	@echo $(DEPEND_C2)
 	@echo ""
 
 	@echo OBJS:
 	@echo $(OBJS)
 	@echo ""
 
-	@echo DEPEND_C:
-	@echo $(DEPEND_C)
-	@echo TMP:
-	@echo $(TMP)
+	@echo MY_VAR:
+	@echo $(MY_VAR)
 	@echo ""
 
 clean:
@@ -144,5 +157,16 @@ clean:
 	@rm -f $(DIR_OBJ)/*.o $(DIR_BIN)/$(NAME)* $(DIR_OBJ)/*.d
 
 upload:
-	./upload.sh
+#	./upload.sh
+	@echo Uploading
+	$(OPENOCD)
 
+# TODO upload, da moze snimit flash sa mikrokontrolera
+
+
+# We can change the list of C source files into a list of object files by replacing the ‘.c’ suffix with ‘.o’ in the result, like this: 
+# $(patsubst %.c,%.o,$(wildcard *.c))
+# Thus, a makefile to compile all C source files in the directory and then link them together could be written as follows: 
+# objects := $(patsubst %.c,%.o,$(wildcard *.c))
+# foo : $(objects)
+#	cc -o foo $(objects)

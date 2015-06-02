@@ -8,9 +8,11 @@ static uint8_t read_reg(nRF_hw_t *nRF0, uint8_t reg)
 	uint8_t spi_port = nRF0->spi_port;
 
 	cs(nRF0, 0);
+	delay_ms(10);
 	spi_rw(spi_port, CMD_R_REGISTER + reg);
 	status = spi_rw(spi_port, CMD_NOP);	// dummy write
 	cs(nRF0, 1);
+	delay_ms(10);
 
 	DEBUG_END;
 	return status;
@@ -87,13 +89,16 @@ static uint8_t write_reg_full(nRF_hw_t *nRF0, uint8_t reg, uint8_t value)
 	// TODO stavit da nakon zapisivanja procita taj registar i usporedi jel jednak onome sto je trebalo zapisat
 	// 		ako jest, vrati 0, inace -1
 
-	uint8_t status;
+	uint8_t status;	// TODO zasto, gdje se koristi? Pokusat bez
 	uint8_t spi_port = nRF0->spi_port;
 
+	//printf("%s(): reg: 0x%X, value: %d\n", __func__, reg, value);
+
 	cs(nRF0, 0);
-	status = spi_rw(spi_port, reg + CMD_W_REGISTER);
-	spi_rw(spi_port, value);
+	status = spi_rw(spi_port, reg + CMD_W_REGISTER);	// select register
+			 spi_rw(spi_port, value);					// write value
 	cs(nRF0, 1);
+	//delay_us(10);	// nasao negdje na netu, mozda i nije potrebno
 
 	DEBUG_END;
 	return status;

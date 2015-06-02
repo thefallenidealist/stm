@@ -4,11 +4,9 @@
 // *************************************** variables **********************************************
 volatile rx_event_t uart1_rx_event = RX_PRINTED;
 volatile rx_event_t uart2_rx_event = RX_PRINTED;
-//volatile rx_event_t uart3_rx_event = RX_PRINTED;
 volatile char uart1_rx_string_arr[UART_MAX_LENGTH] = {};
 //volatile char uart2_rx_string_arr[UART_MAX_LENGTH] = {};
-volatile char uart2_rx_string_arr[MAX_WLAN_BUFFER] = {};	// XXX WLAN
-//volatile char uart3_rx_string_arr[UART_MAX_LENGTH] = {};
+volatile char uart2_rx_string_arr[MAX_WLAN_BUFFER] = {};	// INFO WLAN module kludge
 uint16_t uart2_rx_position = 0;
 
 void uart_init(uint8_t uart_number, uint32_t speed)
@@ -42,13 +40,11 @@ void uart1_init(uint32_t speed)
 	NVIC_InitTypeDef	NVIC_InitStructure;
 
 #if defined STM32F1 || defined STM32F10X_MD
-	// TODO
 	RCC_APB2PeriphClockCmd(UART1_GPIO_RCC, ENABLE);
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
 	RCC_APB2PeriphClockCmd(UART1_RCC, ENABLE);
 
 	GPIO_InitStructure.GPIO_Speed	= GPIO_Speed_50MHz;
-	//GPIO_InitStructure.GPIO_Speed 	= GPIO_Speed_2MHz;
 	GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_AF_PP;
 
 	GPIO_InitStructure.GPIO_Pin = UART1_TX_Pin;
@@ -95,7 +91,6 @@ void uart1_init(uint32_t speed)
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority 			= 0;
 	NVIC_InitStructure.NVIC_IRQChannelCmd 					= ENABLE;
 	NVIC_Init(&NVIC_InitStructure);
-
 }
 
 /************************************************************************************************
@@ -196,37 +191,36 @@ void USART1_IRQHandler(void)
 *************************************************************************************************/
 void uart_clear(uint8_t uart)
 {
-	uart_puts(uart, "\033c");	// clear
+	uart_write_string(uart, "\033c");
 }
 
 /************************************************************************************************
-*  					uart_puts()																	*
+*  					uart_write_string()
 *************************************************************************************************/
-void uart_puts(uint8_t uart, char *string)
+//void uart_puts(uint8_t uart, char *string)
+void uart_write_string(uint8_t uart, char *arg)
 {
-	//printf("uart_puts(): string: %s\n", string);
-
 	do
 	{
 		switch (uart)
 		{
 			case 1:
 				while ((USART1->SR & USART_FLAG_TC) == (uint16_t)RESET);
-				USART1->DR = (*string++ & (uint16_t)0x01FF);
+				USART1->DR = (*arg++ & (uint16_t)0x01FF);
 				break;
 			case 2:
 				while ((USART2->SR & USART_FLAG_TC) == (uint16_t)RESET);
-				USART2->DR = (*string++ & (uint16_t)0x01FF);
+				USART2->DR = (*arg++ & (uint16_t)0x01FF);
 				break;
 			case 3:
 				while ((USART3->SR & USART_FLAG_TC) == (uint16_t)RESET);
-				USART3->DR = (*string++ & (uint16_t)0x01FF);
+				USART3->DR = (*arg++ & (uint16_t)0x01FF);
 				break;
 			default:
 				printf("%s(): wrong USART number: %d\n", __func__, uart);
 				break;
 		}
-	} while (*string != '\0');
+	} while (*arg != '\0');
 }
 
 /*************************************************************************************************
@@ -234,14 +228,22 @@ void uart_puts(uint8_t uart, char *string)
 *************************************************************************************************/
 void USART2_IRQHandler(void)
 {
+	// ovaj nastiman za WLAN modul
 	// samo kopira u globalni buffer
 	//static uint16_t uart2_rx_position = 0;
 
+	/*
 	if (USART_GetITStatus(USART2, USART_IT_RXNE) == SET)
 	{
 		uint16_t rx_char = USART_ReceiveData(USART2);
         {
         	uart2_rx_string_arr[uart2_rx_position++] = rx_char;
         }
+	}
+	*/
+	// TODO isprobat, mozda mrvicu bolja verzija onoga gore:
+	if (USART_GetITStatus(USART2, USART_IT_RXNE) == SET)
+	{
+        uart2_rx_string_arr[uart2_rx_position++] = USART_ReceiveData(USART2);
 	}
 }

@@ -21,7 +21,7 @@ wlan_modul_t *wlan_new(uint8_t uart, uint32_t speed)
 	wlan0.hw.uart_number = uart;
 	wlan0.hw.uart_speed = speed;
 	wlan0.buffer = (char *)&uart2_rx_string_arr[0];	// XXX hardcoded
-			// casting da se umiri kompajler jer je array volatile
+			// casting da se umiri kompajler jer je array volatile TODO
 	wlan0.event = WLAN_SCAN_NOT_STARTED;
 	wlan0.scan = scan;
 	wlan0.scan_done = scan_done;
@@ -82,8 +82,6 @@ static bool scan_done(wlan_modul_t *wlan0)
 {
 	//DEBUG_START;
 
-	//if ( (strstr((char *)uart2_rx_string_arr, "OK") != 0) && (wlan_event == WLAN_SCAN_IN_PROGRESS) )
-	//if (strstr((char *)uart2_rx_string_arr, "OK"))	// TODO buffer
 	if ( (strstr(wlan0->buffer, "OK")) && (wlan0->event == WLAN_SCAN_IN_PROGRESS) )
 	{
 		wlan0->event = WLAN_SCAN_DONE;

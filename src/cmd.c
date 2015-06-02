@@ -11,7 +11,16 @@ void uart_cmd(char *cmd, char *arg)
     // TODO strncmp
 
 	int r;
-	r = strcmp(cmd, "wlan");
+
+	r = strcmp(cmd, "cmd");
+	if (r == 0)
+	{
+		printf("UART test: uspjesno primio komandu, argument joj je: %s\n", arg);
+		//printf("UART test: uspjesno primio komandu, argument joj je: ");
+		//printf("0:%d 1:%d 2:%d 3:%d 4:%d 5:%d\n", arg[0], arg[1], arg[2], arg[3], arg[4]);
+	}
+
+	/*
 	if (r == 0)
 	{
 		// dobivenom argumentu cemo dodar CR i NL
@@ -24,7 +33,7 @@ void uart_cmd(char *cmd, char *arg)
         {
 		    printf("na UART2 saljem: %s\n", arg_copy);
         }
-		uart_puts(2, arg_copy);
+		uart_write_string(2, arg_copy);
 	}
 
     r = strcmp(cmd, "print");
@@ -67,21 +76,24 @@ void uart_cmd(char *cmd, char *arg)
 		uart_parse_rtc(arg);
 
 	}
+	*/
+
+
+
     DEBUG_END;
 }
 
 /************************************************************************************************
-*  				uart1_parse()							*
+*  				uart_parse()							*
 *************************************************************************************************/
-// ovo poziva USART interrupt
-//void uart1_parse(void)
 void uart_parse(void)
-	// TODO da radi za sve USARTe
 {
-	// ono sto dobije razbije na dva komada. 
+	// INFO ovo poziva USART interrupt, ne pozivat iz main()
+	// TODO da radi za sve USARTe
+	// INFO ova funkcija provjerava string sa serijskog i ako je u cmd:arg obliku, razbije string na
+	// 2 dijela
 
     DEBUG_START;
-
 
 	// inicijaliziraj za slucaj da treba ispisat prazni string
 	char  rx_string_copy_arr[UART_MAX_LENGTH] = {};
@@ -100,19 +112,25 @@ void uart_parse(void)
 
 	if (delimiter_position != NULL)
 	{
-		*delimiter_position = '\0';	// na mjesto gdje pokazuje tmp (gdje je delimiter) ubaci null i skrati glavni string
-		strncpy(cmd, rx_string_copy, sizeof(cmd));
-		strncpy(arg, delimiter_position+1, sizeof(arg));
-
-		//printf("cmd: %s\n", cmd);
-		//printf("arg: %s\n", arg);
+		*delimiter_position = '\0';	// na mjesto delimitera ubaci null i skrati glavni string
+		strncpy(cmd, rx_string_copy, 		sizeof(cmd));
+		strncpy(arg, delimiter_position+1,	sizeof(arg));	// sizeof(arg) = 100
+		// TODO maknit '\n' iz arg stringa
+		/*
+		char *newline = strchr(arg, '\n');
+		//printf("arg addr: %lu\n", &arg);
+		//printf("nl  addr: %lu\n", &newline);
+		const char empty = '\0';
+		//strncpy(newline, '\0', 1);
+		//strncpy(newline, &empty, 1);	// na mjesto gdje je '\n' zapisi '\0'
+		*/
+		arg[strlen(arg)-1] = '\0';		// makni '\n' sa zadnjeg mjesta u 'arg'
 
 		uart_cmd(cmd, arg);	// provjeri sto smo to dobili
 	}
 	else
 	{
-		printf("u stringu nije nadjen delimiter\n");
-		//uart_puts(2, "u stringu nije nadjen delimiter\n");
+		printf("Warning: u stringu nije nadjen delimiter, string: %s\n", rx_string_copy);	
 	}
     DEBUG_END;
 }

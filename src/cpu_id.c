@@ -1,6 +1,8 @@
 // created 150305
 #include "cpu_id.h"
 
+// TODO sredit da print_cpu_id() koristi get_cpu_id()
+
 void print_cpu_id()
 {
 	uint32_t cpu_id = SCB->CPUID;
@@ -93,22 +95,24 @@ void print_cpu_id()
 	}
 }
 
-/*
-int8_t get_cpu_id(void)
+//int8_t get_cpu_id(void)
+cpu_type_t get_cpu_id(void)
 {
 	uint32_t cpu_id 	= SCB->CPUID;
-	uint8_t implementer = cpu_id >> 24;
-	uint8_t variant 	= (cpu_id >> 20) & 0xF;
-	uint8_t constant	= (cpu_id >> 16) & 0xF;
+	//uint8_t  implementer = cpu_id >> 24;
+	uint8_t  variant 	= (cpu_id >> 20) & 0xF;
+	uint8_t  constant	= (cpu_id >> 16) & 0xF;
 	uint16_t part		= (cpu_id >> 4)  & 0xFFF;
-	uint8_t revision	= cpu_id & 0b1111;
+	uint8_t  revision	= cpu_id & 0b1111;
 
+	/*
 	printf("CPU ID:      0x%X\n", cpu_id);
 	printf("Implementer: 0x%X\n", implementer);
 	printf("Variant:     0x%X\n", variant);
 	printf("Constant:    0x%X\n", constant);
 	printf("PartNo:      0x%X\n", part);
 	printf("Revision:    0x%X\n", revision);
+	*/
 
 	if (constant == 0xF)
 	{
@@ -119,27 +123,27 @@ int8_t get_cpu_id(void)
 			if ( (variant == 0x0) && (revision == 0x0) )
 			{
 				//printf("CPU core is Cortex-M3 r0p0\n");
-				return 3;
+				return CORTEX_M3;
 			}
 			else if ( (variant == 0x0) && (revision == 0x1) )
 			{
 				//printf("CPU core is Cortex-M3 r1p0\n");
-				return 3;
+				return CORTEX_M3;
 			}
 			else if ( (variant == 0x1) && (revision == 0x1) )
 			{
 				//printf("CPU core is Cortex-M3 r1p1\n");
-				return 3;
+				return CORTEX_M3;
 			}
 			else if ( (variant == 0x2) && (revision == 0x0) )
 			{
 				//printf("CPU core is Cortex-M3 r2p0\n");
-				return 3;
+				return CORTEX_M3;
 			}
 			else if ( (variant == 0x2) && (revision == 0x1) )
 			{
 				//printf("CPU core is Cortex-M3 r2p1\n");
-				return 3;
+				return CORTEX_M3;
 			}
 
 		}
@@ -149,12 +153,12 @@ int8_t get_cpu_id(void)
 			if ( (variant == 0x0) && (revision == 0x0) )
 			{
 				//printf("CPU core is Cortex-M4 r0p0\n");
-				return 4;
+				return CORTEX_M4;
 			}
 			else if ( (variant == 0x0) && (revision == 0x1) )
 			{
 				//printf("CPU core is Cortex-M4 r0p1\n");
-				return 4;
+				return CORTEX_M4;
 			}
 		}
 
@@ -165,12 +169,12 @@ int8_t get_cpu_id(void)
 		if (part == 0xC20)
 		{
 			//printf("CPU core is Cortex-M0 r0p0\n");
-			return 0;
+			return CORTEX_M0;
 		}
 		else if (part == 0xC60)
 		{
 			//printf("CPU core is Cortex-M0+ r0p0\n");
-			return 0;
+			return CORTEX_M0_PLUS;
 		}
 		
 		if (part == 0xC21)	// M1
@@ -178,19 +182,19 @@ int8_t get_cpu_id(void)
 			if ( (variant == 0x0) && (revision == 0x0) )
 			{
 				//printf("CPU core is Cortex-M1 r0p0\n");
-				return 1;
+				return CORTEX_M1;
 			}
 			else if ( (variant == 0x0) && (revision == 0x1) )
 			{
 				//printf("CPU core is Cortex-M1 r0p1\n");
-				return 1;
+				return CORTEX_M1;
 			}
 			else if ( (variant == 0x1) && (revision == 0x0) )
 			{
 				//printf("CPU core is Cortex-M1 r1p0\n");
-				return 1;
+				return CORTEX_M1;
 			}
 		}
 	}
+	return UNKNOWN_CPU;
 }
-*/

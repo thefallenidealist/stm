@@ -3,6 +3,8 @@
 *************************************************************************************************/
 datapipe_t nRF_get_payload_pipe(nRF_hw_t *nRF0)					// reg 0x07, b321
 {
+	// vrati pipe ako u njemu ima nesta
+
 	//Data pipe number for the payload available for 
 	//reading from RX_FIFO
 	//000-101: Data Pipe Number
@@ -12,12 +14,27 @@ datapipe_t nRF_get_payload_pipe(nRF_hw_t *nRF0)					// reg 0x07, b321
 	uint8_t status = read_reg(nRF0, REG_STATUS);
 	datapipe_t pipe = (status >> 1) & 0b111;
 
-	/*
-	if (pipe > 5)
+	if (pipe == 0b110)
 	{
-		printf("%s(): Wrong pipe: %d\n", __func__, pipe);
+		printf("%s(): pipe not used (raw: %d\n", __func__, pipe);
 	}
-	*/
-
+	if (pipe == 0b111)
+	{
+		printf("%s(): RX FIFO empty (default, raw: %d)\n", __func__, pipe);
+	}
+	
 	return pipe;
+}
+
+/*************************************************************************************************
+				nRF_get_pipe()
+*************************************************************************************************/
+datapipe_t nRF_get_pipe(nRF_hw_t *nRF0)
+{
+	// vrati omogucene pajpove
+	uint8_t pipes = read_reg(nRF0, REG_EN_RXADDR);
+
+	//printf("%s(): pipes raw: %d\n", __func__, pipes);
+
+	return pipes;
 }

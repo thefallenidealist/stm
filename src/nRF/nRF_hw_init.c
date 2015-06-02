@@ -10,6 +10,8 @@ int8_t nRF_hw_init(nRF_hw_t *nRF0)
 	char *irq = nRF0->irq;
 	uint16_t prescaler = nRF0->spi_prescaler;
 
+	nRF0->mode = MODE_ERROR;
+
 	if (strlen(cs) != 0)
 	{
 		//printf("%s(): cs: %s\n", __func__, cs);
@@ -36,13 +38,14 @@ int8_t nRF_hw_init(nRF_hw_t *nRF0)
 	{
 		//printf("%s(): irq: %s\n", __func__, nRF0->irq);
 		gpio_init(irq, IN);
+		// TODO exti vanjski
 	}
 	else
 	{
 		DEBUG_INFO("IRQ pin not connected\n");
 	}
 
-	if (spi_init(nRF0->spi_port, prescaler))
+	if (spi_init(nRF0->spi_port, prescaler))	// TODO ili oboje cp argument, ili oboje neCP
 	{
 		ERROR("SPI not initialized\n");
 

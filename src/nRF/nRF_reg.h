@@ -109,7 +109,6 @@
 // defaultne vrijednosti RW, osim ako nije napisano drugacije		XXX prijevod
 
 #define	REG_CONFIG	0x00
-/*
 #define	MASK_RX_DR	6	// Mask interrupt caused by RX_DR
 				// 1: Interrupt not reflected on the IRQ pin
 				// 0: Reflect RX_DR as active low interrupt on the 
@@ -130,8 +129,8 @@
 #define PWR_UP		1	// 1: POWER UP, 0:POWER DOWN
 #define PRIM_RX		0	// RX/TX control 
 				// 1: PRX, 0: PTX 
-*/
 
+/*
 typedef enum
 {
 	PRIM_RX = 0,
@@ -143,6 +142,7 @@ typedef enum
 	MASK_RX_DR
 	// 0
 } reg_config_t;
+*/
 
 #define REG_EN_AA	0x01	// Enable ‘Auto Acknowledgment’ Function Dis-
 							// able this functionality to be compatible with nRF2401

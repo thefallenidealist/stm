@@ -15,37 +15,72 @@
 // *************************************** variables **********************************************
 // private
 _Atomic volatile static uint32_t delay_var;	// timer is 24b countdown
+
 //volatile static uint32_t uptime_us=0;	
 volatile uint32_t uptime_us=0;	
 static char uptime_str[35] = {};	// 34 je maksimalno za 170 godina
 // nije volatile da se ne budi kompajler (kasnije treba bit const)
+static volatile uint32_t gsystick_divider = 0;
+
+/**************************************************************************************************
+*  					delay_get divider
+**************************************************************************************************/
+uint32_t delay_get_divider(void)
+{
+	return gsystick_divider;
+}
 
 /**************************************************************************************************
 *  					delay_init(void)					  *
 **************************************************************************************************/
-void delay_init(void)
+void delay_init(systick_divider_t divider)
 {
+	// zapisi u globalnu varijablu, treba za stimanje delay_ funkcija
+	gsystick_divider = divider;
+
 #ifdef STM32F4XX
     RCC_ClocksTypeDef RCC_Clocks;
     RCC_GetClocksFreq(&RCC_Clocks);
     //SysTick_Config(RCC_Clocks.HCLK_Frequency / 1000); // 1ms
-    SysTick_Config(RCC_Clocks.HCLK_Frequency / 1000000);    // 1us
+    //SysTick_Config(RCC_Clocks.HCLK_Frequency / 1000000);    // 1us
+    SysTick_Config(RCC_Clocks.HCLK_Frequency / divider); 
 #endif
 #ifdef STM32F1
-	if(SysTick_Config(SystemCoreClock / 1000000) !=0)	// 1000000 Hz 1000 kHz	1Mhz	1us
+	//if(SysTick_Config(SystemCoreClock / 1000000) !=0)	// 1000000 Hz 1000 kHz	1Mhz	1us
+	if(SysTick_Config(SystemCoreClock / divider) != 0)
 	{
 		while(1);	// error
 	}
 #endif
 }
+/**************************************************************************************************
+*  					delay_ns()						  *
+**************************************************************************************************/
+/*
+void delay_ns(uint32_t ns)
+{
+	delay_var = ns;
+	while (delay_var != 0);
+}
+*/
 
 /**************************************************************************************************
 *  					delay_us()						  *
 **************************************************************************************************/
 void delay_us(uint32_t us)
 {
-	delay_var = us;
-	while (delay_var != 0);
+	if (gsystick_divider == TICK_EVERY_US)
+	{
+		delay_var = us;
+		while (delay_var != 0);	// delay_var se smanjuje svake 1us
+	}
+	/*
+	else if (gsystick_divider == TICK_EVERY_100NS)
+	{
+		delay_var = 10*us;
+		while (delay_var != 0);	// delay_var se smanjuje svake 100 ns
+	}
+	*/
 }
 
 /**************************************************************************************************
@@ -53,7 +88,17 @@ void delay_us(uint32_t us)
 **************************************************************************************************/
 void delay_ms(uint32_t ms)
 {
-	delay_us(1000*ms);
+	if (gsystick_divider == TICK_EVERY_US)
+	{
+		delay_us(1000*ms);
+	}
+	/*
+	if (gsystick_divider == TICK_EVERY_MS)
+	{
+		delay_var = ms;
+		while (delay_var != 0);	// delay_var se smanjuje svake 1ms
+	}
+	*/
 }
 
 /**************************************************************************************************
@@ -61,7 +106,10 @@ void delay_ms(uint32_t ms)
 **************************************************************************************************/
 void delay_s(uint32_t s)
 {
-	delay_us(1000*1000*s);
+	if (gsystick_divider == TICK_EVERY_US)
+	{
+		delay_us(1000*1000*s);
+	}
 }
 
 /**************************************************************************************************
@@ -186,8 +234,9 @@ const char *get_uptime(void)
 void SysTick_Handler(void)
 {
 	// IRQ every 1 us
+	// IRQ every 1 us or 1 ms or 1 ns
 
-	uptime_us++;	// za uptime, korisnik je ne mijenja
+	uptime_us++;	// za uptime, korisnik je ne mijenja	XXX TODO popravit da radi i za druge (zasad samo radi sa 1 us tick)
 
 	if (delay_var != 0)
 	{
@@ -195,6 +244,7 @@ void SysTick_Handler(void)
 	}
 
 
+	/*
 	//uptime_us += 1234;
 	//uptime_us %= 4294967000;
 	//if (uptime_us / 4294967000 == 1)
@@ -205,4 +255,5 @@ void SysTick_Handler(void)
 		//set_tmp_up(uptime_us);
 		uptime_us %= 10000;
 	}
+	*/
 }
