@@ -104,25 +104,25 @@ void main(void)
 		blinky(BLINKY_F1);
 	#endif
 #endif
-		delay_ms(500);
+		//delay_ms(500);
 #ifdef EXTI_H
 		//printf("EXTI flag: %d\n", exti1_flag);
 		if (exti1_flag == 1)
 		{
-			printf("EXTI1 flag je aktivan, resetiram.\n");
+			//printf("EXTI1 flag je aktivan, resetiram.\n");
 			exti1_flag = 0;
+			// TODO ovdje stavit nRF read
 		}
 #endif
 
 #ifdef NRF_RX
+		// INFO moze i preko interrupta TODO
 		nRF_read_payload(grf);
 #endif
 #ifdef NRF_TX
 		printf("nRF TX salje\n");
-		//uint8_t nrf_buffer[10] = {'a', 'b', 'c', 'd'};
-		//nRF_write_payload(grf, nrf_buffer, 3);
 		nRF_write_payload(grf, nRF_TX_buffer, nRF_get_payload_size(grf, P0));
-		//printf("nRF_get_payload_size: %d\n", nRF_get_payload_size(grf, P0));
+		delay_ms(500);
 #endif
 	}
 }

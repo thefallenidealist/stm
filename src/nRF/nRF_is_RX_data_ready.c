@@ -16,6 +16,8 @@ bool nRF_is_RX_data_ready(nRF_hw_t *nRF0)							// reg 0x06, b6
 
 void nRF_clear_RX_data_ready(nRF_hw_t *nRF0)							// reg 0x06, b6
 {
-	reg_tmp[RX_DR] = 0;
+	// write 1 to clear
+	//reg_tmp[RX_DR] = 0;
+	reg_tmp[RX_DR] = 1;
 	write_reg(nRF0, REG_STATUS);
 }
