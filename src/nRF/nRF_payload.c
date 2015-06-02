@@ -31,7 +31,6 @@ bool nRF_read_payload(nRF_hw_t *nRF0)
 	// novo 150602
 
 	// provjeri RX_DR
-	//bool data_ready = nRF_is_RX_data_ready(grf);
 	bool data_ready = nRF_is_RX_data_ready(nRF0);
 	//printf("%s(): RX data ready: %d\n", __func__, data_ready);
 
