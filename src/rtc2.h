@@ -13,7 +13,7 @@
 #if defined STM32F1 || defined STM32F10X_MD
 	#include "stm32f10x_rcc.h"
 	#include "stm32f10x_pwr.h"
-	//#include "stm32f10x_rtc.h" // treba samo za TX
+	#include "stm32f10x_rtc.h"
 #endif
 
 typedef struct 

@@ -12,8 +12,9 @@
 #include "cpu_id.h" 	// treba da prvi printf da zna jel masni ili mali ARM
 
 void main(void);
-
-//#include "rtc2.h"
+#ifdef STM32F4
+#include "rtc2.h"
+#endif
 //#include "eeprom.h" 	// 3.3V
 //#include "baro.h" 	// 5V
 //#include "oled.h" 	// 5V
@@ -22,7 +23,6 @@ void main(void);
 //#include "mem.h" 				// ne radi na F1 #error
 //#include "cmd.h"
 //#include "joystick.h"
-//#include "nRF_struct.h"
 //#include "colors_ansi.h"
 //#include "wii.h"
 //#include "wlan_hw.h"
@@ -33,7 +33,8 @@ void main(void);
 #include "nRF.h"
 //#include "flash.h"
 //#include "pwm.h"
-#include "src/exti.h" 	// XXX ne smije se SPI koristit sa ovime
+//#include "src/exti.h"
+//#include "src/compass.h"
 
 #define BLINKY_F1	"PA0"
 
@@ -60,7 +61,9 @@ void main(void)
 	printf("________________________________________________________________________________\n");
 
 
-
+#ifdef RTC_H
+	rtc_main();
+#endif
 
 #ifdef EXTI_H
 	exti1_init();
@@ -87,9 +90,12 @@ void main(void)
 	#if defined STM32F1 || defined STM32F10X_MD
 		#define NRF_RX
 	#endif
-
 	nRF_main();
-	//printf("grf: \t0x%X\n", grf);
+#endif
+#ifdef COMPASS_H
+	printf("Idemo pozvat compass_main()\n");
+	compass_main();
+	//compass_main_burgi();
 #endif
 
 	printf("sad ide while\n");
@@ -103,7 +109,7 @@ void main(void)
 		blinky(BLINKY_F1);
 	#endif
 #endif
-		delay_ms(500);
+		//delay_ms(500);
 
 #ifdef EXTI_H
 		//printf("EXTI flag: %d\n", exti1_flag);
@@ -115,15 +121,32 @@ void main(void)
 		}
 #endif
 
+#ifdef RTC_H
+		RTC_data_t *time = rtc_get_time();
+		printf("RTC: %d:%d:%d\n", time->hours, time->minutes, time->seconds);
+#endif
+
 #ifdef NRF_RX
 		// INFO moze i preko interrupta TODO
-		nRF_read_payload(grf);
+		bool payload_ready = nRF_read_payload(grf);
+		if (payload_ready)
+		{
+			printf("nRF RX je dobio: %s\n", nRF_RX_buffer);
+			// obrisi buffer
+			for (uint8_t i=0; i<NRF_FIFO_SIZE; i++)
+			{
+				nRF_RX_buffer[i] = '\0';
+			}
+		}
 #endif
 #ifdef NRF_TX
 		printf("nRF TX salje\n");
-		nRF_write_payload(grf, nRF_TX_buffer, nRF_get_payload_size(grf, P0));
-		//delay_ms(500);
-		//delay_ms(5);
+		char tx_buffer[NRF_FIFO_SIZE] = {};
+		//RTC_data_t *time = rtc_get_time();
+
+		snprintf(tx_buffer, NRF_FIFO_SIZE, "%02d:%02d:%02d:abcdef", time->hours, time->minutes, time->seconds);
+		nRF_write_payload(grf, tx_buffer, nRF_get_payload_size(grf, P0));
+		delay_ms(500);
 #endif
 	}
 }

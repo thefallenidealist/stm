@@ -43,31 +43,36 @@
 #define NRF_SPI	1				// F1, F4
 
 #ifdef STM32F1
-		#define NRF_RX
-		//#define NRF_TX
+	#define NRF_RX
 	#define NRF_SPI_PRESCALER 32
 	#define NRF_CS	"PB0"
 	#define NRF_CE	"PB2"
 	#define NRF_IRQ	"PB1"	// EXTI1
 #endif
 #ifdef STM32F4
-		#define NRF_TX
-		//#define NRF_RX
+	#define NRF_TX
 	#define NRF_SPI_PRESCALER 64
 	#define NRF_CS	"PA4"
 	#define NRF_CE	"PA3"
 	#define NRF_IRQ	"PA5"	// XXX, NC, treba lemit
 #endif
 
+/*
+#ifdef NRF_TX
+	#include "rtc2.h"
+#endif
+*/
+
 uint8_t addr[5] = "qwert";
-#define NRF_ADDRESS_WIDTH	5
 
 nRF_hw_t rf_modul;
 nRF_hw_t *grf = &rf_modul;
 
-#define NRF_FIFO_SIZE	32
-uint8_t nRF_TX_buffer[NRF_FIFO_SIZE];
-uint8_t nRF_RX_buffer[NRF_FIFO_SIZE];
+// INFO uint8_t to char
+//uint8_t nRF_TX_buffer[NRF_FIFO_SIZE];
+//uint8_t nRF_RX_buffer[NRF_FIFO_SIZE];
+char nRF_TX_buffer[NRF_FIFO_SIZE] = {};
+char nRF_RX_buffer[NRF_FIFO_SIZE] = {};
 
 /*************************************************************************************************
 				nRF_is_present()
@@ -130,15 +135,7 @@ int8_t nRF_main(void)
 {
 	// moj pokusaj
 	printf("%s() kaze zdravo\n", __func__);
-	uint8_t payload_size = 8;
-
-	// popuni buffere
-	for (int i=0; i<NRF_FIFO_SIZE; i++)
-	{
-		nRF_TX_buffer[i] = 'a' + i;
-		nRF_RX_buffer[i] = 0;
-	}
-
+	uint8_t payload_size = NRF_PAYLOAD_SIZE;
 
 	// hw init
 	rf_modul.spi_port 	= NRF_SPI;
@@ -156,7 +153,7 @@ int8_t nRF_main(void)
 	gpio_write(rf_modul.ce, 0);
 	gpio_write(rf_modul.cs, 1);
 
-	//delay_ms(11);	// 10.3 ms		// power on delay
+	delay_ms(11);	// 10.3 ms		// power on delay
 	delay_ms(100);	// datasheet page 22		Power on reset
 	// end of hw init
 
@@ -180,7 +177,7 @@ int8_t nRF_main(void)
 	}
 
 	nRF_set_output_power(&rf_modul, power_0dBm);
-	nRF_set_datarate	(&rf_modul, datarate_1Mbps);
+	nRF_set_datarate	(&rf_modul, datarate_2Mbps);
 	nRF_set_payload_size(&rf_modul, 0, payload_size);
 	nRF_set_channel		(&rf_modul, 0);
 
@@ -206,21 +203,20 @@ int8_t nRF_main(void)
 	nRF_set_CRC_length(&rf_modul, CRC_LENGTH_2BTYE);
 
 #ifdef NRF_TX
-	// TODO u posebnu funkciju
-	//write_reg(&rf_modul, (1 << ENAA_P0);	
-	reg_tmp[ENAA_P0] = 1;
-	write_reg(&rf_modul, REG_EN_AA);
+	nRF_enable_aa(&rf_modul, P0);	// iako su po defaultu omogucene za sve pajpove
 
 	nRF_set_retransmit_delay(&rf_modul, DELAY_750us);
 	nRF_set_retransmit_count(&rf_modul, 15);
 
 	nRF_power_on(&rf_modul);
+	delay_ms(150);	// bezveze
 	ce(&rf_modul, 0);	// nije RX, ne slusa
 	// ce je po defaultu vec nula, al ajde
 #endif
 
 #ifdef NRF_RX
 	nRF_power_on(&rf_modul);
+	delay_ms(150);	// bezveze
 	nRF_start_listening(&rf_modul);
 #endif
 

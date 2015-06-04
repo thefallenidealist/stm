@@ -74,7 +74,4 @@ void rtc_set_time(uint8_t h, uint8_t m, uint8_t s)
 
 
 	RTC_SetTime(RTC_Format_BIN, &RTC_TimeStruct);
-
-
-
 }

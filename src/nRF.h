@@ -18,6 +18,11 @@
 
 // TODO zasad napravljeno da samo koristi pipe0
 
+// postavke za nRF
+#define NRF_ADDRESS_WIDTH	5
+#define NRF_FIFO_SIZE		32
+#define NRF_PAYLOAD_SIZE	16
+
 typedef enum
 {
 	TX  = 0,
@@ -126,10 +131,11 @@ typedef enum
 	CRC_LENGTH_2BTYE = 1
 } nRF_crc_length_t;
 
-// ova 3 ispod vjerojatno ne trebaju bit javni
-extern uint8_t reg_tmp[8];
-extern uint8_t nRF_RX_buffer[32];	// treba
-extern uint8_t nRF_TX_buffer[32];	// vjerojatno nije potreban
+//extern uint8_t reg_tmp[8];
+//extern uint8_t nRF_RX_buffer[32];	// treba
+//extern uint8_t nRF_TX_buffer[32];	// vjerojatno nije potreban
+extern char nRF_RX_buffer[32];	// treba
+extern char nRF_TX_buffer[32];	// vjerojatno nije potreban
 extern nRF_hw_t *grf;
 
 /*************************************************************************************************
@@ -169,7 +175,6 @@ uint8_t nRF_get_channel		(nRF_hw_t *nRF0);
 void 		nRF_set_datarate	(nRF_hw_t *nRF0, nRF_datarate_t datarate);
 nRF_datarate_t	nRF_get_datarate	(nRF_hw_t *nRF0);
 
-
 bool 	nRF_is_RX_data_ready	(nRF_hw_t *nRF0);
 bool 	nRF_is_TX_data_sent		(nRF_hw_t *nRF0);
 bool 	nRF_is_TX_full			(nRF_hw_t *nRF0);	
@@ -208,7 +213,8 @@ void 			nRF_disable_CRC(nRF_hw_t *nRF0);
 
 //uint8_t*	nRF_read_payload	(nRF_hw_t *nRF0);
 bool	nRF_read_payload	(nRF_hw_t *nRF0);	// 1 ako je zapisao novo u buffer, 0 ako nije
-void 		nRF_write_payload	(nRF_hw_t *nRF0, uint8_t *buffer, uint8_t length);
+//void 		nRF_write_payload	(nRF_hw_t *nRF0, uint8_t *buffer, uint8_t length);
+void 		nRF_write_payload	(nRF_hw_t *nRF0, char *buffer, uint8_t length);
 
 void nRF_start_listening(nRF_hw_t *nRF0);
 void nRF_stop_listening(nRF_hw_t *nRF0);

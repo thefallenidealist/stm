@@ -1,8 +1,10 @@
 /*************************************************************************************************
 				nRF_write_payload()
 *************************************************************************************************/
-void nRF_write_payload(nRF_hw_t *nRF0, uint8_t *buffer, uint8_t length)
+//void nRF_write_payload(nRF_hw_t *nRF0, uint8_t *buffer, uint8_t length)
+void nRF_write_payload(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 {
+	// TODO max length 32 bytes
 	uint8_t spi_port = nRF0->spi_port;
 
 	// 150602 novo3,  moj pokusaj
@@ -15,28 +17,35 @@ void nRF_write_payload(nRF_hw_t *nRF0, uint8_t *buffer, uint8_t length)
 	}
 	cs(nRF0, 1);
 
-	// start transmission
+	// pulse CE for transmission
 	ce(nRF0, 1);
-	delay_us(15);
-	// end transmission
+	delay_us(11);	// 10+ us
 	ce(nRF0, 0);
+
+	/*
+	The nRF24L01+ stays in TX mode until it finishes transmitting a packet. If CE = 0, nRF24L01+ returns to 
+	standby-I mode. If CE = 1, the status of the TX FIFO determines the next action. If the TX FIFO is not 
+	empty the nRF24L01+ remains in TX mode and transmits the next packet. If the TX FIFO is empty the 
+	nRF24L01+ goes into standby-II mode. The nRF24L01+ transmitter PLL operates in open loop when in TX 
+	mode. It is important never to keep the nRF24L01+ in TX mode for more than 4ms at a time. If the 
+	Enhanced ShockBurst™ features are enabled, nRF24L01+ is never in TX mode longer than 4ms.
+	*/
 }
 
 /*************************************************************************************************
 				nRF_read_payload()
 *************************************************************************************************/
-//uint8_t *nRF_read_payload(nRF_hw_t *nRF0)
 bool nRF_read_payload(nRF_hw_t *nRF0)
 {
 	// novo 150602
 
 	// provjeri RX_DR
 	bool data_ready = nRF_is_RX_data_ready(nRF0);
-	//printf("%s(): RX data ready: %d\n", __func__, data_ready);
 
 	if (data_ready == 1)
 	{
 		// dobili smo nesta
+		//nRF_stop_listening(nRF0);	// XXX no, no, razjebe se
 
 		uint8_t spi_port 	 = nRF0->spi_port;
 		uint8_t pipe		 = nRF_get_payload_pipe(nRF0);
@@ -53,6 +62,7 @@ bool nRF_read_payload(nRF_hw_t *nRF0)
 		}
 		cs(nRF0, 1);
 
+		/*
 		// printing RF FIFO
 		printf("Printamo RX buffer: ");
 		for (uint8_t i=0; i<payload_size; i++)
@@ -62,6 +72,13 @@ bool nRF_read_payload(nRF_hw_t *nRF0)
 		}
 		printf("\n");
 
+		// obrisi buffer
+		for (uint8_t i=0; i<NRF_FIFO_SIZE; i++)
+		{
+			nRF_RX_buffer[i] = '\0';
+		}
+		*/
+
 		//nRF_clear_bits(nRF0); // ocisti RX_DR, TX_DS, MAX_RT
 		nRF_clear_RX_data_ready(nRF0);
 		// INFO mora se pocistit inace se razjebat
@@ -70,10 +87,7 @@ bool nRF_read_payload(nRF_hw_t *nRF0)
 	}
 	else
 	{
-		printf("Nothing received\n");
+		//printf("Nothing received\n");
 		return 0;
 	}
-
-	//print_reg(grf, 0x00);
-	//print_reg(grf, REG_STATUS);
 }
