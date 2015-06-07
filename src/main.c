@@ -123,7 +123,7 @@ void main(void)
 
 #ifdef RTC_H
 		RTC_data_t *time = rtc_get_time();
-		printf("RTC: %d:%d:%d\n", time->hours, time->minutes, time->seconds);
+		//printf("RTC: %d:%d:%d\n", time->hours, time->minutes, time->seconds);
 #endif
 
 #ifdef NRF_RX
@@ -140,12 +140,13 @@ void main(void)
 		}
 #endif
 #ifdef NRF_TX
-		printf("nRF TX salje\n");
 		char tx_buffer[NRF_FIFO_SIZE] = {};
 		//RTC_data_t *time = rtc_get_time();
 
 		snprintf(tx_buffer, NRF_FIFO_SIZE, "%02d:%02d:%02d:abcdef", time->hours, time->minutes, time->seconds);
+
 		nRF_write_payload(grf, tx_buffer, nRF_get_payload_size(grf, P0));
+		printf("nRF TX poslao %s\n", tx_buffer);
 		delay_ms(500);
 #endif
 	}

@@ -1,10 +1,20 @@
 /*************************************************************************************************
 				nRF_write_payload()
 *************************************************************************************************/
-//void nRF_write_payload(nRF_hw_t *nRF0, uint8_t *buffer, uint8_t length)
 void nRF_write_payload(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 {
-	// TODO max length 32 bytes
+	// INFO
+	// moguce mu rec da flusha TX tako da u slucaju da je pokusao prosli paket poslat maksimalno
+	// puta i nije uspio... posalje novi bez explicitnog flushanja iz main()
+	// nRF_flush_TX(nRF0);
+
+
+	if (length > 32)
+	{
+		printf("%s(): Zajeb, length (%d) larger than 32, exiting\n", __func__, length);
+		return;
+	}
+
 	uint8_t spi_port = nRF0->spi_port;
 
 	// 150602 novo3,  moj pokusaj
@@ -30,6 +40,12 @@ void nRF_write_payload(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 	mode. It is important never to keep the nRF24L01+ in TX mode for more than 4ms at a time. If the 
 	Enhanced ShockBurst™ features are enabled, nRF24L01+ is never in TX mode longer than 4ms.
 	*/
+
+	/*
+	   nakon slanja paketa ne radi nista 130us
+	   onda se presalta u RX mode i ocekuje ACK
+	   			page 	45
+	   */
 }
 
 /*************************************************************************************************
@@ -39,17 +55,15 @@ bool nRF_read_payload(nRF_hw_t *nRF0)
 {
 	// novo 150602
 
-	// provjeri RX_DR
-	bool data_ready = nRF_is_RX_data_ready(nRF0);
+	bool data_ready = nRF_is_RX_data_ready(nRF0);	// provjeri RX_DR
 
-	if (data_ready == 1)
+	if (data_ready == 1)	// dobili smo nesta
 	{
-		// dobili smo nesta
-		//nRF_stop_listening(nRF0);	// XXX no, no, razjebe se
 
 		uint8_t spi_port 	 = nRF0->spi_port;
-		uint8_t pipe		 = nRF_get_payload_pipe(nRF0);
-		uint8_t payload_size = nRF_get_payload_size(nRF0, pipe);
+		uint8_t pipe		 = nRF_get_payload_pipe(nRF0);			// provjeri u kojem pajpu je teret
+		uint8_t payload_size = nRF_get_payload_size(nRF0, pipe);	// provjeri koliko je velik teret
+				// vjerojatno nije potrebno ako nije dynamic payload, al neka se nadje
 
 		// reading RX FIFO
 		cs(nRF0, 0);
@@ -62,26 +76,8 @@ bool nRF_read_payload(nRF_hw_t *nRF0)
 		}
 		cs(nRF0, 1);
 
-		/*
-		// printing RF FIFO
-		printf("Printamo RX buffer: ");
-		for (uint8_t i=0; i<payload_size; i++)
-		{
-			//printf("[%d]: %c %d\n", i, nRF_RX_buffer[i], nRF_RX_buffer[i]);
-			printf("%c", nRF_RX_buffer[i]);
-		}
-		printf("\n");
-
-		// obrisi buffer
-		for (uint8_t i=0; i<NRF_FIFO_SIZE; i++)
-		{
-			nRF_RX_buffer[i] = '\0';
-		}
-		*/
-
 		//nRF_clear_bits(nRF0); // ocisti RX_DR, TX_DS, MAX_RT
-		nRF_clear_RX_data_ready(nRF0);
-		// INFO mora se pocistit inace se razjebat
+		nRF_clear_RX_data_ready(nRF0); // INFO mora se pocistit inace se razjebat
 
 		return 1;
 	}

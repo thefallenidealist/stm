@@ -95,15 +95,6 @@ typedef enum
 
 typedef enum
 {
-	/*
-	   ne smiju se zvat jednako kao oni ispod 
-	P0 = 0,
-	P1 = 1,
-	P2 = 2,
-	P3 = 3,
-	P4 = 4,
-	P5 = 5,
-	*/
 	payload_pipe0 = 0,
 	payload_pipe1 = 1,
 	payload_pipe2 = 2,
@@ -206,27 +197,38 @@ void 		nRF_set_output_power	(nRF_hw_t *nRF0, nRF_output_power_t power);
 void 		nRF_set_mode(nRF_hw_t *nRF0, nRF_mode_t mode);
 nRF_mode_t 	nRF_get_mode(nRF_hw_t *nRF0);
 
-int8_t 			nRF_set_CRC_length(nRF_hw_t *nRF0, nRF_crc_length_t crc_length);
+int8_t 		nRF_set_CRC_length(nRF_hw_t *nRF0, nRF_crc_length_t crc_length);
 nRF_crc_length_t 	nRF_get_CRC_length(nRF_hw_t *nRF0);
-void 			nRF_enable_CRC(nRF_hw_t *nRF0);
-void 			nRF_disable_CRC(nRF_hw_t *nRF0);
+void 		nRF_enable_CRC	(nRF_hw_t *nRF0);
+void 		nRF_disable_CRC	(nRF_hw_t *nRF0);
 
-//uint8_t*	nRF_read_payload	(nRF_hw_t *nRF0);
 bool	nRF_read_payload	(nRF_hw_t *nRF0);	// 1 ako je zapisao novo u buffer, 0 ako nije
-//void 		nRF_write_payload	(nRF_hw_t *nRF0, uint8_t *buffer, uint8_t length);
-void 		nRF_write_payload	(nRF_hw_t *nRF0, char *buffer, uint8_t length);
+void 	nRF_write_payload	(nRF_hw_t *nRF0, char *buffer, uint8_t length);
+void 	nRF_write_payload_no_ack	(nRF_hw_t *nRF0, char *buffer, uint8_t length);
 
-void nRF_start_listening(nRF_hw_t *nRF0);
-void nRF_stop_listening(nRF_hw_t *nRF0);
+void nRF_start_listening	(nRF_hw_t *nRF0);
+void nRF_stop_listening		(nRF_hw_t *nRF0);
+void nRF_flush_TX			(nRF_hw_t *nRF0);
+void nRF_flush_RX			(nRF_hw_t *nRF0);
+
+nRF_pipe_t nRF_get_enabled_pipe	(nRF_hw_t *nRF0);
+void 	nRF_enable_auto_ack		(nRF_hw_t *nRF0, nRF_pipe_t pipe);
+void 	nRF_disable_auto_ack	(nRF_hw_t *nRF0, nRF_pipe_t pipe);
+void 	nRF_debug				(nRF_hw_t *nRF0);
+void	nRF_disable_enhanced_shockburst	(nRF_hw_t *nRF0);
+void	nRF_enable_enhanced_shockburst		(nRF_hw_t *nRF0);
+uint8_t nRF_get_payload_width			(nRF_hw_t *nRF0);
+void	nRF_write_ack	(nRF_hw_t *nRF0, nRF_pipe_t pipe);
+
+void nRF_enable_dynamic_payload(nRF_hw_t *nRF0);
+void nRF_disable_dynamic_payload(nRF_hw_t *nRF0);
+void nRF_enable_dynamic_payload_ack(nRF_hw_t *nRF0);
+void nRF_disable_dynamic_payload_ack(nRF_hw_t *nRF0);
+void nRF_enable_dynamic_pipe(nRF_hw_t *nRF0, nRF_pipe_t pipe);
+void nRF_disable_dynamic_pipe(nRF_hw_t *nRF0, nRF_pipe_t pipe);
 
 
-void nRF_flush_TX(nRF_hw_t *nRF0);
-void nRF_flush_RX(nRF_hw_t *nRF0);
-
-nRF_pipe_t nRF_get_enabled_pipe(nRF_hw_t *nRF0);
-void nRF_enable_aa(nRF_hw_t *nRF0, nRF_pipe_t pipe);
-void nRF_disable_aa(nRF_hw_t *nRF0, nRF_pipe_t pipe);
-
+// TODO const int VARIJABLA
 
 
 #endif

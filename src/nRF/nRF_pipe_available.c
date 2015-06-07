@@ -16,6 +16,7 @@ nRF_payload_pipe_t nRF_get_payload_pipe(nRF_hw_t *nRF0)					// reg 0x07, b321
 	uint8_t status = read_reg(nRF0, REG_STATUS);
 	nRF_payload_pipe_t pipe = (status >> 1) & 0b111;
 
+	/*
 	if (pipe == 0b110)
 	{
 		printf("%s(): pipe not used (raw: %d\n", __func__, pipe);
@@ -24,6 +25,7 @@ nRF_payload_pipe_t nRF_get_payload_pipe(nRF_hw_t *nRF0)					// reg 0x07, b321
 	{
 		printf("%s(): RX FIFO empty (default, raw: %d)\n", __func__, pipe);
 	}
+	*/
 	
 	return pipe;
 }
