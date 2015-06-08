@@ -25,8 +25,9 @@
 #include "src/nRF/nRF_is_RX_empty.c"
 #include "src/nRF/nRF_is_RX_data_ready.c"
 
-#include "src/nRF/nRF_RX_address.c" 
-#include "src/nRF/nRF_TX_address.c"
+//#include "src/nRF/nRF_RX_address.c" 
+//#include "src/nRF/nRF_TX_address.c"
+#include "src/nRF/nRF_address.c"
 #include "src/nRF/nRF_payload_size.c"
 #include "src/nRF/nRF_flush.c"
 #include "src/nRF/nRF_observe_tx.c"
@@ -63,7 +64,10 @@
 	#define NRF_IRQ	"PA5"	// XXX, NC, treba lemit
 #endif
 
-uint8_t addr[5] = "qwert";
+//uint8_t addr[5] = "qw\nrt";
+
+uint8_t addr_tx[5] = "addr0";
+uint8_t addr_rx[5] = "addr0";
 
 nRF_hw_t rf_modul;
 nRF_hw_t *grf = &rf_modul;
@@ -152,11 +156,12 @@ int8_t nRF_main(void)
 
 	nRF_set_output_power(&rf_modul, power_0dBm);
 	nRF_set_datarate	(&rf_modul, datarate_2Mbps);
-	//nRF_set_payload_size(&rf_modul, 0, payload_size);
+	nRF_set_payload_size(&rf_modul, 0, payload_size);
 	nRF_set_channel		(&rf_modul, 0);
 	nRF_enable_pipe		(&rf_modul, 0);
 	nRF_set_address_width(&rf_modul, NRF_ADDRESS_WIDTH);
 
+	/*
 	uint8_t mode = nRF_get_mode(&rf_modul);
 	if (mode == TX)
 	{
@@ -168,21 +173,22 @@ int8_t nRF_main(void)
 	{
 		nRF_set_RX_address	(&rf_modul, addr);
 	}
+	*/
+	nRF_set_TX_address	(&rf_modul, addr_tx);
+	nRF_set_RX_address	(&rf_modul, addr_rx);
+ 
+	//nRF_print_TX_address(&rf_modul);
+	//nRF_print_RX_address(&rf_modul);
 
-	printf("RF_TX address: %s\n", nRF_get_TX_address(&rf_modul));
-	printf("RF_RX address: %s\n", nRF_get_RX_address(&rf_modul));
-
-	// CRC is forced if AutoACK is enabled
-	nRF_enable_CRC(&rf_modul);
+	nRF_enable_CRC(&rf_modul);			// CRC is forced if AutoACK is enabled
 	nRF_set_CRC_length(&rf_modul, CRC_LENGTH_1BTYE);
 
-#ifdef NRF_TX
+	// dynamic payload:
 	nRF_enable_auto_ack(&rf_modul, P0);	// iako su po defaultu omogucene za sve pajpove
 
-	// ARD=500µs is long enough for any ACK payload length in 1 or 2Mbps mode.
-	nRF_set_retransmit_delay(&rf_modul, DELAY_500us);
+	nRF_set_retransmit_delay(&rf_modul, DELAY_500us);	// ARD=500µs is long enough for any ACK payload length in 1 or 2Mbps mode.
 	nRF_set_retransmit_count(&rf_modul, 15);	// 1 to 15 retries
-
+#ifdef NRF_TX
 	nRF_power_on(&rf_modul);
 	ce(&rf_modul, 0);	// nije RX, ne slusa
 	// ce je po defaultu vec nula, al ajde
@@ -197,27 +203,42 @@ int8_t nRF_main(void)
 	nRF_debug(&rf_modul);
 
 
+	return 0;	// bezveze
 }
 
 // TODO nRF_send_payload_wait_ack()
 
 void nRF_debug(nRF_hw_t *nRF0)
 {
+	printf("\n\n\t\t\t\t\t\t%s()\n", __func__);
 
+
+	/*
 	printf("nRF pipe0 payload size: %d\n", 	nRF_get_payload_size(nRF0, 0));
 	printf("nRF_is_RX_data_ready: %d\n", nRF_is_RX_data_ready(nRF0));
 	printf("nRF_is_RX_data_ready: %d\n", nRF_is_RX_data_ready(nRF0));
+	*/
 
+	print_reg(nRF0, 0);
+	print_reg(nRF0, 3);
 	printf("nRF get address width: %d\n", nRF_get_address_width(nRF0));
+	/*
 	printf("nRF get retransmit delay: %d\n", nRF_get_retransmit_delay(nRF0));
 	printf("nRF get retransmit count: %d\n", nRF_get_retransmit_count(nRF0));
 	printf("nRF get channel: %d\n", nRF_get_channel(nRF0));
 	printf("nRF get datarate: %d\n", nRF_get_datarate(nRF0));
 	printf("nRF get payload pipe: %d\n", nRF_get_payload_pipe(nRF0));
 	printf("nRF get pipe: %d\n", nRF_get_enabled_pipe(nRF0));
+	*/
 
-	printf("nRF get RX address: %s\n", nRF_get_RX_address(nRF0));	// ptr
-	printf("nRF get TX address: %s\n", nRF_get_TX_address(nRF0));	// ptr
+	nRF_print_RX_address(nRF0, P0);
+	nRF_print_RX_address(nRF0, P1);
+	nRF_print_RX_address(nRF0, P2);
+	nRF_print_RX_address(nRF0, P3);
+	nRF_print_RX_address(nRF0, P4);
+	nRF_print_RX_address(nRF0, P5);
+	nRF_print_TX_address(nRF0);
+	/*
 	printf("nRF get payload size: %d\n", nRF_get_payload_size(nRF0, 0));
 	printf("nRF get mode [0: TX, 1: RX]: %d\n", nRF_get_mode(nRF0));
 	printf("nRF get CRC length: %d\n", nRF_get_CRC_length(nRF0));
@@ -237,4 +258,5 @@ void nRF_debug(nRF_hw_t *nRF0)
 	print_reg(nRF0, REG_FEATURE);
 	print_reg(nRF0, REG_EN_AA);
 	print_reg(nRF0, REG_DYNPD);
+	*/
 }

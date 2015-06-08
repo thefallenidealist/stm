@@ -138,6 +138,9 @@ void main(void)
 				nRF_RX_buffer[i] = '\0';
 			}
 		}
+
+
+		delay_ms(500);
 #endif
 #ifdef NRF_TX
 		char tx_buffer[NRF_FIFO_SIZE] = {};
@@ -146,7 +149,7 @@ void main(void)
 		snprintf(tx_buffer, NRF_FIFO_SIZE, "%02d:%02d:%02d:abcdef", time->hours, time->minutes, time->seconds);
 
 		nRF_write_payload(grf, tx_buffer, nRF_get_payload_size(grf, P0));
-		printf("nRF TX poslao %s\n", tx_buffer);
+		//printf("nRF TX poslao %s\n", tx_buffer);
 		delay_ms(500);
 #endif
 	}
