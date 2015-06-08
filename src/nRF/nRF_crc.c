@@ -3,6 +3,7 @@
 *************************************************************************************************/
 void nRF_enable_CRC(nRF_hw_t *nRF0)
 {
+	// Forced high if one of the bits in the EN_AA is high
 	reg_tmp[EN_CRC] = 1;
 	write_reg(nRF0, REG_CONFIG);
 }

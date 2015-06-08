@@ -16,7 +16,9 @@ void main(void);
 #include "rtc2.h"
 #endif
 //#include "eeprom.h" 	// 3.3V
-//#include "baro.h" 	// 5V
+#if defined STM32F4 || defined STM32F4XX
+#include "baro.h" 	// 5V
+#endif
 //#include "oled.h" 	// 5V
 //#include "clock_print.h" 		// isprobano F1
 //#include "glcd.h"
@@ -128,7 +130,8 @@ void main(void)
 #if defined BARO_H && defined STM32F4
 		//uint16_t temperature = bmp180_get_temperature();
 		//printf("temperature: %d.%d°C\n", temperature/10, temperature%10);
-		bmp180_print();
+
+		//bmp180_print();
 #endif
 
 #ifdef RTC_H
@@ -149,17 +152,23 @@ void main(void)
 			}
 		}
 
-
 		delay_ms(500);
 #endif
 #ifdef NRF_TX
 		char tx_buffer[NRF_FIFO_SIZE] = {};
 		//RTC_data_t *time = rtc_get_time();
 
-		snprintf(tx_buffer, NRF_FIFO_SIZE, "%02d:%02d:%02d:abcdef", time->hours, time->minutes, time->seconds);
-
+		snprintf(tx_buffer, NRF_FIFO_SIZE, "RTC:%02d:%02d:%02d:abcdef", time->hours, time->minutes, time->seconds);
+		//nRF_write_payload_no_ack(grf, tx_buffer, nRF_get_payload_size(grf, P0));
+		//nRF_write_payload(grf, tx_buffer, nRF_get_payload_size(grf, P0));
+		//printf("nRF poslao: %s\n", tx_buffer);
+#if defined BARO_H && defined STM32F4
+		uint16_t temperature = bmp180_get_temperature();
+		snprintf(tx_buffer, NRF_FIFO_SIZE, "baro: %d.%d°C", temperature/10, temperature%10);
+		//nRF_write_payload_no_ack(grf, tx_buffer, nRF_get_payload_size(grf, P0));
 		nRF_write_payload(grf, tx_buffer, nRF_get_payload_size(grf, P0));
-		//printf("nRF TX poslao %s\n", tx_buffer);
+		printf("nRF poslao: %s\n", tx_buffer);
+#endif
 		delay_ms(500);
 #endif
 	}

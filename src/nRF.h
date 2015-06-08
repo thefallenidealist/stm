@@ -169,7 +169,8 @@ uint8_t nRF_get_retransmitted_packets	(nRF_hw_t *nRF0);
 void 	nRF_set_channel		(nRF_hw_t *nRF0, uint8_t ch);
 uint8_t nRF_get_channel		(nRF_hw_t *nRF0);
 
-void 			nRF_set_datarate	(nRF_hw_t *nRF0, nRF_datarate_t datarate);
+void 	nRF_set_datarate	(nRF_hw_t *nRF0, nRF_datarate_t datarate);
+//uint8_t	nRF_get_datarate	(nRF_hw_t *nRF0);	// vrati uljepsano
 nRF_datarate_t	nRF_get_datarate	(nRF_hw_t *nRF0);
 
 bool 	nRF_is_RX_data_ready	(nRF_hw_t *nRF0);
@@ -205,10 +206,10 @@ void 		nRF_set_output_power	(nRF_hw_t *nRF0, nRF_output_power_t power);
 void 		nRF_set_mode(nRF_hw_t *nRF0, nRF_mode_t mode);
 nRF_mode_t 	nRF_get_mode(nRF_hw_t *nRF0);
 
-int8_t 				nRF_set_CRC_length	(nRF_hw_t *nRF0, nRF_crc_length_t crc_length);
-nRF_crc_length_t 	nRF_get_CRC_length	(nRF_hw_t *nRF0);
-void 				nRF_enable_CRC		(nRF_hw_t *nRF0);
-void 				nRF_disable_CRC		(nRF_hw_t *nRF0);
+int8_t 	nRF_set_CRC_length	(nRF_hw_t *nRF0, nRF_crc_length_t crc_length);
+uint8_t	nRF_get_CRC_length	(nRF_hw_t *nRF0);
+void 	nRF_enable_CRC		(nRF_hw_t *nRF0);
+void 	nRF_disable_CRC		(nRF_hw_t *nRF0);
 
 bool	nRF_read_payload			(nRF_hw_t *nRF0);	// 1 ako je zapisao novi payload u buffer, 0 ako nije
 void 	nRF_write_payload			(nRF_hw_t *nRF0, char *buffer, uint8_t length);
@@ -235,5 +236,7 @@ void nRF_enable_dynamic_payload_ack	(nRF_hw_t *nRF0);
 void nRF_disable_dynamic_payload_ack(nRF_hw_t *nRF0);
 void nRF_enable_dynamic_pipe		(nRF_hw_t *nRF0, nRF_pipe_t pipe);
 void nRF_disable_dynamic_pipe		(nRF_hw_t *nRF0, nRF_pipe_t pipe);
+uint8_t nRF_get_dynamic_payload_length(nRF_hw_t *nRF0, nRF_pipe_t pipe);
+
 
 #endif

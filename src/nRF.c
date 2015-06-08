@@ -133,7 +133,6 @@ int8_t nRF_main(void)
 
 	delay_ms(11);	// 10.3 ms		// power on delay
 	delay_ms(100);	// datasheet page 22		Power on reset
-	// end of hw init
 
 #ifdef NRF_TX
 	nRF_set_mode(&rf_modul, TX);
@@ -156,42 +155,42 @@ int8_t nRF_main(void)
 
 	nRF_set_output_power(&rf_modul, power_0dBm);
 	nRF_set_datarate	(&rf_modul, datarate_2Mbps);
-	nRF_set_payload_size(&rf_modul, 0, payload_size);
 	nRF_set_channel		(&rf_modul, 0);
-	nRF_enable_pipe		(&rf_modul, 0);
 	nRF_set_address_width(&rf_modul, NRF_ADDRESS_WIDTH);
 
-	/*
 	uint8_t mode = nRF_get_mode(&rf_modul);
 	if (mode == TX)
 	{
-		nRF_set_TX_address	(&rf_modul, addr);
-		nRF_set_RX_address	(&rf_modul, addr);
 		// TX modul treba i RX adresu zbog ACK
+		nRF_set_TX_address	(&rf_modul, addr_tx);
+		nRF_set_RX_address	(&rf_modul, P0, addr_rx);
 	}
 	else if (mode == RX)
 	{
-		nRF_set_RX_address	(&rf_modul, addr);
+		nRF_set_RX_address	(&rf_modul, P0, addr_rx);
 	}
-	*/
-	nRF_set_TX_address	(&rf_modul, addr_tx);
-	nRF_set_RX_address	(&rf_modul, P0, addr_rx);
  
 	nRF_enable_CRC(&rf_modul);			// CRC is forced if AutoACK is enabled
 	nRF_set_CRC_length(&rf_modul, CRC_LENGTH_1BTYE);
 
-	// dynamic payload:
 	nRF_enable_auto_ack(&rf_modul, P0);	// iako su po defaultu omogucene za sve pajpove
 
+	//nRF_enable_dynamic_payload(&rf_modul);
+	//nRF_enable_dynamic_pipe(&rf_modul, 0);
+	nRF_set_payload_size(&rf_modul, 0, payload_size);
+	nRF_enable_pipe(&rf_modul, 0);
+
+#ifdef NRF_TX
 	nRF_set_retransmit_delay(&rf_modul, DELAY_500us);	// ARD=500µs is long enough for any ACK payload length in 1 or 2Mbps mode.
 	nRF_set_retransmit_count(&rf_modul, 15);			// 1 to 15 retries
-#ifdef NRF_TX
+
 	nRF_power_on(&rf_modul);
 	ce(&rf_modul, 0);	// nije RX, ne slusa
 	// ce je po defaultu vec nula, al ajde
 #endif
 
 #ifdef NRF_RX
+
 	nRF_power_on(&rf_modul);
 	nRF_start_listening(&rf_modul);
 #endif
@@ -217,23 +216,19 @@ void nRF_debug(nRF_hw_t *nRF0)
 	print_reg(nRF0, 0);
 	print_reg(nRF0, 3);
 	printf("nRF get address width: %d\n", nRF_get_address_width(nRF0));
-	/*
 	printf("nRF get retransmit delay: %d\n", nRF_get_retransmit_delay(nRF0));
 	printf("nRF get retransmit count: %d\n", nRF_get_retransmit_count(nRF0));
 	printf("nRF get channel: %d\n", nRF_get_channel(nRF0));
 	printf("nRF get datarate: %d\n", nRF_get_datarate(nRF0));
 	printf("nRF get payload pipe: %d\n", nRF_get_payload_pipe(nRF0));
 	printf("nRF get pipe: %d\n", nRF_get_enabled_pipe(nRF0));
-	*/
 
 	nRF_print_RX_address(nRF0, P0);
 	nRF_print_TX_address(nRF0);
-	/*
-	printf("nRF get payload size: %d\n", nRF_get_payload_size(nRF0, 0));
+	printf("nRF get payload size: %d\n", nRF_get_payload_size(nRF0, P0));
 	printf("nRF get mode [0: TX, 1: RX]: %d\n", nRF_get_mode(nRF0));
-	printf("nRF get CRC length: %d\n", nRF_get_CRC_length(nRF0));
+	printf("nRF get CRC length: %d byte[s]\n", nRF_get_CRC_length(nRF0));
 
-	printf("nRF pipe0 payload size: %d\n", 	nRF_get_payload_size(nRF0, 0));
 	printf("nRF_is_RX_data_ready: %d\n", nRF_is_RX_data_ready(nRF0));
 
 	// DEBUG oprintaj koji registar
@@ -243,10 +238,13 @@ void nRF_debug(nRF_hw_t *nRF0)
 	}
 
 	printf("idemo omogucit dynamic payload\n");
-	nRF_enable_dynamic_pipe(nRF0, P0);
+	//nRF_enable_dynamic_pipe(nRF0, P0);
 
 	print_reg(nRF0, REG_FEATURE);
 	print_reg(nRF0, REG_EN_AA);
 	print_reg(nRF0, REG_DYNPD);
-	*/
+
+	printf("nRF pipe0 payload size: %d\n", 	nRF_get_payload_size(nRF0, P0));
+	printf("nRF get dynamic payload length: %d\n", nRF_get_dynamic_payload_length(nRF0, P0));
+
 }
