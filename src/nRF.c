@@ -175,11 +175,8 @@ int8_t nRF_main(void)
 	}
 	*/
 	nRF_set_TX_address	(&rf_modul, addr_tx);
-	nRF_set_RX_address	(&rf_modul, addr_rx);
+	nRF_set_RX_address	(&rf_modul, P0, addr_rx);
  
-	//nRF_print_TX_address(&rf_modul);
-	//nRF_print_RX_address(&rf_modul);
-
 	nRF_enable_CRC(&rf_modul);			// CRC is forced if AutoACK is enabled
 	nRF_set_CRC_length(&rf_modul, CRC_LENGTH_1BTYE);
 
@@ -187,7 +184,7 @@ int8_t nRF_main(void)
 	nRF_enable_auto_ack(&rf_modul, P0);	// iako su po defaultu omogucene za sve pajpove
 
 	nRF_set_retransmit_delay(&rf_modul, DELAY_500us);	// ARD=500µs is long enough for any ACK payload length in 1 or 2Mbps mode.
-	nRF_set_retransmit_count(&rf_modul, 15);	// 1 to 15 retries
+	nRF_set_retransmit_count(&rf_modul, 15);			// 1 to 15 retries
 #ifdef NRF_TX
 	nRF_power_on(&rf_modul);
 	ce(&rf_modul, 0);	// nije RX, ne slusa
@@ -199,9 +196,7 @@ int8_t nRF_main(void)
 	nRF_start_listening(&rf_modul);
 #endif
 
-
 	nRF_debug(&rf_modul);
-
 
 	return 0;	// bezveze
 }
@@ -232,11 +227,6 @@ void nRF_debug(nRF_hw_t *nRF0)
 	*/
 
 	nRF_print_RX_address(nRF0, P0);
-	nRF_print_RX_address(nRF0, P1);
-	nRF_print_RX_address(nRF0, P2);
-	nRF_print_RX_address(nRF0, P3);
-	nRF_print_RX_address(nRF0, P4);
-	nRF_print_RX_address(nRF0, P5);
 	nRF_print_TX_address(nRF0);
 	/*
 	printf("nRF get payload size: %d\n", nRF_get_payload_size(nRF0, 0));

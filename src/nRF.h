@@ -186,7 +186,8 @@ void 	nRF_clear_bits			(nRF_hw_t *nRF0);
 int8_t  			nRF_enable_pipe		(nRF_hw_t *nRF0, nRF_pipe_t pipe);
 nRF_payload_pipe_t 	nRF_get_payload_pipe(nRF_hw_t *nRF0);
 
-int8_t		nRF_set_RX_address	(nRF_hw_t *nRF0, uint8_t address[]);
+//int8_t		nRF_set_RX_address	(nRF_hw_t *nRF0, uint8_t address[]);
+int8_t		nRF_set_RX_address	(nRF_hw_t *nRF0, nRF_pipe_t pipe, uint8_t address[]);
 int8_t		nRF_set_TX_address	(nRF_hw_t *nRF0, uint8_t address[]);
 //uint8_t*	nRF_get_RX_address	(nRF_hw_t *nRF0);
 //uint8_t*	nRF_get_TX_address	(nRF_hw_t *nRF0);	

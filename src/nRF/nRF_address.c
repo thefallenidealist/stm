@@ -1,34 +1,42 @@
 /*************************************************************************************************
 				nRF_set_RX_address()
 *************************************************************************************************/
-int8_t nRF_set_RX_address(nRF_hw_t *nRF0, uint8_t address[])	// reg 0x0A
+int8_t nRF_set_RX_address(nRF_hw_t *nRF0, nRF_pipe_t pipe, uint8_t address[])	// reg 0x0A
 {
-	uint8_t pipe = 0;		// TODO implementirat za sve pajpove
-	// LSB se prvi zapisuje
+	// INFO	ako dobije duzu adresu nego sto treba, zapisat ce samo onoliko bajtova koliko treba
+	// INFO ako dobije kracu onda ce zapisat koliko ima i smece iz memorije
+	// INFO za P{2,3,4,5} postavi samo LSB, MSB pokupi od P1
+
 	uint8_t width 	 = nRF_get_address_width(nRF0);	// uvijek ce bit 3..5
 	uint8_t spi_port = nRF0->spi_port;
 
-	if (pipe > 5)		// unsigned 
-	{
-		ERROR("Wrong pipe\n");
-		printf("Wrong pipe\n");
-		return -1;
-	}
-	// INFO	ako dobije duzu adresu nego sto treba, zapisat ce samo onoliko bajtova koliko treba
-	// INFO ako dobije kracu onda ce zapisat koliko ima i smece iz memorije
-	else
+	if ( (pipe == P0) || (pipe == P1) )	// only P0 and P1 have 5 full 5 bytes address
 	{
 		cs(nRF0, 0);
-		spi_rw(spi_port, (REG_RX_ADDR_P0+pipe) + CMD_W_REGISTER);	// 0x0A+pipe
+		spi_rw(spi_port, (REG_RX_ADDR_P0+pipe) + CMD_W_REGISTER);
 
-		for (uint8_t i=0; i<width; i++)
+		for (uint8_t i=0; i<width; i++) // 40 bits
 		{
 			spi_rw(spi_port, address[i]);
 		}
-		cs(nRF0, 1);
 
-		return 0;
+		cs(nRF0, 1);
 	}
+	else if (pipe <= P5)
+	{
+		// LSB
+		cs(nRF0, 0);
+		spi_rw(spi_port, (REG_RX_ADDR_P0+pipe) + CMD_W_REGISTER);
+		spi_rw(spi_port, address[width-1]);
+		cs(nRF0, 1);
+	}
+	else
+	{
+		printf("%s() zajeb: wrong pipe: %d, exiting\n", __func__, pipe);
+		return 0xFF;
+	}
+
+	return 0;
 }
 
 /*************************************************************************************************
@@ -46,6 +54,7 @@ int8_t nRF_set_TX_address(nRF_hw_t *nRF0, uint8_t address[])		// reg 0x10
 	{
 		spi_rw(spi_port, address[i]);
 	}
+
 	cs(nRF0, 1);
 
 	return 0;
@@ -70,6 +79,7 @@ static uint8_t *nRF_get_RX_address(nRF_hw_t *nRF0, nRF_pipe_t pipe)				// reg 0x
 		{
 			addr[i] = spi_rw(spi_port, REG_RX_ADDR_P0 + pipe);
 		}
+
 		cs(nRF0, 1);
 	}
 	else if (pipe <= P5)
@@ -82,6 +92,7 @@ static uint8_t *nRF_get_RX_address(nRF_hw_t *nRF0, nRF_pipe_t pipe)				// reg 0x
 		{
 			addr[i] = spi_rw(spi_port, REG_RX_ADDR_P1);
 		}
+
 		cs(nRF0, 1);
 
 		// LSB

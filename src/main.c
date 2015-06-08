@@ -16,7 +16,7 @@ void main(void);
 #include "rtc2.h"
 #endif
 //#include "eeprom.h" 	// 3.3V
-#include "baro.h" 	// 5V
+//#include "baro.h" 	// 5V
 //#include "oled.h" 	// 5V
 //#include "clock_print.h" 		// isprobano F1
 //#include "glcd.h"
@@ -30,7 +30,7 @@ void main(void);
 //#include "wlan.h"
 //#include "rtc_ext.h"
 //#include "rom.h"
-//#include "nRF.h"
+#include "nRF.h"
 //#include "flash.h"
 //#include "pwm.h"
 //#include "src/exti.h"
@@ -98,7 +98,9 @@ void main(void)
 	//compass_main_burgi();
 #endif
 
+#if defined BARO_H && defined STM32F4
 	bmp180_example();
+#endif
 
 	printf("sad ide while\n");
 	while (1)
