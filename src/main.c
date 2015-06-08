@@ -12,11 +12,11 @@
 #include "cpu_id.h" 	// treba da prvi printf da zna jel masni ili mali ARM
 
 void main(void);
-#ifdef STM32F4
+#if defined STM32F4 || defined STM32F4XX
 #include "rtc2.h"
 #endif
 //#include "eeprom.h" 	// 3.3V
-//#include "baro.h" 	// 5V
+#include "baro.h" 	// 5V
 //#include "oled.h" 	// 5V
 //#include "clock_print.h" 		// isprobano F1
 //#include "glcd.h"
@@ -30,7 +30,7 @@ void main(void);
 //#include "wlan.h"
 //#include "rtc_ext.h"
 //#include "rom.h"
-#include "nRF.h"
+//#include "nRF.h"
 //#include "flash.h"
 //#include "pwm.h"
 //#include "src/exti.h"
@@ -98,6 +98,8 @@ void main(void)
 	//compass_main_burgi();
 #endif
 
+	bmp180_example();
+
 	printf("sad ide while\n");
 	while (1)
 	{
@@ -119,6 +121,12 @@ void main(void)
 			exti1_flag = 0;
 			// TODO ovdje stavit nRF read
 		}
+#endif
+
+#if defined BARO_H && defined STM32F4
+		//uint16_t temperature = bmp180_get_temperature();
+		//printf("temperature: %d.%d°C\n", temperature/10, temperature%10);
+		bmp180_print();
 #endif
 
 #ifdef RTC_H

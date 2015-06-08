@@ -35,7 +35,8 @@ int32_t  BMP180_p;
 void bmp180_init(void)
 {
 	// INFO moj modul ima regulator na sebi, treba ga ustekat u 5V ili amputirat
-	i2c_init(2, 100000);
+	i2c_init(BMP_I2C_PORT, BMP_I2C_SPEED);
+	bmp180_calibration();
 }
 
 /**************************************************************************************************
@@ -43,13 +44,11 @@ void bmp180_init(void)
 **************************************************************************************************/
 int8_t bmp180_write(uint8_t reg, uint8_t data)
 {
-	i2c_start(2);
-
-	i2c_sendAddr_tx(2, BMP_ADDR_W);
-	i2c_write(2, reg);
-	i2c_write(2, data);
-
-	i2c_stop(2);
+	i2c_start(BMP_I2C_PORT);
+	i2c_sendAddr_tx(BMP_I2C_PORT, BMP_ADDR_W);
+	i2c_write(BMP_I2C_PORT, reg);
+	i2c_write(BMP_I2C_PORT, data);
+	i2c_stop(BMP_I2C_PORT);
 
 	return 0;	// alles gut
 }
@@ -63,20 +62,18 @@ int16_t bmp180_read(uint8_t reg)
 	uint8_t receivedH = 0;
 	uint8_t receivedL = 0;
 
-	i2c_start(2);
-	i2c_sendAddr_tx(2, BMP_ADDR_W);
-	i2c_write(2, reg);
+	i2c_start(BMP_I2C_PORT);
+	i2c_sendAddr_tx(BMP_I2C_PORT, BMP_ADDR_W);
+	i2c_write(BMP_I2C_PORT, reg);
 
-	i2c_restart(2);
-	i2c_sendAddr_rx(2, BMP_ADDR_R);
-	receivedH = i2c_read_ack(2);
-	receivedL = i2c_read_nack(2);
+	i2c_restart(BMP_I2C_PORT);
+	i2c_sendAddr_rx(BMP_I2C_PORT, BMP_ADDR_R);
+	receivedH = i2c_read_ack(BMP_I2C_PORT);
+	receivedL = i2c_read_nack(BMP_I2C_PORT);
 
-	i2c_stop(2);
+	i2c_stop(BMP_I2C_PORT);
 
 	received = (receivedH << 8) | (receivedL & 0xFF);
-
-	//printf("DEBUG %s(): H: 0x%X %d \t L: 0x%X %d \t kombinirano: 0x%X %d\n", __func__, receivedH, receivedH, receivedL, receivedL, received, received);
 
 	return received;
 }
@@ -92,25 +89,11 @@ void bmp180_calibration(void)
 	BMP180_AC4 = bmp180_read(0xB0);
 	BMP180_AC5 = bmp180_read(0xB2);
 	BMP180_AC6 = bmp180_read(0xB4);
-	BMP180_B1 = bmp180_read(0xB6);
-	BMP180_B2 = bmp180_read(0xB8);
-	BMP180_MB = bmp180_read(0xBA);
-	BMP180_MC = bmp180_read(0xBC);
-	BMP180_MD = bmp180_read(0xBE);
-
-	/*
-	printf("AC1 %d\n", BMP180_AC1);
-	printf("AC2 %d\n", BMP180_AC2);
-	printf("AC3 %d\n", BMP180_AC3);
-	printf("AC4 %d\n", BMP180_AC4);
-	printf("AC5 %d\n", BMP180_AC5);
-	printf("AC6 %d\n", BMP180_AC6);
-	printf("B1 %d\n", BMP180_B1);
-	printf("B2 %d\n", BMP180_B2);
-	printf("MB %d\n", BMP180_MB);
-	printf("MC %d\n", BMP180_MC);
-	printf("MD %d\n", BMP180_MD);
-	*/
+	BMP180_B1  = bmp180_read(0xB6);
+	BMP180_B2  = bmp180_read(0xB8);
+	BMP180_MB  = bmp180_read(0xBA);
+	BMP180_MC  = bmp180_read(0xBC);
+	BMP180_MD  = bmp180_read(0xBE);
 }
 
 /**************************************************************************************************
@@ -142,51 +125,23 @@ int32_t bmp180_get_pressure(void)
 	bmp180_write(0xF4, 0x34 + (OSS << 6));	// pressure
 						// shiftanje jer OSS ide u b7, b6 u registru
 	/*
-	switch (OSS)
-	{
-		case 0:
-			delay_ms(5);
-			break;
-		case 1:
-			delay_ms(8);
-			break;
-		case 2:
-			delay_ms(14);
-			break;
-		case 3:
-			delay_ms(26);
-			break;
-		default:
-			printf("%s(): Wrong OSS\n", __func__);
-			break;
-	}
+	OSS		delay ms
+	0		5
+	1		8
+	2		14
+	3		26
 	*/
-
 	// KK-u bilo dosadno pa rece:
 	if (OSS > 3)
 	{
-		printf("%s(): Wrong OSS\n", __func__);
+		printf("%s(): Wrong OSS, exiting\n", __func__);
+		return 0xFF;
 	}
 	else
 	{
-		//delay_ms(5 + 3 * (pow(2,OSS) - 1));
 		delay_ms(5 + 3 * ((1 << OSS) - 1));
 	}
 
-	/*
-	const uint8_t OSS_VAL[] = {5, 8, 14, 21};
-	if (OSS < 4)
-	{
-		delay_ms(OSS_VAL[OSS]);
-	}
-	else
-	{
-			printf("%s(): Wrong OSS\n", __func__);
-	}
-	*/
-	
-	// UP = (MSB << 16 + LSB << 8 + XLSB) >> (8-OSS);
-	//int16_t UP = bmp180_read(0xF6) >> (8-OSS);
 	uint16_t UP0 = bmp180_read(0xF6);
 	// simulacija XLSB bita
 	uint32_t UP = (UP0 << 8) >> (8 - OSS);
@@ -241,10 +196,6 @@ void bmp180_print(void)
 **************************************************************************************************/
 void bmp180_example(void)
 {
-	printf("%s() start\n", __func__);
 	bmp180_init();
-	bmp180_calibration();
-
 	bmp180_print();
-	printf("%s() end\n", __func__);
 }

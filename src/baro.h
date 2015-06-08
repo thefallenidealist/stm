@@ -18,21 +18,25 @@
 	#include "stm32f4xx_gpio.h"
 	#include "stm32f4xx_i2c.h"
 #endif
+// *************************************** local includes *****************************************
 #include "delay.h"
 #include "i2c.h"
-// *************************************** local includes *****************************************
 // *************************************** defines ************************************************
-#define BMP_ADDR_W	0xEE
 #define BMP_ADDR_R	0xEF
+#define BMP_ADDR_W	0xEE
+
+// settings
+#define BMP_I2C_PORT	2
+#define BMP_I2C_SPEED	100000
 
 // *************************************** function prototypes ************************************
-void 	bmp180_init	(void);
-int8_t	bmp180_write	(uint8_t reg, uint8_t data);
-int16_t bmp180_read	(uint8_t reg);
-void	bmp180_calibration	(void);
+void 	bmp180_init				(void);
+int8_t	bmp180_write			(uint8_t reg, uint8_t data);
+int16_t bmp180_read				(uint8_t reg);
+void	bmp180_calibration		(void);
 int16_t bmp180_get_temperature	(void);
-int32_t bmp180_get_pressure	(void);
-void	bmp180_print	(void);
-void 	bmp180_example	(void);
+int32_t bmp180_get_pressure		(void);
+void	bmp180_print			(void);
+void 	bmp180_example			(void);
 
 #endif
