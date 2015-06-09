@@ -59,7 +59,6 @@ bool nRF_read_payload(nRF_hw_t *nRF0)
 
 	if (data_ready == 1)	// dobili smo nesta
 	{
-
 		uint8_t spi_port 	 = nRF0->spi_port;
 		uint8_t pipe		 = nRF_get_payload_pipe(nRF0);			// provjeri u kojem pajpu je teret
 		uint8_t payload_size = nRF_get_payload_size(nRF0, pipe);	// provjeri koliko je velik teret

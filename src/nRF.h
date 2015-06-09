@@ -237,6 +237,8 @@ void nRF_disable_dynamic_payload_ack(nRF_hw_t *nRF0);
 void nRF_enable_dynamic_pipe		(nRF_hw_t *nRF0, nRF_pipe_t pipe);
 void nRF_disable_dynamic_pipe		(nRF_hw_t *nRF0, nRF_pipe_t pipe);
 uint8_t nRF_get_dynamic_payload_length(nRF_hw_t *nRF0, nRF_pipe_t pipe);
+void nRF_enable_dynamic_payload_noack(nRF_hw_t *nRF0);
+void nRF_disable_dynamic_payload_noack(nRF_hw_t *nRF0);
 
 
 #endif

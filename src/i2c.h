@@ -23,8 +23,8 @@
 #define I2C_PIN_SDA	// TODO
 /*
 F4 I2C2:
-SDA	PB11
 SCL	PB10
+SDA	PB11
 */
 
 int8_t	i2c_init	(uint8_t i2c_number, uint32_t i2c_speed);

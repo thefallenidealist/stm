@@ -4,14 +4,9 @@
 // TODO const keyword gdje treba
 // TODO svaka funkcija provjerava jel dobila NULL adresu
 
-// low layer
 #include "src/nRF/nRF_hw_init.c"
 #include "src/nRF/nRF_gpio.c"
-
-// mid layer
 #include "src/nRF/nRF_reg.c"
-
-// high layer
 #include "src/nRF/nRF_address_width.c"
 #include "src/nRF/nRF_retransmit_delay.c"
 #include "src/nRF/nRF_retransmit_count.c"
@@ -24,9 +19,6 @@
 #include "src/nRF/nRF_is_TX_full.c"
 #include "src/nRF/nRF_is_RX_empty.c"
 #include "src/nRF/nRF_is_RX_data_ready.c"
-
-//#include "src/nRF/nRF_RX_address.c" 
-//#include "src/nRF/nRF_TX_address.c"
 #include "src/nRF/nRF_address.c"
 #include "src/nRF/nRF_payload_size.c"
 #include "src/nRF/nRF_flush.c"
@@ -42,6 +34,7 @@
 #include "src/nRF/nRF_enhanced_shockburst.c"
 #include "src/nRF/nRF_ack.c"
 #include "src/nRF/nRF_feature.c"
+#include "src/nRF/nRF_present.c"
 
 // XXX jebena magija: veliki ARM sjebe nRF, osim ako se ne resetira lijevim prstenjakom
 // TODO moguce rjesenje magije 100nF + 1-10uF C na Vcc i GND
@@ -66,22 +59,14 @@
 
 //uint8_t addr[5] = "qw\nrt";
 
-uint8_t addr_tx[5] = "addr0";
-uint8_t addr_rx[5] = "addr0";
+uint8_t addr_tx[5] = "addrT";
+uint8_t addr_rx[5] = "addrR";
 
 nRF_hw_t rf_modul;
 nRF_hw_t *grf = &rf_modul;
 
 char nRF_TX_buffer[NRF_FIFO_SIZE] = {};
 char nRF_RX_buffer[NRF_FIFO_SIZE] = {};
-
-/*************************************************************************************************
-				nRF_is_present()
-*************************************************************************************************/
-bool nRF_is_present(nRF_hw_t *nRF0)
-{
-	return 0;
-}
 
 /*
 void nrf_check(void)
@@ -134,6 +119,14 @@ int8_t nRF_main(void)
 	delay_ms(11);	// 10.3 ms		// power on delay
 	delay_ms(100);	// datasheet page 22		Power on reset
 
+
+	if (nRF_is_present(&rf_modul) == 0)
+	{
+		printf("%s(): Zajeb, nema nRF modula ili se uzjebo, izlazim.\n", __func__);
+		return -1;
+	}
+
+
 #ifdef NRF_TX
 	nRF_set_mode(&rf_modul, TX);
 #endif
@@ -167,7 +160,10 @@ int8_t nRF_main(void)
 	}
 	else if (mode == RX)
 	{
-		nRF_set_RX_address	(&rf_modul, P0, addr_rx);
+		//nRF_set_RX_address	(&rf_modul, P0, addr_rx);
+		// pokusaj ukrizenih adresa
+		nRF_set_RX_address	(&rf_modul, P0, addr_tx);	// slusa na adresi na kojoj TX salje
+		nRF_set_TX_address	(&rf_modul, addr_rx);	// salje na adresi na kojoj TX slusa
 	}
  
 	nRF_enable_CRC(&rf_modul);			// CRC is forced if AutoACK is enabled
@@ -175,14 +171,37 @@ int8_t nRF_main(void)
 
 	nRF_enable_auto_ack(&rf_modul, P0);	// iako su po defaultu omogucene za sve pajpove
 
-	//nRF_enable_dynamic_payload(&rf_modul);
-	//nRF_enable_dynamic_pipe(&rf_modul, 0);
-	nRF_set_payload_size(&rf_modul, 0, payload_size);
-	nRF_enable_pipe(&rf_modul, 0);
+	// obicno slanje
+	//nRF_set_payload_size(&rf_modul, 0, payload_size);
+	//nRF_enable_pipe(&rf_modul, 0);
+
+	/*
+	// dynamic payload
+	// EN_AA je vec omogucen
+	nRF_enable_dynamic_payload(&rf_modul);
+	nRF_enable_dynamic_payload_ack(&rf_modul);
+
+	//nRF_enable_dynamic_payload_ack(&rf_modul);
+	//nRF_enable_dynamic_payload_noack(&rf_modul);		// pokusaj
+	//nRF_disable_dynamic_payload_ack(&rf_modul);
+	//nRF_enable_dynamic_payload_noack(&rf_modul);		// pokusaj
+
+	nRF_enable_dynamic_pipe(&rf_modul, 0);
+	nRF_enable_dynamic_pipe(&rf_modul, 1);
+	nRF_enable_dynamic_pipe(&rf_modul, 2);
+	nRF_enable_dynamic_pipe(&rf_modul, 3);
+	nRF_enable_dynamic_pipe(&rf_modul, 4);
+	nRF_enable_dynamic_pipe(&rf_modul, 5);
+	*/
+	
 
 #ifdef NRF_TX
 	nRF_set_retransmit_delay(&rf_modul, DELAY_500us);	// ARD=500µs is long enough for any ACK payload length in 1 or 2Mbps mode.
 	nRF_set_retransmit_count(&rf_modul, 15);			// 1 to 15 retries
+
+	// dynamic payload
+	nRF_enable_dynamic_payload(&rf_modul);
+	nRF_enable_dynamic_pipe(&rf_modul, P0);
 
 	nRF_power_on(&rf_modul);
 	ce(&rf_modul, 0);	// nije RX, ne slusa
@@ -190,13 +209,15 @@ int8_t nRF_main(void)
 #endif
 
 #ifdef NRF_RX
+	// dynamic payload
+	nRF_enable_dynamic_payload(&rf_modul);
+	nRF_enable_dynamic_pipe(&rf_modul, P0);
 
 	nRF_power_on(&rf_modul);
 	nRF_start_listening(&rf_modul);
 #endif
 
 	nRF_debug(&rf_modul);
-
 	return 0;	// bezveze
 }
 

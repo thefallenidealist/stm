@@ -34,19 +34,21 @@
 #define SSD1306_EXTERNALVCC		0x1
 #define SSD1306_SWITCHCAPVCC	0x2
 
-#define SSD1306_CMD		0x00	// djeluje da bilo sta moze bit ovdje, pa i druga komanda
-//c#define SSD1306_CMD		0x22
-//#define SSD1306_DATA		0x40
-#define SSD1306_DATA		0x40	// i ovo moze bit bilo sta
+//#define SSD1306_CMD		0x00	// djeluje da bilo sta moze bit ovdje, pa i druga komanda
+#define SSD1306_CMD			0x22
+#define SSD1306_DATA		0x40
+//#define SSD1306_DATA		0x40	// i ovo moze bit bilo sta
 
 uint8_t a[] = {0b01001100, 0b10010010, 0b10010010, 0b10010010, 0b01111110};
 
 void ssd1306_command(uint8_t cmd)
 {
 	i2c_start(2);
-	i2c_write(2, OLED_ADDR_W);
+	//i2c_write(2, OLED_ADDR_W);		// radi i ovako
+	i2c_sendAddr_tx(2, OLED_ADDR_W);	// radi i ovako
 	i2c_write(2, SSD1306_CMD);
 	i2c_write(2, cmd);
+	//i2c_write(2, SSD1306_CMD+cmd);
 	i2c_stop(2);
 }
 
@@ -54,7 +56,8 @@ void ssd1306_command(uint8_t cmd)
 void  ssd1306_data(uint8_t cmd)
 {
 	i2c_start(2);
-	i2c_write(2, OLED_ADDR_W);
+	//i2c_write(2, OLED_ADDR_W);
+	i2c_sendAddr_tx(2, OLED_ADDR_W);	// radi i ovako
 	i2c_write(2, SSD1306_DATA);
 	i2c_write(2, cmd);
 	i2c_stop(2);
@@ -63,10 +66,9 @@ void  ssd1306_data(uint8_t cmd)
 void oled_io_init(void)
 {
 	printf("oled_io_init pocetak\n");
-	//i2c_init(2, 100000);
+	i2c_init(2, 100000);
 	//i2c_init(2, 400000);
 	//i2c_init(2, 800000);
-	i2c_init(2, 1000000);
 
 	printf("oled_io_init kraj\n");
 }
@@ -150,6 +152,16 @@ void ssd1306_bg(bool arg)
 	i2c_stop(2);
 }
 
+void oled_set_contrast(uint8_t contrast)
+{
+	i2c_start(2);
+	i2c_write(2, OLED_ADDR_W);
+	i2c_write(2, SSD1306_CMD);
+	i2c_write(2, SSD1306_SETCONTRAST);
+	i2c_write(2, contrast);
+	i2c_stop(2);
+}
+
 uint32_t oled_init()
 {
 	printf("oled_init() pocetak\n");
@@ -172,8 +184,9 @@ uint32_t oled_init()
 	ssd1306_command(SSD1306_COMSCANDEC);			// rotate screen 180
 	ssd1306_command(SSD1306_SETCOMPINS);                    // 0xDA
 	ssd1306_command(0x12);
-	ssd1306_command(SSD1306_SETCONTRAST);                   // 0x81
-	ssd1306_command(0xCF);
+	//ssd1306_command(SSD1306_SETCONTRAST);                   // 0x81
+	//ssd1306_command(0xCF);
+	//ssd1306_command(0x10);
 	ssd1306_command(SSD1306_SETPRECHARGE);                  // 0xd9
 	ssd1306_command(0xF1);
 	ssd1306_command(SSD1306_SETVCOMDETECT);                 // 0xDB
@@ -184,7 +197,7 @@ uint32_t oled_init()
 
 	printf("oled_init() kraj\n");
 
-	ssd1306_bg(0);
+	//ssd1306_bg(0);
 	//ssd1306_bg(1);
 	//ssd1306_bg(0);
 	//ssd1306_fillRectangle(30,30,50,50,0);
@@ -202,13 +215,12 @@ void oled_kocka()
 
 	// kockica 8x8 pixela
 
-	/*
-	for (int i=0; i<12; i++)
+	ssd1306_setXY(0,0, 128, 64);
+
+	for (int i=0; i<16; i++)
 	{
-		//ssd1306_fillRectangle(0,0,8,8, 1);
 		ssd1306_fillRectangle(i,0,i+8,8, 1);
 	}
-	*/
 }
 
 void oled_example(void)
@@ -216,7 +228,17 @@ void oled_example(void)
 	oled_io_init();
 	oled_init();
 
+	//oled_set_contrast(255);
+	//oled_set_contrast(5);
+	oled_set_contrast(0);
+
+	ssd1306_bg(0);
+
+	oled_kocka();
+
+	/*
 	ssd1306_bg(0);
 	delay_ms(500);
 	ssd1306_bg(1);
+	*/
 }

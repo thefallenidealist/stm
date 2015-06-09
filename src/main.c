@@ -17,9 +17,10 @@ void main(void);
 #endif
 //#include "eeprom.h" 	// 3.3V
 #if defined STM32F4 || defined STM32F4XX
-#include "baro.h" 	// 5V
+//#include "baro.h" 	// 5V
 #endif
-//#include "oled.h" 	// 5V
+#include "oled.h" 	// 5V
+//#include "src/visak/oled.h" 	// 5V
 //#include "clock_print.h" 		// isprobano F1
 //#include "glcd.h"
 //#include "mem.h" 				// ne radi na F1 #error
@@ -32,7 +33,7 @@ void main(void);
 //#include "wlan.h"
 //#include "rtc_ext.h"
 //#include "rom.h"
-#include "nRF.h"
+//#include "nRF.h"
 //#include "flash.h"
 //#include "pwm.h"
 //#include "src/exti.h"
@@ -104,6 +105,10 @@ void main(void)
 	bmp180_example();
 #endif
 
+#ifdef OLED_H
+	oled_example();
+#endif
+
 	printf("sad ide while\n");
 	while (1)
 	{
@@ -152,7 +157,9 @@ void main(void)
 			}
 		}
 
-		delay_ms(500);
+		//printf("nRF data ready: %d\n", nRF_is_RX_data_ready(grf));
+
+		//delay_ms(500);
 #endif
 #ifdef NRF_TX
 		char tx_buffer[NRF_FIFO_SIZE] = {};
@@ -163,8 +170,11 @@ void main(void)
 		//nRF_write_payload(grf, tx_buffer, nRF_get_payload_size(grf, P0));
 		//printf("nRF poslao: %s\n", tx_buffer);
 #if defined BARO_H && defined STM32F4
-		uint16_t temperature = bmp180_get_temperature();
-		snprintf(tx_buffer, NRF_FIFO_SIZE, "baro: %d.%d°C", temperature/10, temperature%10);
+		//uint16_t temperature = bmp180_get_temperature();
+		float temperature = bmp180_get_temperature_float();
+
+		//snprintf(tx_buffer, NRF_FIFO_SIZE, "baro: %d.%d°C", temperature/10, temperature%10);
+		snprintf(tx_buffer, NRF_FIFO_SIZE, "baro: %.1f°C", temperature);
 		//nRF_write_payload_no_ack(grf, tx_buffer, nRF_get_payload_size(grf, P0));
 		nRF_write_payload(grf, tx_buffer, nRF_get_payload_size(grf, P0));
 		printf("nRF poslao: %s\n", tx_buffer);

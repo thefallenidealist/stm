@@ -3,6 +3,13 @@
 *************************************************************************************************/
 void nRF_enable_dynamic_payload(nRF_hw_t *nRF0)
 {
+	uint8_t spi_port = nRF0->spi_port;
+
+	cs(nRF0, 0);
+	spi_rw(spi_port, CMD_ACTIVATE);	// potrebno za aktivirat spesl ficrse
+	spi_rw(spi_port, 0x73);
+	cs(nRF0, 1);
+
 	// INFO override the pipes "RX_PW" setting
 	reg_tmp[EN_DPL] = 1;
 	write_reg(nRF0, REG_FEATURE);
@@ -43,6 +50,26 @@ void nRF_disable_dynamic_payload_ack(nRF_hw_t *nRF0)
 }
 
 /*************************************************************************************************
+				nRF_enable_dynamic_payload_noack()
+*************************************************************************************************/
+void nRF_enable_dynamic_payload_noack(nRF_hw_t *nRF0)
+{
+	// Enables the W_TX_PAYLOAD_NOACK command
+	reg_tmp[EN_DYN_ACK] = 1;
+	write_reg(nRF0, REG_FEATURE);
+}
+
+/*************************************************************************************************
+				nRF_disable_dynamic_payload_noack()
+*************************************************************************************************/
+void nRF_disable_dynamic_payload_noack(nRF_hw_t *nRF0)
+{
+	// Enables the W_TX_PAYLOAD_NOACK command
+	reg_tmp[EN_DYN_ACK] = 1;
+	write_reg(nRF0, REG_FEATURE);
+}
+
+/*************************************************************************************************
 				nRF_enable_dynamic_pipe()
 *************************************************************************************************/
 void nRF_enable_dynamic_pipe(nRF_hw_t *nRF0, nRF_pipe_t pipe)
@@ -70,6 +97,7 @@ void nRF_enable_dynamic_pipe(nRF_hw_t *nRF0, nRF_pipe_t pipe)
 *************************************************************************************************/
 void nRF_disable_dynamic_pipe(nRF_hw_t *nRF0, nRF_pipe_t pipe)
 {
+	// TODO
 }
 
 /*************************************************************************************************
