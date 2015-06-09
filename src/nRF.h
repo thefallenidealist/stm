@@ -240,5 +240,11 @@ uint8_t nRF_get_dynamic_payload_length(nRF_hw_t *nRF0, nRF_pipe_t pipe);
 void nRF_enable_dynamic_payload_noack(nRF_hw_t *nRF0);
 void nRF_disable_dynamic_payload_noack(nRF_hw_t *nRF0);
 
+// novo, pokusi
+void nRF_enable_feature_dynPL(nRF_hw_t *nRF0, nRF_pipe_t pipe);
+void nRF_enable_feature_ackPL(nRF_hw_t *nRF0);
+void nRF_set_ACK_payload(nRF_hw_t *nRF0, nRF_pipe_t pipe, char *data, uint8_t length);
+
+
 
 #endif

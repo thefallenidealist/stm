@@ -33,7 +33,7 @@ void main(void);
 //#include "wlan.h"
 //#include "rtc_ext.h"
 //#include "rom.h"
-//#include "nRF.h"
+#include "nRF.h"
 //#include "flash.h"
 //#include "pwm.h"
 //#include "src/exti.h"
@@ -149,18 +149,22 @@ void main(void)
 		bool payload_ready = nRF_read_payload(grf);
 		if (payload_ready)
 		{
-			printf("nRF RX je dobio: %s\n", nRF_RX_buffer);
+			// dynamic payload
+			// odgovori nazad
+			char ack[] = "RF odgovara";
+			nRF_set_ACK_payload(grf, P0, ack, 7);
+			nRF_clear_bits(grf);
+
+			//printf("nRF RX je dobio: %s\n", nRF_RX_buffer);
 			// obrisi buffer
 			for (uint8_t i=0; i<NRF_FIFO_SIZE; i++)
 			{
 				nRF_RX_buffer[i] = '\0';
 			}
 		}
-
 		//printf("nRF data ready: %d\n", nRF_is_RX_data_ready(grf));
-
-		//delay_ms(500);
-#endif
+		delay_ms(50);
+#endif	// NRF_RX
 #ifdef NRF_TX
 		char tx_buffer[NRF_FIFO_SIZE] = {};
 		//RTC_data_t *time = rtc_get_time();
@@ -170,16 +174,17 @@ void main(void)
 		//nRF_write_payload(grf, tx_buffer, nRF_get_payload_size(grf, P0));
 		//printf("nRF poslao: %s\n", tx_buffer);
 #if defined BARO_H && defined STM32F4
-		//uint16_t temperature = bmp180_get_temperature();
-		float temperature = bmp180_get_temperature_float();
+		uint16_t temperature = bmp180_get_temperature();
+		snprintf(tx_buffer, NRF_FIFO_SIZE, "baro: %d.%d°C", temperature/10, temperature%10);
 
-		//snprintf(tx_buffer, NRF_FIFO_SIZE, "baro: %d.%d°C", temperature/10, temperature%10);
-		snprintf(tx_buffer, NRF_FIFO_SIZE, "baro: %.1f°C", temperature);
+		//float temperature = bmp180_get_temperature_float();
+		//snprintf(tx_buffer, NRF_FIFO_SIZE, "baro: %.1f°C", temperature);
+
 		//nRF_write_payload_no_ack(grf, tx_buffer, nRF_get_payload_size(grf, P0));
 		nRF_write_payload(grf, tx_buffer, nRF_get_payload_size(grf, P0));
 		printf("nRF poslao: %s\n", tx_buffer);
-#endif
+#endif	// BARO_H STM32F4
 		delay_ms(500);
-#endif
+#endif	// NRF_TX
 	}
 }

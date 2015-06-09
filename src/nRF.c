@@ -194,14 +194,16 @@ int8_t nRF_main(void)
 	nRF_enable_dynamic_pipe(&rf_modul, 5);
 	*/
 	
+	//nRF_enable_feature_dynPL(&rf_modul, P0);
+	nRF_enable_feature_ackPL(&rf_modul);
 
 #ifdef NRF_TX
 	nRF_set_retransmit_delay(&rf_modul, DELAY_500us);	// ARD=500µs is long enough for any ACK payload length in 1 or 2Mbps mode.
 	nRF_set_retransmit_count(&rf_modul, 15);			// 1 to 15 retries
 
 	// dynamic payload
-	nRF_enable_dynamic_payload(&rf_modul);
-	nRF_enable_dynamic_pipe(&rf_modul, P0);
+	//nRF_enable_dynamic_payload(&rf_modul);
+	//nRF_enable_dynamic_pipe(&rf_modul, P0);
 
 	nRF_power_on(&rf_modul);
 	ce(&rf_modul, 0);	// nije RX, ne slusa
@@ -210,8 +212,8 @@ int8_t nRF_main(void)
 
 #ifdef NRF_RX
 	// dynamic payload
-	nRF_enable_dynamic_payload(&rf_modul);
-	nRF_enable_dynamic_pipe(&rf_modul, P0);
+	//nRF_enable_dynamic_payload(&rf_modul);
+	//nRF_enable_dynamic_pipe(&rf_modul, P0);
 
 	nRF_power_on(&rf_modul);
 	nRF_start_listening(&rf_modul);

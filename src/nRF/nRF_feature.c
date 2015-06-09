@@ -84,8 +84,8 @@ void nRF_enable_dynamic_pipe(nRF_hw_t *nRF0, nRF_pipe_t pipe)
 	// (Requires EN_DPL and ENAA_PN)
 
 	// just in case
-	nRF_enable_dynamic_payload(nRF0);
-	nRF_enable_auto_ack(nRF0, pipe);
+	//nRF_enable_dynamic_payload(nRF0);
+	//nRF_enable_auto_ack(nRF0, pipe);
 
 	reg_tmp[pipe] = 1;	// DPL_Px = 1
 	write_reg(nRF0, REG_DYNPD);
@@ -126,4 +126,66 @@ uint8_t nRF_get_dynamic_payload_length(nRF_hw_t *nRF0, nRF_pipe_t pipe)
 	}
 
 	return length;
+}
+
+/*************************************************************************************************
+**************************************************************************************************
+**************************************************************************************************
+**************************************************************************************************
+**************************************************************************************************
+*************************************************************************************************/
+// novo 150609
+void nRF_enable_feature_dynPL(nRF_hw_t *nRF0, nRF_pipe_t pipe)
+{
+	// ACTIVATE
+	uint8_t spi_port = nRF0->spi_port;
+
+	cs(nRF0, 0);
+	spi_rw(spi_port, CMD_ACTIVATE);
+	spi_rw(spi_port, 0x73);
+	cs(nRF0, 1);
+
+	// activate EN_DPL
+	reg_tmp[EN_DPL] = 1;
+	write_reg(nRF0, REG_FEATURE);
+
+	// enable pipe
+	nRF_enable_dynamic_pipe(nRF0, pipe);
+}
+
+//NRF24L01_EnableFeatureAckPL
+void nRF_enable_feature_ackPL(nRF_hw_t *nRF0)
+{
+	nRF_enable_feature_dynPL(nRF0, P0);
+	// set ARD TODO
+	// enable autoACK
+	reg_tmp[EN_ACK_PAY] = 1;
+	write_reg(nRF0, REG_FEATURE);
+}
+
+// SetAckPayload
+void nRF_set_ACK_payload(nRF_hw_t *nRF0, nRF_pipe_t pipe, char *data, uint8_t length)
+{
+	bool TX_full = nRF_is_TX_full(nRF0);
+
+	if (TX_full == 1)
+	{
+		printf("TX is full\n");
+	}
+	else
+	{
+		uint8_t spi_port = nRF0->spi_port;
+		//pipe = pipe & 0x07;		// XXX koji kurac je ovo?
+
+		cs(nRF0, 0);
+		spi_rw(spi_port, pipe);
+		while (length)
+		{
+			//printf("%s(): *data: %c length: %d\n", __func__, *data, length);
+			spi_rw(spi_port, *data++);
+			length--;
+		}
+		cs(nRF0, 1);
+	}
+	printf("%s() kraj\n", __func__);
 }
