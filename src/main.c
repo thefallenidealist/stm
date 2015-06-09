@@ -17,9 +17,9 @@ void main(void);
 #endif
 //#include "eeprom.h" 	// 3.3V
 #if defined STM32F4 || defined STM32F4XX
-//#include "baro.h" 	// 5V
+#include "baro.h" 	// 5V
 #endif
-#include "oled.h" 	// 5V
+//#include "oled.h" 	// 5V
 //#include "src/visak/oled.h" 	// 5V
 //#include "clock_print.h" 		// isprobano F1
 //#include "glcd.h"
