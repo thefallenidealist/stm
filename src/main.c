@@ -112,6 +112,7 @@ void main(void)
 	printf("sad ide while\n");
 	while (1)
 	{
+		/*
 #ifdef BLINKY_H
 	#if defined STM32F4 || defined STM32F4XX
 		blinky_blinky(50);
@@ -120,7 +121,7 @@ void main(void)
 		blinky(BLINKY_F1);
 	#endif
 #endif
-		//delay_ms(500);
+		*/
 
 #ifdef EXTI_H
 		//printf("EXTI flag: %d\n", exti1_flag);
@@ -146,6 +147,7 @@ void main(void)
 
 #ifdef NRF_RX
 		// INFO moze i preko interrupta TODO
+		/*
 		bool payload_ready = nRF_read_payload(grf);
 		if (payload_ready)
 		{
@@ -153,7 +155,8 @@ void main(void)
 			// odgovori nazad
 			char ack[] = "RF odgovara";
 			nRF_set_ACK_payload(grf, P0, ack, 7);
-			nRF_clear_bits(grf);
+			//nRF_clear_bits(grf);
+			nRF_start_listening(grf);
 
 			//printf("nRF RX je dobio: %s\n", nRF_RX_buffer);
 			// obrisi buffer
@@ -162,8 +165,22 @@ void main(void)
 				nRF_RX_buffer[i] = '\0';
 			}
 		}
+		*/
+
+		if (nRF_is_RX_data_ready(grf) == 1)
+		{
+			printf("nRF je dobio nesto\n");
+
+			uint8_t packet_size = nRF_get_dynamic_payload_length(grf, P0);
+			printf("velicina paketa: %d\n", packet_size);
+
+			printf("Flusamo RX\n");
+			//nRF_flush_RX(grf);
+			nRF_clear_RX_data_ready(grf);
+		}
+
+
 		//printf("nRF data ready: %d\n", nRF_is_RX_data_ready(grf));
-		delay_ms(50);
 #endif	// NRF_RX
 #ifdef NRF_TX
 		char tx_buffer[NRF_FIFO_SIZE] = {};
@@ -183,8 +200,8 @@ void main(void)
 		//nRF_write_payload_no_ack(grf, tx_buffer, nRF_get_payload_size(grf, P0));
 		nRF_write_payload(grf, tx_buffer, nRF_get_payload_size(grf, P0));
 		printf("nRF poslao: %s\n", tx_buffer);
+		delay_ms(50);
 #endif	// BARO_H STM32F4
-		delay_ms(500);
 #endif	// NRF_TX
 	}
 }

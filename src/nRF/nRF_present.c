@@ -19,5 +19,17 @@ bool nRF_is_present(nRF_hw_t *nRF0)
 		}
 	}
 
+	/*
+	   // XXX ne pomaze, reg_config ispadne 8, a kasnije bude 0x00
+	uint8_t reg_config = read_reg(nRF0, REG_CONFIG);
+
+	printf("\t\t\t\t%s() reg_config: %d\n", __func__, reg_config);
+
+	if (reg_config == 0x00)	// REG_CONFIG should't be empty
+	{
+		return 0;
+	}
+	*/
+
 	return 1;
 }

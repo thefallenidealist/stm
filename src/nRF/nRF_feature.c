@@ -64,8 +64,8 @@ void nRF_enable_dynamic_payload_noack(nRF_hw_t *nRF0)
 *************************************************************************************************/
 void nRF_disable_dynamic_payload_noack(nRF_hw_t *nRF0)
 {
-	// Enables the W_TX_PAYLOAD_NOACK command
-	reg_tmp[EN_DYN_ACK] = 1;
+	// Disables the W_TX_PAYLOAD_NOACK command
+	reg_tmp[EN_DYN_ACK] = 0;
 	write_reg(nRF0, REG_FEATURE);
 }
 
@@ -111,7 +111,9 @@ uint8_t nRF_get_dynamic_payload_length(nRF_hw_t *nRF0, nRF_pipe_t pipe)
 	uint8_t length = 0xFF;
 
 	ce(nRF0, 0);
-	length = spi_rw(spi_port, CMD_R_RX_PL_WID);
+	//length = spi_rw(spi_port, CMD_R_RX_PL_WID);
+	spi_rw(spi_port, CMD_R_RX_PL_WID);
+	length = spi_rw(spi_port, CMD_NOP);		// pokusaj
 	ce(nRF0, 1);
 
 	/*
@@ -164,7 +166,7 @@ void nRF_enable_feature_ackPL(nRF_hw_t *nRF0)
 }
 
 // SetAckPayload
-void nRF_set_ACK_payload(nRF_hw_t *nRF0, nRF_pipe_t pipe, char *data, uint8_t length)
+void nRF_set_ACK_payload(nRF_hw_t *nRF0, nRF_pipe_t pipe, char *buffer, uint8_t length)
 {
 	bool TX_full = nRF_is_TX_full(nRF0);
 
@@ -177,15 +179,20 @@ void nRF_set_ACK_payload(nRF_hw_t *nRF0, nRF_pipe_t pipe, char *data, uint8_t le
 		uint8_t spi_port = nRF0->spi_port;
 		//pipe = pipe & 0x07;		// XXX koji kurac je ovo?
 
+
 		cs(nRF0, 0);
-		spi_rw(spi_port, pipe);
-		while (length)
+		//spi_rw(spi_port, pipe);
+		spi_rw(spi_port, CMD_W_ACK_PAYLOAD);
+		while (length--)
 		{
-			//printf("%s(): *data: %c length: %d\n", __func__, *data, length);
-			spi_rw(spi_port, *data++);
-			length--;
+			spi_rw(spi_port, *buffer++);
 		}
 		cs(nRF0, 1);
+
+		// pulse CE for transmission
+		ce(nRF0, 1);
+		delay_us(11);	// 10+ us
+		ce(nRF0, 0);
 	}
 	printf("%s() kraj\n", __func__);
 }

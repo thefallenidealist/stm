@@ -57,8 +57,7 @@
 	#define NRF_IRQ	"PA5"	// XXX, NC, treba lemit
 #endif
 
-//uint8_t addr[5] = "qw\nrt";
-
+uint8_t addr[5] = "qwert";
 uint8_t addr_tx[5] = "addrT";
 uint8_t addr_rx[5] = "addrR";
 
@@ -123,6 +122,7 @@ int8_t nRF_main(void)
 	if (nRF_is_present(&rf_modul) == 0)
 	{
 		printf("%s(): Zajeb, nema nRF modula ili se uzjebo, izlazim.\n", __func__);
+		delay_s(15);
 		return -1;
 	}
 
@@ -147,8 +147,8 @@ int8_t nRF_main(void)
 	}
 
 	nRF_set_output_power(&rf_modul, power_0dBm);
-	nRF_set_datarate	(&rf_modul, datarate_2Mbps);
-	nRF_set_channel		(&rf_modul, 0);
+	nRF_set_datarate	(&rf_modul, datarate_1Mbps);
+	nRF_set_channel		(&rf_modul, 15);
 	nRF_set_address_width(&rf_modul, NRF_ADDRESS_WIDTH);
 
 	uint8_t mode = nRF_get_mode(&rf_modul);
@@ -157,6 +157,9 @@ int8_t nRF_main(void)
 		// TX modul treba i RX adresu zbog ACK
 		nRF_set_TX_address	(&rf_modul, addr_tx);
 		nRF_set_RX_address	(&rf_modul, P0, addr_rx);
+
+		//nRF_set_TX_address	(&rf_modul, addr);
+		//nRF_set_RX_address	(&rf_modul, P0, addr);
 	}
 	else if (mode == RX)
 	{
@@ -164,6 +167,9 @@ int8_t nRF_main(void)
 		// pokusaj ukrizenih adresa
 		nRF_set_RX_address	(&rf_modul, P0, addr_tx);	// slusa na adresi na kojoj TX salje
 		nRF_set_TX_address	(&rf_modul, addr_rx);	// salje na adresi na kojoj TX slusa
+
+		//nRF_set_RX_address	(&rf_modul, P0, addr);
+		//nRF_set_TX_address	(&rf_modul, addr);
 	}
  
 	nRF_enable_CRC(&rf_modul);			// CRC is forced if AutoACK is enabled
@@ -193,13 +199,16 @@ int8_t nRF_main(void)
 	nRF_enable_dynamic_pipe(&rf_modul, 4);
 	nRF_enable_dynamic_pipe(&rf_modul, 5);
 	*/
+
+	//nRF_set_retransmit_delay(&rf_modul, DELAY_500us);	// ARD=500µs is long enough for any ACK payload length in 1 or 2Mbps mode.
+	nRF_set_retransmit_delay(&rf_modul, DELAY_2ms);	// ARD=500µs is long enough for any ACK payload length in 1 or 2Mbps mode.
+	nRF_set_retransmit_count(&rf_modul, 15);			// 1 to 15 retries
 	
-	//nRF_enable_feature_dynPL(&rf_modul, P0);
-	nRF_enable_feature_ackPL(&rf_modul);
+	nRF_enable_feature_dynPL(&rf_modul, P0);
+	//nRF_enable_feature_ackPL(&rf_modul);
+	//nRF_enable_dynamic_payload_ack(&rf_modul);	// EN_DYN_ACK=1, enables W_TX_PAYLOAD_NOACK cmd
 
 #ifdef NRF_TX
-	nRF_set_retransmit_delay(&rf_modul, DELAY_500us);	// ARD=500µs is long enough for any ACK payload length in 1 or 2Mbps mode.
-	nRF_set_retransmit_count(&rf_modul, 15);			// 1 to 15 retries
 
 	// dynamic payload
 	//nRF_enable_dynamic_payload(&rf_modul);
