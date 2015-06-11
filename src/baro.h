@@ -22,26 +22,26 @@
 #include "delay.h"
 #include "i2c.h"
 // *************************************** defines ************************************************
-#define BMP_ADDR_R	0xEF
-#define BMP_ADDR_W	0xEE
-
 // settings
 #define BMP_I2C_PORT	2
 #define BMP_I2C_SPEED	100000
 
+// *************************************** new data types ************************************
+typedef enum
+{
+	Pa 		= 1,
+	hPa 	= 2,
+	mbar	= 2,
+	kPa 	= 3
+} barometer_conversion_t;
+
 // *************************************** function prototypes ************************************
 void 	bmp180_init				(void);
-int16_t bmp180_get_temperature	(void);
-int32_t bmp180_get_pressure		(void);
+float	bmp180_get_temperature	(void);
+float	bmp180_get_pressure		(barometer_conversion_t mjerilo);	// XXX prevest, fali rijec
+float	bmp180_get_altitude		(void);
 void	bmp180_print			(void);
 void 	bmp180_example			(void);
-void	bmp180_print_id(void);
-
-/*
-   XXX ne moze ic iznad 29.6°C:
-baro: 29.6°C
-baro: 6310.3°C
-*/
-
+void	bmp180_print_id			(void);
 
 #endif

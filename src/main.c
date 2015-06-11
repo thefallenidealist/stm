@@ -102,11 +102,7 @@ void main(void)
 #endif
 
 #if defined BARO_H && defined STM32F4
-	//while(1)
-	{
-		bmp180_example();
-		//delay_ms(100);
-	}
+	bmp180_example();
 #endif
 
 #ifdef OLED_H
@@ -138,10 +134,7 @@ void main(void)
 #endif
 
 #if defined BARO_H && defined STM32F4
-		//uint16_t temperature = bmp180_get_temperature();
-		//printf("temperature: %d.%d°C\n", temperature/10, temperature%10);
-
-		//bmp180_print();
+		bmp180_print();
 #endif
 
 #ifdef RTC_H
