@@ -33,7 +33,7 @@ void main(void);
 //#include "wlan.h"
 //#include "rtc_ext.h"
 //#include "rom.h"
-#include "nRF.h"
+//#include "nRF.h"
 //#include "flash.h"
 //#include "pwm.h"
 //#include "src/exti.h"

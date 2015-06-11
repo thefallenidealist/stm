@@ -6,9 +6,10 @@
 // TODO ako nema divajsa a pozove se init, nemoj zalockat sve
 
 // privatne globalne varijable
-int16_t  AC1;
-int16_t  AC2;
-int16_t  AC3;
+// TODO static sve
+int16_t	AC1;
+int16_t	AC2;
+int16_t	AC3;
 uint16_t AC4;
 uint16_t AC5;
 uint16_t AC6;
@@ -28,6 +29,10 @@ int32_t  B6;
 uint32_t B7;
 int32_t  T;
 int32_t  p;
+
+// XXX math.h ima y0 i y1 -_-
+double c5,c6,mc,md,x0,x1,x2,var_y0,var_y1,y2,p0,p1,p2;
+// double c5 je int AC5
 
 // *************************************** private function prototypes ****************************
 static int8_t bmp180_write(uint8_t reg, uint8_t data);
@@ -86,6 +91,7 @@ static int16_t bmp180_read(uint8_t reg)
 /**************************************************************************************************
 *  					read8(void)
 **************************************************************************************************/
+/*
 static int8_t read8(uint8_t reg)
 {
 	i2c_start	(BMP_I2C_PORT);
@@ -100,6 +106,7 @@ static int8_t read8(uint8_t reg)
 
 	return received;
 }
+*/
 
 /**************************************************************************************************
 *  					bmp180_calibration(void)
@@ -117,27 +124,76 @@ static void bmp180_calibration(void)
 	MB  = bmp180_read(0xBA);
 	MC  = bmp180_read(0xBC);
 	MD  = bmp180_read(0xBE);
+
+
+
+	// neki kurac
+		double c3,c4,b1;
+	
+		c3 = 160.0 * pow(2,-15) * AC3;
+		c4 = pow(10,-3) * pow(2,-15) * AC4;
+		b1 = pow(160,2) * pow(2,-30) * B1;
+		c5 = (pow(2,-15) / 160) * AC5;
+		c6 = AC6;
+		mc = (pow(2,11) / pow(160,2)) * MC;
+		md = MD / 160.0;
+		x0 = AC1;
+		x1 = 160.0 * pow(2,-13) * AC2;
+		x2 = pow(160,2) * pow(2,-25) * B2;
+		var_y0 = c4 * pow(2,15);
+		var_y1 = c4 * c3;
+		y2 = c4 * b1;
+		p0 = (3791.0 - 8.0) / 1600.0;
+		p1 = 1.0 - 7357.0 * pow(2,-20);
+		p2 = 3038.0 * 100.0 * pow(2,-36);
 }
 
 /**************************************************************************************************
 *  					bmp180_get_temperature()
 **************************************************************************************************/
+#define BMP180_CMD_START_TEMPERATURE	0x2E
 //int16_t bmp180_get_temperature(void)
 int32_t bmp180_get_temperature(void)
 {
-	bmp180_write(0xF4, 0x2E);		// reci mu da naracuna temperaturu
+	bmp180_write(0xF4, BMP180_CMD_START_TEMPERATURE);		// reci mu da naracuna temperaturu
 	delay_ms(5);		// 4.5
 
 	//int16_t UT = bmp180_read(0xF6);		// pokupi temperaturu
-	int32_t UT = bmp180_read(0xF6);		// pokupi temperaturu
+	//int32_t UT = bmp180_read(0xF6);		// pokupi temperaturu
 						// dovoljno samo ocitat ADC_H, automatski ce poslat i ADC_L
+	int16_t itu = bmp180_read(0xF6);
+	//pkirintf("%s(): tu: %.1f\n", __func__, tu);
+
+	double tu = (double)itu;
+	printf("TU int: %d \t double: %.1f\n", itu, tu);
+
 
 	// kompenziraj
-	X1 = ((UT - AC6) * AC5) >> 15;
-	X2 = (MC << 11) / (X1 + MD);
-	B5 = X1 + X2;
+	//X1 = ((UT - AC6) * AC5) >> 15;
+	//double dX1 = (((float)UT - AC6) * (float)AC5) >> 15;	// podijeli sa 2^15
+	double dX1 = (((double)tu - (double)AC6) * (double)AC5) / pow(2,15);
+
+	//X2 = (MC << 11) / (X1 + MD);
+	//double dX2 = ((float)MC << 11) / (dX1 + (float)MD);
+	double dX2 = (double)MC * pow(2,11)    	/ (dX1 + (double)MD);
+
+
+	//B5 = X1 + X2;
+	double dB5 = dX1 + dX2;
 	//uint16_t T = ((B5 + 8) >> 4);
-	uint32_t T = ((B5 + 8) >> 4);
+	//uint32_t T = ((B5 + 8) >> 4);
+	double dT = ((dB5 + 8) / pow(2,4));
+
+	printf("T double: %1.f, int: %d\n", dT, T);
+
+
+	/*
+	// nesta novo, nesta divlje
+	double a = c5 * (tu - c6);
+	double T = a + (mc / (a + md));
+
+	printf("%s(): T: %.1f\n", __func__, T);
+	*/
 
 	return T;
 }
