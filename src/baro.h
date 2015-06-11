@@ -31,15 +31,11 @@
 
 // *************************************** function prototypes ************************************
 void 	bmp180_init				(void);
-//int8_t	bmp180_write			(uint8_t reg, uint8_t data);
-//int16_t bmp180_read				(uint8_t reg);
-//void	bmp180_calibration		(void);
-//int16_t bmp180_get_temperature	(void);
-int32_t	bmp180_get_temperature	(void);
+int16_t bmp180_get_temperature	(void);
 int32_t bmp180_get_pressure		(void);
 void	bmp180_print			(void);
 void 	bmp180_example			(void);
-float	bmp180_get_temperature_float	(void);
+void	bmp180_print_id(void);
 
 /*
    XXX ne moze ic iznad 29.6°C:

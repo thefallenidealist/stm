@@ -102,7 +102,11 @@ void main(void)
 #endif
 
 #if defined BARO_H && defined STM32F4
-	bmp180_example();
+	//while(1)
+	{
+		bmp180_example();
+		//delay_ms(100);
+	}
 #endif
 
 #ifdef OLED_H

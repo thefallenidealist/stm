@@ -6,10 +6,9 @@
 // TODO ako nema divajsa a pozove se init, nemoj zalockat sve
 
 // privatne globalne varijable
-// TODO static sve
-int16_t	AC1;
-int16_t	AC2;
-int16_t	AC3;
+int16_t  AC1;
+int16_t  AC2;
+int16_t  AC3;
 uint16_t AC4;
 uint16_t AC5;
 uint16_t AC6;
@@ -30,14 +29,13 @@ uint32_t B7;
 int32_t  T;
 int32_t  p;
 
-// XXX math.h ima y0 i y1 -_-
-double c5,c6,mc,md,x0,x1,x2,var_y0,var_y1,y2,p0,p1,p2;
-// double c5 je int AC5
+#define BMP180_REG_ID	0xD0
+#define BMP180_CMD_START_TEMPERATURE_CONVERSION	0x2E
 
 // *************************************** private function prototypes ****************************
-static int8_t bmp180_write(uint8_t reg, uint8_t data);
-static int16_t bmp180_read(uint8_t reg);
-static void bmp180_calibration(void);
+static uint8_t	write		(uint8_t reg, uint8_t data);
+static uint16_t read		(uint8_t reg);
+static void 	calibration	(void);
 
 /**************************************************************************************************
 *  					bmp180_init(void)
@@ -47,13 +45,13 @@ void bmp180_init(void)
 	// INFO moj modul ima regulator na sebi, treba ga ustekat u 5V ili amputirat
 	i2c_init(BMP_I2C_PORT, BMP_I2C_SPEED);
 	delay_ms(10);	// start up time
-	bmp180_calibration();
+	calibration();
 }
 
 /**************************************************************************************************
-*  					bmp180_write(void)
+*  					write(void)
 **************************************************************************************************/
-static int8_t bmp180_write(uint8_t reg, uint8_t data)
+static uint8_t write(uint8_t reg, uint8_t data)
 {
 	i2c_start	(BMP_I2C_PORT);
 	i2c_sendAddr_tx(BMP_I2C_PORT, BMP_ADDR_W);
@@ -65,10 +63,11 @@ static int8_t bmp180_write(uint8_t reg, uint8_t data)
 }
 
 /**************************************************************************************************
-*  					bmp180_read(void)
+*  					read(void)
 **************************************************************************************************/
-static int16_t bmp180_read(uint8_t reg)
+static uint16_t read(uint8_t reg)
 {
+	// stari, cita i vraca uint sa I2C
 	uint16_t received = 0;
 	uint8_t receivedH = 0;
 	uint8_t receivedL = 0;
@@ -88,114 +87,165 @@ static int16_t bmp180_read(uint8_t reg)
 
 	return received;
 }
-/**************************************************************************************************
-*  					read8(void)
-**************************************************************************************************/
+
 /*
-static int8_t read8(uint8_t reg)
+static int16_t read_int(uint8_t reg)
 {
-	i2c_start	(BMP_I2C_PORT);
-	i2c_sendAddr_tx(BMP_I2C_PORT, BMP_ADDR_W);
-	i2c_write	(BMP_I2C_PORT, reg);
+	uint16_t received = read(reg);
+	int8_t MSB;
+	uint8_t LSB;
 
-	i2c_restart	(BMP_I2C_PORT);
-	i2c_sendAddr_rx(BMP_I2C_PORT, BMP_ADDR_R);
-	uint8_t received = i2c_read_nack	(BMP_I2C_PORT);
+	MSB = (int8_t)((received>> 8) & 0xFF);	// 16b->8b
+	LSB = (received & 0xFF);
+	//LSB = (uint8_t)(received & 0xFF);
 
-	i2c_stop	(BMP_I2C_PORT);
+	return ( (MSB << 8) | LSB);
 
-	return received;
+}
+
+static uint16_t read_uint(uint8_t reg)
+{
+	uint16_t received = read(reg);
+	uint8_t MSB, LSB;
+
+	MSB = (uint8_t)((received >> 8) & 0xFF);	// 16b->8b
+	LSB = (uint8_t)(received & 0xFF);
+
+	return ( (MSB << 8) | LSB);
 }
 */
 
 /**************************************************************************************************
-*  					bmp180_calibration(void)
+*  					bmp180_print_id()
 **************************************************************************************************/
-static void bmp180_calibration(void)
+void bmp180_print_id(void)
 {
-	AC1 = bmp180_read(0xAA);
-	AC2 = bmp180_read(0xAC);
-	AC3 = bmp180_read(0xAE);
-	AC4 = bmp180_read(0xB0);
-	AC5 = bmp180_read(0xB2);
-	AC6 = bmp180_read(0xB4);
-	B1  = bmp180_read(0xB6);
-	B2  = bmp180_read(0xB8);
-	MB  = bmp180_read(0xBA);
-	MC  = bmp180_read(0xBC);
-	MD  = bmp180_read(0xBE);
+	i2c_start	(BMP_I2C_PORT);
+	i2c_sendAddr_tx(BMP_I2C_PORT, BMP_ADDR_W);
+	i2c_write	(BMP_I2C_PORT, BMP180_REG_ID);
+	i2c_restart	(BMP_I2C_PORT);
+	i2c_sendAddr_rx(BMP_I2C_PORT, BMP_ADDR_R);
+	uint8_t id = i2c_read_nack	(BMP_I2C_PORT);
+	i2c_stop	(BMP_I2C_PORT);
 
+	printf("%s(): ID: 0x%X, should be 0x55\n", __func__, id);
+}
 
-
-	// neki kurac
-		double c3,c4,b1;
-	
-		c3 = 160.0 * pow(2,-15) * AC3;
-		c4 = pow(10,-3) * pow(2,-15) * AC4;
-		b1 = pow(160,2) * pow(2,-30) * B1;
-		c5 = (pow(2,-15) / 160) * AC5;
-		c6 = AC6;
-		mc = (pow(2,11) / pow(160,2)) * MC;
-		md = MD / 160.0;
-		x0 = AC1;
-		x1 = 160.0 * pow(2,-13) * AC2;
-		x2 = pow(160,2) * pow(2,-25) * B2;
-		var_y0 = c4 * pow(2,15);
-		var_y1 = c4 * c3;
-		y2 = c4 * b1;
-		p0 = (3791.0 - 8.0) / 1600.0;
-		p1 = 1.0 - 7357.0 * pow(2,-20);
-		p2 = 3038.0 * 100.0 * pow(2,-36);
+/**************************************************************************************************
+*  					calibration(void)
+**************************************************************************************************/
+static void calibration(void)
+{
+	AC1 = read(0xAA);
+	AC2 = read(0xAC);
+	AC3 = read(0xAE);
+	AC4 = read(0xB0);
+	AC5 = read(0xB2);
+	AC6 = read(0xB4);
+	B1  = read(0xB6);
+	B2  = read(0xB8);
+	MB  = read(0xBA);
+	MC  = read(0xBC);
+	MD  = read(0xBE);
+	/*
+	AC1 = read_int(0xAA);
+	AC2 = read_int(0xAC);
+	AC3 = read_int(0xAE);
+	AC4 = read_uint(0xB0);
+	AC5 = read_uint(0xB2);
+	AC6 = read_uint(0xB4);
+	B1  = read_int(0xB6);
+	B2  = read_int(0xB8);
+	MB  = read_int(0xBA);
+	MC  = read_int(0xBC);
+	MD  = read_int(0xBE);
+	*/
 }
 
 /**************************************************************************************************
 *  					bmp180_get_temperature()
 **************************************************************************************************/
-#define BMP180_CMD_START_TEMPERATURE	0x2E
-//int16_t bmp180_get_temperature(void)
-int32_t bmp180_get_temperature(void)
+int16_t bmp180_get_temperature(void)
 {
-	bmp180_write(0xF4, BMP180_CMD_START_TEMPERATURE);		// reci mu da naracuna temperaturu
+	write(0xF4, BMP180_CMD_START_TEMPERATURE_CONVERSION);
 	delay_ms(5);		// 4.5
 
-	//int16_t UT = bmp180_read(0xF6);		// pokupi temperaturu
-	//int32_t UT = bmp180_read(0xF6);		// pokupi temperaturu
+	//int16_t UT = read(0xF6);		// pokupi temperaturu
+	uint16_t UT = read(0xF6);		// pokupi temperaturu				// jebo majku, bio je trik da ovo bude uint16_t, a ne int16_t
 						// dovoljno samo ocitat ADC_H, automatski ce poslat i ADC_L
-	int16_t itu = bmp180_read(0xF6);
-	//pkirintf("%s(): tu: %.1f\n", __func__, tu);
 
-	double tu = (double)itu;
-	printf("TU int: %d \t double: %.1f\n", itu, tu);
+	//float fUT = (float)UT;
+	double fUT = (double)UT;
+	//float X1, X2, B5, T;
+	double X1, X2, B5, T;
+
+	/*
+	// test onog iz datasheeta
+	fUT = 27898;
+	AC6 = 23153;
+	AC5 = 32757;
+	MC  = -8711;
+	MD  = 2868;
+	// treba ispast 150 (za 15.0°C, ispadne 150.5)
+	*/
 
 
-	// kompenziraj
-	//X1 = ((UT - AC6) * AC5) >> 15;
-	//double dX1 = (((float)UT - AC6) * (float)AC5) >> 15;	// podijeli sa 2^15
-	double dX1 = (((double)tu - (double)AC6) * (double)AC5) / pow(2,15);
+	// X1 = (UT - AC6) * AC5 / 2^15
+	//X1 = (fUT - (float)AC6) * (float) AC5 / powf(2,15);
+	X1 = (fUT - (double)AC6) * (double) AC5 / powf(2,15);
 
-	//X2 = (MC << 11) / (X1 + MD);
-	//double dX2 = ((float)MC << 11) / (dX1 + (float)MD);
-	double dX2 = (double)MC * pow(2,11)    	/ (dX1 + (double)MD);
+	// X2 = MC * 2^11 / (X1 + MD)
+	//X2 = (float)MC * powf(2,11) / (X1 + (float)MD);
+	X2 = (double)MC * pow(2,11) / (X1 + (double)MD);
+
+	// B5 = X1 + X2;
+	B5 = X1 + X2;
+
+	// T = (B5 + 8) / 2^4
+	//T = (B5 + 8.0) / powf(2,4);
+	T = (B5 + 8.0) / pow(2,4);
+
+	/*
+	// valja
+	UT:	 32534
+	X1:  -39543.2   [6957.4]
+	X2:  611.2      [-2415.7]
+	B5:  -38932.1   [4541.7]
+	T:   -2432.8    [284.4]
+
+	// ne valja:
+	UT: -32651
+	X1:  7010.1     [6957.4]
+	X2:  -2402.2    [-2415.7]
+	B5:  4607.9     [4541.7]
+	T:   288.5      [284.4]
+	*/
 
 
-	//B5 = X1 + X2;
-	double dB5 = dX1 + dX2;
-	//uint16_t T = ((B5 + 8) >> 4);
-	//uint32_t T = ((B5 + 8) >> 4);
-	double dT = ((dB5 + 8) / pow(2,4));
-
-	printf("T double: %1.f, int: %d\n", dT, T);
+	//printf("sizeof \n\tint32_t: %lu \n\tfloat: %lu\n\tdouble: %lu\n", sizeof(int32_t)*8, sizeof(float)*8, sizeof(double)*8);
 
 
 	/*
-	// nesta novo, nesta divlje
-	double a = c5 * (tu - c6);
-	double T = a + (mc / (a + md));
+	printf("\t\t\t\t UT: %d %.1f\n", UT, fUT);
 
-	printf("%s(): T: %.1f\n", __func__, T);
+	// u zagradi stvarne vrijednosti sa mojeg barometra, T = 28.4°C
+	printf("AC6: %d \t[22769]\n", AC6);
+	printf("AC5: %d \t[23349]\n", AC5);
+	printf("MC:  %d \t[-11075]\n", MC);
+	printf("\n");
+	printf("X1:  %.1f \t[6957.4]\n", X1);
+	printf("X2:  %.1f \t[-2415.7]\n", X2);
+	printf("B5:  %.1f \t[4541.7]\n", B5);
+	printf("T:   %.1f \t[284.4]\n", T);
+	printf("\n");
 	*/
 
-	return T;
+	printf("T: float: %.1f \t int16_t: %d\n", T, (int16_t)T);
+
+
+
+
+	return 0;
 }
 
 /**************************************************************************************************
@@ -204,7 +254,7 @@ int32_t bmp180_get_temperature(void)
 int32_t bmp180_get_pressure(void)
 {
 	uint8_t OSS = 3;	// oversampling OSS = 0..3
-	bmp180_write(0xF4, 0x34 + (OSS << 6));	// pressure
+	write(0xF4, 0x34 + (OSS << 6));	// pressure
 						// shiftanje jer OSS ide u b7, b6 u registru
 	// KK-u bilo dosadno pa rece:
 	if (OSS > 3)
@@ -217,7 +267,7 @@ int32_t bmp180_get_pressure(void)
 		delay_ms(5 + 3 * ((1 << OSS) - 1));
 	}
 
-	uint16_t UP0 = bmp180_read(0xF6);
+	uint16_t UP0 = read(0xF6);
 	// simulacija XLSB bita
 	uint32_t UP = (UP0 << 8) >> (8 - OSS);
 
@@ -255,8 +305,10 @@ int32_t bmp180_get_pressure(void)
 void bmp180_print(void)
 {		
 	uint16_t temperature = bmp180_get_temperature();
+	/*
 	uint32_t pressure    = bmp180_get_pressure();
 
+	// calculate altitude		TODO spesl funkcija
 	// altitude = 44330 * ( 1 - (p/p0)^(1/5.255))
 	float exponent = 1/5.255;
 	float pp0 = ((float)pressure/101325);
@@ -264,6 +316,8 @@ void bmp180_print(void)
 	float altitude = 44330 * (1 - b);
 
 	printf("BMP180:\t\t%d.%d °C\t%u.%u hPa\t%.1f m\n", temperature/10, temperature%10, pressure/100, (pressure%100)/10, altitude);
+	*/
+	printf("BMP180:\t\t%d.%d °C\n", temperature/10, temperature%10);
 }
 
 /**************************************************************************************************
@@ -272,42 +326,8 @@ void bmp180_print(void)
 void bmp180_example(void)
 {
 	bmp180_init();
+	bmp180_print_id();
 	bmp180_print();
-
-	/*
-	// 160508 ajmo ponovo
-	bmp180_calibration();
-
-	uint8_t id = read8(0xD0);	// 0x55
-	printf("BMP180 ID: 0x%X\n", id);
-
-	// read uncompensated temperature value
-	bmp180_write(0xF4, 0x2E);
-	delay_ms(5);
-
-	uint16_t MSB = bmp180_read(0xF6);
-	//int8_t LSB = bmp180_read(0xF7);
-	uint8_t LSB = 0xFF;
-
-	int32_t UT = MSB << (8 + LSB);
-	printf("LSB: %d, MSB: %d \t UT: %d\n", LSB, MSB, UT);
-
-
-	// calculate true temperature
-	//X1 = (UT - AC6) * AC5 / (int32_t)pow(2,15);
-	float AC5p = (float)AC5 / (1 << 15);
-	printf("AC5p: %.1f\n", AC5p);
-
-	printf("\t\tdebug: UT: %d AC6: %d AC5: %d\n", UT, AC6, AC5);
-	float X1a = (UT - AC6) * AC5 / AC5p;
-	//X2 = MC * (uint32_t)pow(2, 11) / (X1 + MD);
-	X2 = MC * (1 << 1) / (X1 + MD);
-	B5 = X1a + X2;
-	printf("\t\tdebug, X1: %d X2: %d B5: %d\n", X1a, X2, B5);
-	int32_t T = (B5 + 8) / (1 << 4);
-
-	printf("temperature: %d\n", T);
-	*/
 }
 
 
@@ -317,11 +337,11 @@ void bmp180_example(void)
 /*
 float bmp180_get_temperature_float()
 {
-	bmp180_write(0xF4, 0x2E);		// reci mu da naracuna temperaturu
+	write(0xF4, 0x2E);		// reci mu da naracuna temperaturu
 	delay_ms(5);
 
-	//int16_t UT = bmp180_read(0xF6);		// pokupi temperaturu
-	int32_t UT = bmp180_read(0xF6);		// pokupi temperaturu
+	//int16_t UT = read(0xF6);		// pokupi temperaturu
+	int32_t UT = read(0xF6);		// pokupi temperaturu
 						// dovoljno samo ocitat ADC_H, automatski ce poslat i ADC_L
 
 	// kompenziraj
