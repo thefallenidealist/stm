@@ -6,6 +6,10 @@
 #ifndef BARO_H
 #define BARO_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdio.h>
 #include <math.h>
 #ifdef STM32F10X_MD
@@ -44,4 +48,7 @@ void	bmp180_print			(void);
 void 	bmp180_example			(void);
 void	bmp180_print_id			(void);
 
-#endif
+#ifdef __cplusplus
+}
+#endif	// __cplusplus
+#endif	// BARO_H

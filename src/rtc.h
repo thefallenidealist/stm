@@ -1,6 +1,10 @@
 #ifndef RTC_H
 #define RTC_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 // Vbat 1.8 - 3.6V	TODO
 // XXX RTC_SetCounter nikad ne izadje 
 // jebeni RTC
@@ -24,4 +28,7 @@ uint8_t RTC_get_m(void);
 uint8_t RTC_get_s(void);
 void RTC_IRQHandler(void);
 
-#endif
+#ifdef __cplusplus
+}
+#endif	// __cplusplus
+#endif	// RTC_H

@@ -1,6 +1,10 @@
 #ifndef SPI_H
 #define SPI_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #if defined STM32F10X_MD || defined STM32F1
 	#include "stm32f10x_rcc.h"
 	#include "stm32f10x_gpio.h"
@@ -42,4 +46,7 @@ void 	spi_write16_fast	(uint8_t spi_port, uint16_t data16);
 uint16_t spi_rw16			(uint8_t spi_port, uint16_t data16);
 uint8_t	spi_rw				(uint8_t spi_port, uint8_t data8);
 
+#ifdef __cplusplus
+}
+#endif	// __cplusplus
 #endif	// SPI_H

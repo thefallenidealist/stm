@@ -1,6 +1,10 @@
 #ifndef RTC_H
 #define RTC_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
@@ -28,4 +32,7 @@ void 		rtc_set_time (uint8_t h, uint8_t m, uint8_t s);
 RTC_data_t *rtc_get_time (void);
 void 		rtc_main	 (void);
 
-#endif
+#ifdef __cplusplus
+}
+#endif	// __cplusplus
+#endif	// RTC_H

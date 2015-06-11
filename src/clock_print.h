@@ -1,6 +1,10 @@
 #ifndef CLOCK_PRINT_H
 #define CLOCK_PRINT_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdio.h>
 #ifdef STM32F4
 	#include "stm32f4xx_rcc.h"
@@ -11,4 +15,7 @@
 
 void clock_print(void);
 
-#endif
+#ifdef __cplusplus
+}
+#endif	// __cplusplus
+#endif	// CLOCK_PRINT_H

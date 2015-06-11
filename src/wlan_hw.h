@@ -1,6 +1,10 @@
 #ifndef WLAN_HW_H
 #define WLAN_HW_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 // created 150129
 #include "debug.h"
 #include "uart.h"
@@ -42,4 +46,7 @@ struct wlan_modul_t
 // javni prototipi
 wlan_modul_t	*wlan_new(uint8_t uart, uint32_t speed);
 
-#endif
+#ifdef __cplusplus
+}
+#endif	// __cplusplus
+#endif	// WLAN_HW_H

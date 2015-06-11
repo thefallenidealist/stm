@@ -2,6 +2,10 @@
 #ifndef FLASH_H
 #define FLASH_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdio.h>
 #include <stdint.h>
 
@@ -19,4 +23,7 @@ typedef struct
 
 void flash_main();
 
-#endif
+#ifdef __cplusplus
+}
+#endif	// __cplusplus
+#endif	// FLASH_H

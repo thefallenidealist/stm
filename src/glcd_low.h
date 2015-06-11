@@ -1,6 +1,10 @@
 #ifndef GLCD_LOW_H
 #define GLCD_LOW_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 // GLCD uC specifican dio
 
 // *************************************** sys includes *******************************************
@@ -98,4 +102,7 @@ void glcd_rst_on(void);
 #define glcd_rst_off(void)	GPIO_WriteBit(GLCD_RESET_PORT, GLCD_RESET_PIN, 1);
 #define glcd_rst_on(void)	GPIO_WriteBit(GLCD_RESET_PORT, GLCD_RESET_PIN, 0);
 
-#endif
+#ifdef __cplusplus
+}
+#endif	// __cplusplus
+#endif	// GLCD_LOW_H

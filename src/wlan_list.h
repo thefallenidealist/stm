@@ -1,6 +1,10 @@
 #ifndef WLAN_LIST_H
 #define WLAN_LIST_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
@@ -31,4 +35,7 @@ int8_t		wlan_list_ready(wlan_modul_t *wlan0);
 #define WLAN_LIST_MAX 20	// koliko max mreza odjednom cemo uspjet nac
 #define WLAN_LIST 10	// koliko najjacih mreza ce isprintat
 
-#endif
+#ifdef __cplusplus
+}
+#endif	// __cplusplus
+#endif	// WLAN_LIST_H

@@ -1,5 +1,9 @@
-#ifndef DEBUG_HEADER
-#define DEBUG_HEADER
+#ifndef DEBUG_H
+#define DEBUG_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #include <stdio.h>
 #include <stdint.h>
@@ -25,4 +29,7 @@
 
 extern uint8_t debug_level;
 
-#endif
+#ifdef __cplusplus
+}
+#endif	// __cplusplus
+#endif	// DEBUG_H

@@ -1,6 +1,10 @@
 #ifndef CPU_ID_H
 #define CPU_ID_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdio.h>
 #include <stdint.h>
 #include "uart.h"
@@ -18,4 +22,7 @@ typedef enum
 void 		print_cpu_id	(void);
 cpu_type_t	get_cpu_id		(void);
 
-#endif
+#ifdef __cplusplus
+}
+#endif	// __cplusplus
+#endif	// CPU_ID_H

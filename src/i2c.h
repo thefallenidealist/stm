@@ -2,6 +2,10 @@
 #ifndef I2C_H
 #define I2C_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 // TODO izvuc pinout vamo
 // PB10, PB11	F4
 
@@ -47,6 +51,8 @@ uint8_t i2c_read_nack(uint8_t i2c_number);
 uint8_t i2c_write_ack(uint8_t i2c_number, uint8_t data);
 uint8_t i2c_write_nack(uint8_t i2c_number, uint8_t data);
 
+#ifdef __cplusplus
+}
+#endif	// __cplusplus
 #endif
-
 // XXX major zajeb: vrati npr 12 kad timeouta sto moze ispast kao da je procitao nesto sa I2C-a

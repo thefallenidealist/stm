@@ -1,6 +1,10 @@
 #ifndef MEM_H
 #define MEM_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h> 	// malloc
@@ -19,4 +23,7 @@
 void mem_info(void);
 void malloc_test(void);
 
-#endif
+#ifdef __cplusplus
+}
+#endif	// __cplusplus
+#endif	// MEM_H

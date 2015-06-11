@@ -1,6 +1,10 @@
 #ifndef GLCD_HIGH_H
 #define GLCD_HIGH_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdint.h>
 #include <string.h> // strlen
 #include "glcd_colors.h"
@@ -52,7 +56,7 @@ void glcd_rectangle(unsigned int x0, unsigned int y0, unsigned int length, unsig
 void glcd_line(unsigned int x0, unsigned int y0, unsigned int x1, unsigned int y1, unsigned int color);
 void glcd_kockice(int size, int fgcolor2, int bgcolor2);
 
-
-
-
-#endif
+#ifdef __cplusplus
+}
+#endif	// __cplusplus
+#endif	// GLCD_HIGH_H

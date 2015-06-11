@@ -1,6 +1,11 @@
-// created 150214
+// CReated 150214
 #ifndef ROM_H
 #define ROM_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdio.h>
 #include <stdint.h>
 #include "i2c.h"
@@ -57,4 +62,7 @@ void rom_print(rom_t *self);
 void rom_init(rom_t *self);
 void rom_example();
 
-#endif
+#ifdef __cplusplus
+}
+#endif	// __cplusplus
+#endif	// ROM_H

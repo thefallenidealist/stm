@@ -1,6 +1,10 @@
+//created 150526
 #ifndef EXTI_H
 #define EXTI_H
-//created 150526
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #if defined STM32F4 || defined STM32F4XX
 	#include "stm32f4xx_exti.h"
@@ -19,4 +23,7 @@ extern volatile uint8_t exti1_flag;
 void exti1_init(void);
 //void EXTI1_IRQHandler(void);
 
-#endif
+#ifdef __cplusplus
+}
+#endif	// __cplusplus
+#endif	// EXTI_H

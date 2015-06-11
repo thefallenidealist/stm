@@ -1,6 +1,13 @@
 // *************************************** description ********************************************
 // created 140919
 // driver za eBay joystick sa tipkom, uzican od Burgija
+#ifndef JOYSTICK_H
+#define JOYSTICK_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 // *************************************** sys includes *******************************************
 // gpio
 //#include "stm32f10x_adc.h"
@@ -34,3 +41,9 @@
 void joystick_init();
 void joystick_gpio_init();
 char joystick_read();
+
+#ifdef __cplusplus
+}
+#endif	// __cplusplus
+#endif	// JOYSTICK_H
+// TODO ovo sve presaltat na GPIO driver

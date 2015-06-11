@@ -1,6 +1,10 @@
 #ifndef UART_H
 #define UART_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 // *************************************** sys includes *******************************************
 #include <stdio.h>
 #include <stdint.h>
@@ -97,4 +101,7 @@ void uart_clear(uint8_t uart);
 
 extern uint16_t uart2_rx_position;
 
-#endif
+#ifdef __cplusplus
+}
+#endif	// __cplusplus
+#endif	// UART_H

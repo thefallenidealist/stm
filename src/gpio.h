@@ -2,6 +2,10 @@
 #ifndef GPIO_H
 #define GPIO_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*
    TODO
    gpio_init ANALOG_IN, DIGITAL_IN, IN
@@ -96,12 +100,12 @@ typedef struct
 #ifndef AVR
 	uint32_t 		rcc;
 	GPIO_TypeDef 	*port;
-#endif
+#endif	// AVR
 #ifdef AVR
 	uint8_t			ddr;
 	uint8_t			port;
 	//int8_t			port;
-#endif
+#endif	// AVR
 	uint16_t 		pin;
 	//direction_t		direction;		// not implemented
 	//direction_t		type;		// not implemented
@@ -120,4 +124,7 @@ int8_t 	gpio_init	(const char *pin, direction_t direction);
 int8_t	gpio_write	(const char *pin, state_t state);
 bool 	gpio_read	(const char *pin);
 
-#endif
+#ifdef __cplusplus
+}
+#endif	// __cplusplus
+#endif	// GPIO_H

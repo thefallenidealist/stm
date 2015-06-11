@@ -4,6 +4,10 @@
 #ifndef RTC_EXT_H
 #define RTC_EXT_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 // local includes
 #include "i2c.h"
 #include "delay.h"
@@ -42,4 +46,7 @@ void rtc_set_day(uint8_t day);
 void rtc_ext_start(void);
 void rtc_ext_example(void);
 
-#endif
+#ifdef __cplusplus
+}
+#endif	// __cplusplus
+#endif	// RTC_EXT_H

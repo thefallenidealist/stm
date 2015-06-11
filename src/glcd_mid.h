@@ -1,6 +1,10 @@
 #ifndef GLCD_MID_H
 #define GLCD_MID_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "delay.h"
 #include "glcd_ili9341-cmd.h"
 #include "glcd_low.h"
@@ -38,4 +42,7 @@ typedef struct
 
 } glcd_t;
 
+#ifdef __cplusplus
+}
+#endif	// __cplusplus
 #endif

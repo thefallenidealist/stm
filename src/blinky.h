@@ -2,6 +2,10 @@
 #ifndef	BLINKY_H
 #define BLINKY_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
@@ -29,4 +33,7 @@ void blinky_blinky_init(uint8_t leds, bool arg);
 void blinky_blinky(uint8_t arg);
 void blinky(const char *arg);
 
-#endif
+#ifdef __cplusplus
+}
+#endif	// __cplusplus
+#endif	// BLINKY_H

@@ -3,6 +3,10 @@
 #ifndef LED_ARRAY_H
 #define LED_ARRAY_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 //#include "gpio.h"
 #include "stm32f10x_rcc.h"
 #include "stm32f10x_gpio.h"
@@ -24,5 +28,7 @@ void stopwatch_delay(uint32_t ticks);
 
 int led_main(void);
 
-
-#endif
+#ifdef __cplusplus
+}
+#endif	// __cplusplus
+#endif	// LED_ARRAY_H

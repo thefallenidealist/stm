@@ -1,6 +1,10 @@
 #ifndef NEWLIB_STUBS_H
 #define NEWLIB_STUBS_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdio.h>
 #include <errno.h>
 #include <sys/stat.h>
@@ -49,5 +53,7 @@ clock_t _times(struct tms *buf);
 int _unlink(char *name);
 int _wait(int *status);
 
-
-#endif
+#ifdef __cplusplus
+}
+#endif	// __cplusplus
+#endif	// NEWLIB_STUBS_H

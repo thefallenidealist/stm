@@ -2,6 +2,10 @@
 #ifndef COMPASS_H
 #define COMPASS_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdio.h>
 //#include <math.h>
 #ifdef STM32F10X_MD
@@ -56,5 +60,7 @@ void HMC5883L_I2C_BufferRead(u8 slaveAddr, u8* pBuffer, u8 ReadAddr, u16 NumByte
 void stupnjevi();
 void procitaj();
 
-
-#endif
+#ifdef __cplusplus
+}
+#endif	// __cplusplus
+#endif	// COMPASS_H

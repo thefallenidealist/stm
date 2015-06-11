@@ -74,14 +74,18 @@ bool nRF_read_payload(nRF_hw_t *nRF0)
 		{
 			// zapisivanje u globalni buffer
 			nRF_RX_buffer[i] = spi_rw(spi_port, CMD_NOP);
-			// DEBUG idemo oprintat
-			printf("%c ", nRF_RX_buffer[i]);
+			printf("%c", nRF_RX_buffer[i]);		// DEBUG idemo oprintat
 		}
 		cs(nRF0, 1);
 		printf("\n");
 
-		//nRF_clear_bits(nRF0); // ocisti RX_DR, TX_DS, MAX_RT
+		nRF_clear_bits(nRF0); // ocisti RX_DR, TX_DS, MAX_RT
 		nRF_clear_RX_data_ready(nRF0); // INFO mora se pocistit inace se razjebat
+
+		// TODO posalji ACK ako je DYNPD?
+		// W_ACK_PAYLOAD
+		char buffer[] = "PRX salje nazad";
+		nRF_set_ACK_payload(nRF0, pipe, buffer, 10);	// TODO probat sa drugim pajpom
 
 
 		return 1;
@@ -105,6 +109,9 @@ bool nRF_read_payload(nRF_hw_t *nRF0)
 void nRF_write(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 {
 	// kao pametniji write_payload gdje pokusava vise puta poslat i stalno provjerava jel poslano
+	uint8_t  ARC = nRF_get_retransmit_count(nRF0);
+	uint16_t ARD = nRF_get_retransmit_delay_in_us(nRF0);
+	uint32_t timeout_us = ARC*ARD*2;	// 15ms
 
 	nRF_stop_listening(nRF0);
 
@@ -113,22 +120,13 @@ void nRF_write(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 	delay_us(150);	// 130
 	nRF_write_payload(nRF0, buffer, length);
 
-	uint8_t  ARC = nRF_get_retransmit_count(nRF0);
-	uint16_t ARD = nRF_get_retransmit_delay_in_us(nRF0);
-	uint32_t timeout_us = ARC*ARD;
-	/*
-	printf("\t\t ARC: %d\n", nRF_get_retransmit_count(nRF0));
-	printf("\t\t ARD: %d us\n", nRF_get_retransmit_delay_in_us(nRF0));
-	printf("\t\t REG_SETUP_RETR: ");
-	print_reg(nRF0, REG_SETUP_RETR);
-	*/
 	
 	// cekaj na ACK ili da posalje maksimalni broj puta
 	uint32_t sent_at = get_uptime_us();
 	do
 	{
-		printf("%s(): Jos uvijek se salje paket, uptime_us: %ld\n", __func__, get_uptime_us());
-		//printf("%s(): get_uptime_us(): %ld - sent_at: %ld < timeout_us: %ld\n", __func__, get_uptime_us(), sent_at, timeout_us);
+		//printf("%s(): Jos uvijek se salje paket, uptime_us: %ld\n", __func__, get_uptime_us());
+		printf("S");
 	}
 	// treba radit sve dok nije poslao		ili		sve dok nije ispucao sanse		ili 	timeouto
 	while ( !((nRF_is_TX_data_sent(nRF0) == 1) || (nRF_is_TX_data_failed(nRF0) == 1) || (get_uptime_us() - sent_at > timeout_us)));
@@ -140,7 +138,8 @@ void nRF_write(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 	}
 	else if (nRF_is_TX_data_failed(nRF0) == 1)
 	{
-		printf("%s(): MAX_RT: %d Maksimalno se potrudio i svejedno fejlao\n", __func__, nRF_get_retransmit_count(nRF0));
+		//printf("%s(): MAX_RT: %d Maksimalno se potrudio i svejedno fejlao\n", __func__, nRF_get_retransmit_count(nRF0));
+		printf("M");
 		nRF_clear_bits(nRF0);
 	}
 	else if (nRF_is_RX_data_ready(nRF0) == 1)
@@ -150,8 +149,8 @@ void nRF_write(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 	}
 	else
 	{
-		printf("%s(): Timeout od %d us se dogodio pa je ovaj iziso, zadani timeout: %d\n", __func__,
-				get_uptime_us()-sent_at, timeout_us);
+		//printf("%s(): Timeout od %d us se dogodio pa je ovaj iziso, zadani timeout: %d\n", __func__, get_uptime_us()-sent_at, timeout_us);
+		printf("T");
 	}
 
 	// power_down

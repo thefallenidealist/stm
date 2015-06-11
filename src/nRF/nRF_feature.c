@@ -188,6 +188,14 @@ void nRF_enable_feature_ackPL(nRF_hw_t *nRF0)
 // SetAckPayload
 void nRF_set_ACK_payload(nRF_hw_t *nRF0, nRF_pipe_t pipe, char *buffer, uint8_t length)
 {
+	// moj pokusaj
+
+	nRF_set_mode(nRF0, TX);
+	delay_us(130);
+
+
+
+
 	bool TX_full = nRF_is_TX_full(nRF0);
 
 	if (TX_full == 1)
@@ -197,11 +205,8 @@ void nRF_set_ACK_payload(nRF_hw_t *nRF0, nRF_pipe_t pipe, char *buffer, uint8_t 
 	else
 	{
 		uint8_t spi_port = nRF0->spi_port;
-		//pipe = pipe & 0x07;		// XXX koji kurac je ovo?
-
 
 		cs(nRF0, 0);
-		//spi_rw(spi_port, pipe);
 		spi_rw(spi_port, CMD_W_ACK_PAYLOAD);
 		while (length--)
 		{
@@ -214,6 +219,10 @@ void nRF_set_ACK_payload(nRF_hw_t *nRF0, nRF_pipe_t pipe, char *buffer, uint8_t 
 		delay_us(11);	// 10+ us
 		ce(nRF0, 0);
 	}
+
+	nRF_set_mode(nRF0, RX);
+	delay_us(130);
+
 	printf("%s() kraj\n", __func__);
 }
 

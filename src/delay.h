@@ -1,6 +1,10 @@
 #ifndef DELAY_H
 #define DELAY_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 // *************************************** description ********************************************
 /*
    140907
@@ -53,4 +57,7 @@ const char *get_uptime(void);
 
 void SysTick_Handler(void);     // javni samo zbog debuga/igranja
 
-#endif
+#ifdef __cplusplus
+}
+#endif	// __cplusplus
+#endif	// DELAY_H

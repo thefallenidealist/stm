@@ -2,6 +2,10 @@
 #ifndef ADC1_H		// pokusat adc1_h
 #define ADC1_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #ifdef STM32F10X_MD
 	#include "stm32f10x_rcc.h"
 	#include "stm32f10x_gpio.h"
@@ -18,4 +22,7 @@ void ADC_example(void);
 void ADC_init(void);
 uint16_t ADC_read(uint8_t channel);
 
-#endif
+#ifdef __cplusplus
+}
+#endif	// __cplusplus
+#endif	// ADC1_H

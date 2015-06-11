@@ -1,6 +1,10 @@
 #ifndef EEPROM_H
 #define EEPROM_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 // created 140918
 // *************************************** description ********************************************
 // Atmel 24C256 I2C EEPROM driver
@@ -38,4 +42,7 @@ uint8_t eeprom_write(uint16_t addr, uint8_t data);
 uint8_t eeprom_read(uint16_t addr);
 void eeprom_example(void);
 
-#endif
+#ifdef __cplusplus
+}
+#endif	// __cplusplus
+#endif	// EEPROM_H
