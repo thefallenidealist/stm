@@ -55,9 +55,9 @@ bool nRF_read_payload(nRF_hw_t *nRF0)
 {
 	// novo 150602
 
-	bool data_ready = nRF_is_RX_data_ready(nRF0);	// provjeri RX_DR
+	//bool data_ready = nRF_is_RX_data_ready(nRF0);	// provjeri RX_DR
 
-	if (data_ready == 1)	// dobili smo nesta
+	//if (data_ready == 1)	// dobili smo nesta
 	{
 		uint8_t spi_port 	 = nRF0->spi_port;
 		uint8_t pipe		 = nRF_get_payload_pipe(nRF0);			// provjeri u kojem pajpu je teret
@@ -68,23 +68,31 @@ bool nRF_read_payload(nRF_hw_t *nRF0)
 		cs(nRF0, 0);
 		spi_rw(spi_port, CMD_R_RX_PAYLOAD);
 
+		printf("%s(): pipe: %d, size: %d\n\t\t", __func__, pipe, payload_size);
+
 		for (uint8_t i=0; i<payload_size; i++)
 		{
 			// zapisivanje u globalni buffer
 			nRF_RX_buffer[i] = spi_rw(spi_port, CMD_NOP);
+			// DEBUG idemo oprintat
+			printf("%c ", nRF_RX_buffer[i]);
 		}
 		cs(nRF0, 1);
+		printf("\n");
 
 		//nRF_clear_bits(nRF0); // ocisti RX_DR, TX_DS, MAX_RT
 		nRF_clear_RX_data_ready(nRF0); // INFO mora se pocistit inace se razjebat
 
+
 		return 1;
 	}
+	/*
 	else
 	{
 		//printf("Nothing received\n");
 		return 0;
 	}
+	*/
 }
 
 

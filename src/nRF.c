@@ -97,7 +97,7 @@ int8_t nRF_main(void)
 {
 	// moj pokusaj
 	printf("%s() kaze zdravo\n", __func__);
-	//uint8_t payload_size = NRF_PAYLOAD_SIZE;
+	uint8_t payload_size = NRF_PAYLOAD_SIZE;
 
 	// hw init
 	rf_modul.spi_port 	= NRF_SPI;
@@ -179,21 +179,29 @@ int8_t nRF_main(void)
 	nRF_set_retransmit_count(&rf_modul, 15);
 
 
+	// XXX 150611 pokusaj iako ko ne bi trebalo
+	nRF_set_payload_size(&rf_modul, P0, payload_size);
+	nRF_set_payload_size(&rf_modul, P1, payload_size);
+
 	uint8_t mode = nRF_get_mode(&rf_modul);
 	if (mode == TX)
 	{
 		nRF_set_TX_address	(&rf_modul, addr_tx);
-		nRF_set_RX_address	(&rf_modul, P1, addr_rx);
+		//nRF_set_RX_address	(&rf_modul, P1, addr_rx);
+		nRF_set_RX_address	(&rf_modul, P0, addr_rx);
 	}
 	else if (mode == RX)
 	{
 		nRF_set_TX_address	(&rf_modul, addr_rx);	// salje na adresi na kojoj TX slusa
-		nRF_set_RX_address	(&rf_modul, P1, addr_tx);	// slusa na adresi na kojoj TX salje
+		//nRF_set_RX_address	(&rf_modul, P1, addr_tx);	// slusa na adresi na kojoj TX salje
+		nRF_set_RX_address	(&rf_modul, P0, addr_tx);	// slusa na adresi na kojoj TX salje
 	}
 	nRF_power_on(&rf_modul);
 
 	nRF_debug(&rf_modul);
+#ifdef NRF_TX
 	delay_s(3);
+#endif
 	return 0;	// bezveze
 }
 

@@ -169,11 +169,26 @@ void main(void)
 		{
 			printf("nRF je dobio nesto\n");
 
-			uint8_t packet_size = nRF_get_dynamic_payload_length(grf, P0);
-			printf("velicina paketa: %d\n", packet_size);
+			/*
+			//uint8_t packet_size = nRF_get_dynamic_payload_length(grf, P0);
+			//printf("velicina paketa: %d\n", packet_size);
+			uint8_t pipe		 = nRF_get_payload_pipe(grf);			// provjeri u kojem pajpu je teret
+			uint8_t payload_size = nRF_get_payload_size(grf, pipe);	// provjeri koliko je velik teret
+
+			printf("pipe: %d \t, size: %d\n", pipe, payload_size);
+			*/
+
+			nRF_read_payload(grf);
+
+			/*
+			printf("Idemo isprintat 2-3 bajta: ");
+			for (uint8_t i=0; i<4; i++)
+			{
+			}
+			*/
 
 			printf("Flusamo RX\n");
-			//nRF_flush_RX(grf);
+			nRF_flush_RX(grf);
 			nRF_clear_RX_data_ready(grf);
 		}
 
