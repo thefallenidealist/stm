@@ -30,14 +30,3 @@ nRF_payload_pipe_t nRF_get_payload_pipe(nRF_hw_t *nRF0)					// reg 0x07, b321
 	return pipe;
 }
 
-/*************************************************************************************************
-				nRF_get_enabled_pipe()
-*************************************************************************************************/
-nRF_pipe_t nRF_get_enabled_pipe(nRF_hw_t *nRF0)
-{
-	uint8_t pipes = read_reg(nRF0, REG_EN_RXADDR);
-
-	//printf("%s(): pipes raw: %d\n", __func__, pipes);
-
-	return pipes;
-}

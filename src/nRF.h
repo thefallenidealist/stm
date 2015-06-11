@@ -175,6 +175,7 @@ nRF_datarate_t	nRF_get_datarate	(nRF_hw_t *nRF0);
 
 bool 	nRF_is_RX_data_ready	(nRF_hw_t *nRF0);
 bool 	nRF_is_TX_data_sent		(nRF_hw_t *nRF0);
+bool 	nRF_is_TX_data_failed	(nRF_hw_t *nRF0);
 bool 	nRF_is_TX_full			(nRF_hw_t *nRF0);	
 bool	nRF_is_TX_full2			(nRF_hw_t *nRF0);
 bool 	nRF_is_TX_empty			(nRF_hw_t *nRF0);
@@ -230,6 +231,7 @@ void		nRF_enable_enhanced_shockburst	(nRF_hw_t *nRF0);
 uint8_t 	nRF_get_payload_width			(nRF_hw_t *nRF0);
 void		nRF_write_ack					(nRF_hw_t *nRF0, nRF_pipe_t pipe);
 
+void nRF_enable_FEATURE				(nRF_hw_t *nRF0);
 void nRF_enable_dynamic_payload		(nRF_hw_t *nRF0);
 void nRF_disable_dynamic_payload	(nRF_hw_t *nRF0);
 void nRF_enable_dynamic_payload_ack	(nRF_hw_t *nRF0);
@@ -244,6 +246,11 @@ void nRF_disable_dynamic_payload_noack(nRF_hw_t *nRF0);
 void nRF_enable_feature_dynPL(nRF_hw_t *nRF0, nRF_pipe_t pipe);
 void nRF_enable_feature_ackPL(nRF_hw_t *nRF0);
 void nRF_set_ACK_payload(nRF_hw_t *nRF0, nRF_pipe_t pipe, char *data, uint8_t length);
+
+void nRF_write(nRF_hw_t *nRF0, char *buffer, uint8_t length);
+void nRF_print_enabled_pipe(nRF_hw_t *nRF0);
+
+
 
 
 

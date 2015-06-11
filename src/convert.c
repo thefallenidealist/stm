@@ -37,18 +37,20 @@ void dec2bin8(uint8_t arg)
 }
 
 
-uint8_t bin[8];
+//uint8_t bin[8];
 /*************************************************************************************************
 			dec2bin8_str
 *************************************************************************************************/
 uint8_t *dec2bin8_str(uint8_t arg)
 {
+	static uint8_t bin[9];
 	uint8_t i=8;
 	while(i-- > 0)
 	{
 		// treba zapisat u naopakom redoslijedu, zato 7-i
 		bin[7-i] = 48 + ((arg >> i) & 1);
 	}
+	bin[8] = '\0';	// dodaj NULL jer je string
 
-	return &bin[0];
+	return bin;
 }

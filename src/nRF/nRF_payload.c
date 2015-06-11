@@ -86,3 +86,60 @@ bool nRF_read_payload(nRF_hw_t *nRF0)
 		return 0;
 	}
 }
+
+
+
+
+
+
+void nRF_write(nRF_hw_t *nRF0, char *buffer, uint8_t length)
+{
+	nRF_stop_listening(nRF0);
+
+	reg_tmp[PWR_UP] = 1;
+	reg_tmp[PRIM_RX] = 0;
+	delay_us(150);	// 130
+	nRF_write_payload(nRF0, buffer, length);
+
+	//const uint32_t timeout_us = 15*500+100;	// ARC*ARD
+	uint32_t timeout_us = 15000;
+	printf("\t\t ARC: %d\n", nRF_get_retransmit_count(nRF0));
+	printf("\t\t ARD: %d\n", nRF_get_retransmit_delay(nRF0));
+	printf("\t\t REG_SETUP_RETR: ");
+	print_reg(nRF0, REG_SETUP_RETR);
+	
+	// cekaj na ACK ili da posalje maksimalni broj puta
+	uint32_t sent_at = get_uptime_us();
+	do
+	{
+		printf("%s(): Jos uvijek se salje paket, uptime_us: %ld\n", __func__, get_uptime_us());
+		printf("%s(): REG_STATUS: \n", __func__);
+		print_reg(nRF0, REG_STATUS);
+		//printf("%s(): get_uptime_us(): %ld - sent_at: %ld < timeout_us: %ld\n", __func__, get_uptime_us(), sent_at, timeout_us);
+	}
+	// sve dok nije poslao ili fejlao
+	while (!( (nRF_is_TX_data_sent(nRF0) == 0) || ((nRF_is_TX_data_failed(nRF0)) == 1) ||
+				(get_uptime_us() - sent_at > timeout_us )));
+	// (22:03:01) Karlo: while (!(send == 1 || failed == 1 || uptime - sent_at > timeout )
+
+	// ili je poslao ili fejlao
+	if (nRF_is_TX_data_sent(nRF0) == 1)
+	{
+		printf("%s(): Paket je poslan\n", __func__);
+	}
+	else if (nRF_is_TX_data_failed(nRF0) == 1)
+	{
+		printf("%s(): Maksimalno se potrudio i svejedno fejlao\n", __func__);
+	}
+	else if (nRF_is_RX_data_ready(nRF0) == 1)
+	{
+		uint8_t length = nRF_get_dynamic_payload_length(nRF0, P0);		// XXX hardcoded pipe0
+		printf("%s(): Izgleda da smo dobili ACK, duzina: %d\n", __func__, length);
+	}
+	else
+	{
+		printf("%s(): Timeout od %d us se dogodio pa je ovaj iziso\n", __func__, get_uptime_us()-sent_at);
+	}
+
+	// power_down
+}

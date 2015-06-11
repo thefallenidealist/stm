@@ -1,14 +1,34 @@
+static bool g_reg_feature_enabled = 0;
+/*************************************************************************************************
+				nRF_enable_dynamic_payload()
+*************************************************************************************************/
+void nRF_enable_FEATURE(nRF_hw_t *nRF0)
+{
+	// only in power down or standby mode (when CE is 0);
+	if (g_reg_feature_enabled == 0)
+	{
+		uint8_t spi_port = nRF0->spi_port;
+
+		cs(nRF0, 0);
+		spi_rw(spi_port, CMD_ACTIVATE);	// potrebno za aktivirat spesl ficrse
+		spi_rw(spi_port, 0x73);
+		cs(nRF0, 1);
+
+		printf("\t\tREG_FEATURE enabled\n");
+	}
+	else
+	{
+		printf("%s(): REG_FEATURE is already activated, variable: %d\n", __func__,
+				g_reg_feature_enabled);
+	}
+}
+
 /*************************************************************************************************
 				nRF_enable_dynamic_payload()
 *************************************************************************************************/
 void nRF_enable_dynamic_payload(nRF_hw_t *nRF0)
 {
-	uint8_t spi_port = nRF0->spi_port;
-
-	cs(nRF0, 0);
-	spi_rw(spi_port, CMD_ACTIVATE);	// potrebno za aktivirat spesl ficrse
-	spi_rw(spi_port, 0x73);
-	cs(nRF0, 1);
+	nRF_enable_FEATURE(nRF0);
 
 	// INFO override the pipes "RX_PW" setting
 	reg_tmp[EN_DPL] = 1;
@@ -196,3 +216,5 @@ void nRF_set_ACK_payload(nRF_hw_t *nRF0, nRF_pipe_t pipe, char *buffer, uint8_t 
 	}
 	printf("%s() kraj\n", __func__);
 }
+
+

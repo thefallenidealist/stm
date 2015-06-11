@@ -3,10 +3,6 @@
 *************************************************************************************************/
 int8_t nRF_enable_pipe(nRF_hw_t *nRF0, nRF_pipe_t pipe)					// reg 0x02
 {
-
-	//printf("%s(): argument: %d\n", __func__, pipe);
-
-	// samo jednu po jednu XXX
 	if (pipe > 5)
 	{
 		ERROR("Wrong pipe\n");
@@ -14,7 +10,36 @@ int8_t nRF_enable_pipe(nRF_hw_t *nRF0, nRF_pipe_t pipe)					// reg 0x02
 	}
 	else
 	{
-		write_reg_full(nRF0, REG_EN_RXADDR, (1 << pipe));	// kad se enablea samo jedna
+		reg_tmp[pipe] = 1;	// ERX_Px = 1
+		write_reg(nRF0, REG_EN_RXADDR);
 		return 0;
 	}
+}
+
+/*************************************************************************************************
+				nRF_get_enabled_pipe()
+*************************************************************************************************/
+nRF_pipe_t nRF_get_enabled_pipe(nRF_hw_t *nRF0)
+{
+	uint8_t pipes = read_reg(nRF0, REG_EN_RXADDR);
+	return pipes;
+}
+
+/*************************************************************************************************
+				nRF_print_enabled_pipe()
+*************************************************************************************************/
+void nRF_print_enabled_pipe(nRF_hw_t *nRF0)
+{
+	uint8_t pipes = nRF_get_enabled_pipe(nRF0);
+
+	printf("%s(): Enabled pipes: ", __func__);
+
+	for (uint8_t i=0; i<8; i++)
+	{
+		if ( ((pipes >> i) & 1) == 1)
+		{
+			printf("P%d ", i);
+		}
+	}
+	printf("\n");
 }

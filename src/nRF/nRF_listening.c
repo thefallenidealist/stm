@@ -7,6 +7,8 @@ void nRF_start_listening(nRF_hw_t *nRF0)
 	nRF_flush_TX(nRF0);
 	nRF_flush_RX(nRF0);
 
+	//nRF_set_mode(nRF0, RX);			// XXX 160510 igranje
+
 	// TODO postavit RX address?
 
 	ce(nRF0, 1);	// Activate PRX mode by setting the CE pin high. page 37

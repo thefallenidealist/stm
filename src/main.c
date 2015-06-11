@@ -182,25 +182,27 @@ void main(void)
 
 		//printf("nRF data ready: %d\n", nRF_is_RX_data_ready(grf));
 #endif	// NRF_RX
+
+
+
 #ifdef NRF_TX
 		char tx_buffer[NRF_FIFO_SIZE] = {};
-		//RTC_data_t *time = rtc_get_time();
 
-		snprintf(tx_buffer, NRF_FIFO_SIZE, "RTC:%02d:%02d:%02d:abcdef", time->hours, time->minutes, time->seconds);
-		//nRF_write_payload_no_ack(grf, tx_buffer, nRF_get_payload_size(grf, P0));
-		//nRF_write_payload(grf, tx_buffer, nRF_get_payload_size(grf, P0));
-		//printf("nRF poslao: %s\n", tx_buffer);
 #if defined BARO_H && defined STM32F4
 		uint16_t temperature = bmp180_get_temperature();
 		snprintf(tx_buffer, NRF_FIFO_SIZE, "baro: %d.%d°C", temperature/10, temperature%10);
 
-		//float temperature = bmp180_get_temperature_float();
-		//snprintf(tx_buffer, NRF_FIFO_SIZE, "baro: %.1f°C", temperature);
+		static uint8_t length = 4;
+		if (length > 32)
+		{
+			length = 4;
+		}
 
-		//nRF_write_payload_no_ack(grf, tx_buffer, nRF_get_payload_size(grf, P0));
-		nRF_write_payload(grf, tx_buffer, nRF_get_payload_size(grf, P0));
-		printf("nRF poslao: %s\n", tx_buffer);
-		delay_ms(50);
+		//nRF_write_payload(grf, tx_buffer, nRF_get_payload_size(grf, P0));
+		nRF_write(grf, tx_buffer, length++);
+		printf("nRF poslao: %s, uptime_us: %ld\n", tx_buffer, get_uptime_us());
+		//delay_ms(100);
+		//delay_ms(50);
 #endif	// BARO_H STM32F4
 #endif	// NRF_TX
 	}

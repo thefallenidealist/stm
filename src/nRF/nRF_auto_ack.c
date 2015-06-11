@@ -3,6 +3,7 @@
 *************************************************************************************************/
 void nRF_enable_auto_ack(nRF_hw_t *nRF0, nRF_pipe_t pipe)
 {
+	// defaultno su svi pajpovi enableani
 	reg_tmp[pipe] = 1;
 	write_reg(nRF0, REG_EN_AA);
 }
