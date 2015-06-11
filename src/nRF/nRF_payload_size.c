@@ -26,16 +26,9 @@ int8_t nRF_set_payload_size(nRF_hw_t *nRF0, nRF_pipe_t pipe, uint8_t payload_siz
 		spi_rw(spi_port, payload_size);
 		cs(nRF0, 1);
 
-		//write_reg_full(nRF0, REG_RX_PW_P0+pipe, payload_size);
-
-		// zapisi u objekt
-		// INFO i nije potrebno kad _get_ procita direktno sa divajsa
-		//memmove(&nRF0->rx_payload_size[pipe], &payload_size, sizeof(nRF0->rx_payload_size));
-
 		return 0;
 	}
 }
-// INFO provjereno
 
 /*************************************************************************************************
 				nRF_get_payload_size()
@@ -54,7 +47,6 @@ int8_t nRF_get_payload_size(nRF_hw_t *nRF0, nRF_pipe_t pipe)			// reg 0x{11,12,1
 		return payload_size;
 	}
 }
-// INFO provjereno
 
 
 
@@ -63,16 +55,10 @@ int8_t nRF_get_payload_size(nRF_hw_t *nRF0, nRF_pipe_t pipe)			// reg 0x{11,12,1
 /*************************************************************************************************
 				nRF_get_payload_width()
 *************************************************************************************************/
+// INFO koristit nRF_get_dynamic_payload_length()
+	/*
 uint8_t nRF_get_payload_width(nRF_hw_t *nRF0)
 {
-	// TODO za sta bi ovo moglo posluzit?
-	/*
-		CMD	 R_RX_PL_WIDa
-	Read RX payload width for the top 
-	R_RX_PAYLOAD in the RX FIFO.
-	Note: Flush RX FIFO if the read value is larger 
-	than 32 bytes.
-	*/
 	uint8_t spi_port = nRF0->spi_port;
 
 	cs(nRF0, 0);
@@ -88,4 +74,6 @@ uint8_t nRF_get_payload_width(nRF_hw_t *nRF0)
 	{
 		return width;
 	}
+	
 }
+	*/

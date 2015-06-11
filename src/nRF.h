@@ -160,7 +160,7 @@ void	nRF_set_address_width		(nRF_hw_t *nRF0, uint8_t width);
 uint8_t nRF_get_address_width		(nRF_hw_t *nRF0);
 
 int8_t	nRF_set_retransmit_delay		(nRF_hw_t *nRF0, nRF_delay_t delay);
-uint8_t nRF_get_retransmit_delay		(nRF_hw_t *nRF0);
+uint16_t nRF_get_retransmit_delay_in_us	(nRF_hw_t *nRF0);
 void 	nRF_set_retransmit_count		(nRF_hw_t *nRF0, uint8_t count);
 uint8_t nRF_get_retransmit_count		(nRF_hw_t *nRF0);
 uint8_t nRF_get_lost_packets			(nRF_hw_t *nRF0);

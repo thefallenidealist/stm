@@ -1,11 +1,11 @@
+// *************************************** description ********************************************
+// BMP180 barometer/therometer driver
 // INFO 5V divajs (ili amputirat jos koji dio)
+// created 140916
+// *************************************** sys includes *******************************************
 #ifndef BARO_H
 #define BARO_H
 
-// created 140916
-// *************************************** description ********************************************
-// BMP180 barometer/therometer driver
-// *************************************** sys includes *******************************************
 #include <stdio.h>
 #include <math.h>
 #ifdef STM32F10X_MD

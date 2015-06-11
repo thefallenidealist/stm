@@ -131,9 +131,9 @@ uint8_t nRF_get_dynamic_payload_length(nRF_hw_t *nRF0, nRF_pipe_t pipe)
 	uint8_t length = 0xFF;
 
 	ce(nRF0, 0);
-	//length = spi_rw(spi_port, CMD_R_RX_PL_WID);
-	spi_rw(spi_port, CMD_R_RX_PL_WID);
-	length = spi_rw(spi_port, CMD_NOP);		// pokusaj
+	length = spi_rw(spi_port, CMD_R_RX_PL_WID);
+	//spi_rw(spi_port, CMD_R_RX_PL_WID);
+	//length = spi_rw(spi_port, CMD_NOP);		// pokusaj
 	ce(nRF0, 1);
 
 	/*

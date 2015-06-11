@@ -169,7 +169,7 @@ static void print_address(nRF_hw_t *nRF0, uint8_t mode, nRF_pipe_t pipe)		// mod
 	address = address_copy;		// ponovo pokazi na pocetak adrese
 	for (uint8_t i=0; i<length; i++)
 	{
-		if ( isprint(*address) != 0 )
+		if ( (*address >= 32) && (*address < 127))	// is printable
 		{
 			printf("%c", *address++);		// print char
 		}

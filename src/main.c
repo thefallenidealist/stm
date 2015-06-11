@@ -33,7 +33,7 @@ void main(void);
 //#include "wlan.h"
 //#include "rtc_ext.h"
 //#include "rom.h"
-//#include "nRF.h"
+#include "nRF.h"
 //#include "flash.h"
 //#include "pwm.h"
 //#include "src/exti.h"
@@ -102,7 +102,8 @@ void main(void)
 #endif
 
 #if defined BARO_H && defined STM32F4
-	bmp180_example();
+	bmp180_init();
+	//bmp180_example();
 #endif
 
 #ifdef OLED_H
@@ -134,11 +135,11 @@ void main(void)
 #endif
 
 #if defined BARO_H && defined STM32F4
-		bmp180_print();
+		//bmp180_print();
 #endif
 
 #ifdef RTC_H
-		RTC_data_t *time = rtc_get_time();
+		//RTC_data_t *time = rtc_get_time();
 		//printf("RTC: %d:%d:%d\n", time->hours, time->minutes, time->seconds);
 #endif
 
@@ -186,8 +187,8 @@ void main(void)
 		char tx_buffer[NRF_FIFO_SIZE] = {};
 
 #if defined BARO_H && defined STM32F4
-		uint16_t temperature = bmp180_get_temperature();
-		snprintf(tx_buffer, NRF_FIFO_SIZE, "baro: %d.%d°C", temperature/10, temperature%10);
+		float temperature = bmp180_get_temperature();
+		snprintf(tx_buffer, NRF_FIFO_SIZE, "baro: %.1f °C", temperature);
 
 		static uint8_t length = 4;
 		if (length > 32)
@@ -197,7 +198,7 @@ void main(void)
 
 		//nRF_write_payload(grf, tx_buffer, nRF_get_payload_size(grf, P0));
 		nRF_write(grf, tx_buffer, length++);
-		printf("nRF poslao: %s, uptime_us: %ld\n", tx_buffer, get_uptime_us());
+		printf("main(): nRF poslao: \"%s\", uptime_us: %ld\n", tx_buffer, get_uptime_us());
 		//delay_ms(100);
 		//delay_ms(50);
 #endif	// BARO_H STM32F4

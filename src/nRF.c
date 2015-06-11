@@ -97,7 +97,7 @@ int8_t nRF_main(void)
 {
 	// moj pokusaj
 	printf("%s() kaze zdravo\n", __func__);
-	uint8_t payload_size = NRF_PAYLOAD_SIZE;
+	//uint8_t payload_size = NRF_PAYLOAD_SIZE;
 
 	// hw init
 	rf_modul.spi_port 	= NRF_SPI;
@@ -213,7 +213,7 @@ void nRF_debug(nRF_hw_t *nRF0)
 	print_reg(nRF0, 0);
 	print_reg(nRF0, 3);
 	printf("nRF get address width: %d\n", nRF_get_address_width(nRF0));
-	printf("nRF get retransmit delay: %d\n", nRF_get_retransmit_delay(nRF0));
+	printf("nRF get retransmit delay: %d us\n", nRF_get_retransmit_delay_in_us(nRF0));
 	printf("nRF get retransmit count: %d\n", nRF_get_retransmit_count(nRF0));
 	printf("nRF get channel: %d\n", nRF_get_channel(nRF0));
 	printf("nRF get datarate: %d\n", nRF_get_datarate(nRF0));

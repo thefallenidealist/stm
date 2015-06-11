@@ -33,12 +33,50 @@ int8_t nRF_set_retransmit_delay(nRF_hw_t *nRF0, nRF_delay_t delay)			// reg 0x04
 }
 
 /*************************************************************************************************
-				nRF_get_retransmit_delay()
+				nRF_get_retransmit_delay_in_us()
 *************************************************************************************************/
-uint8_t nRF_get_retransmit_delay(nRF_hw_t *nRF0)
+uint16_t nRF_get_retransmit_delay_in_us(nRF_hw_t *nRF0)
 {
+	// moze posluzit za racunaje softerskog timeouta kod slanja
 	uint8_t status = read_reg(nRF0, REG_SETUP_RETR);
 	uint8_t delay = (status >> 4) & 0b1111;
-	return delay;
-	// TODO return nRF_delay_t
+
+	switch (delay)
+	{
+		case DELAY_250us:
+			return 250;
+		case DELAY_500us:
+			return 500;
+		case DELAY_750us:
+			return 750;
+		case DELAY_1000us:
+			return 1000;
+		case DELAY_1250us:
+			return 1250;
+		case DELAY_1500us:
+			return 1500;
+		case DELAY_1750us:
+			return 1750;
+		case DELAY_2000us:
+			return 2000;
+		case DELAY_2250us:
+			return 2250;
+		case DELAY_2500us:
+			return 2500;
+		case DELAY_2750us:
+			return 2750;
+		case DELAY_3000us:
+			return 3000;
+		case DELAY_3250us:
+			return 3250;
+		case DELAY_3500us:
+			return 3500;
+		case DELAY_3750us:
+			return 3750;
+		case DELAY_4000us:
+			return 4000;
+		default:
+			printf("%s() Zajeb, wrong ARD delay: %d\n", __func__, delay);
+			return 0;
+	}
 }
