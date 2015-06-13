@@ -125,24 +125,14 @@ int8_t nRF_main(void)
 		//return -1;
 	}
 
+	/*
 #ifdef NRF_TX
 	nRF_set_mode(&rf_modul, TX);
 #endif
 #ifdef NRF_RX
 	nRF_set_mode(&rf_modul, RX);
 #endif
-	if (nRF_get_mode(&rf_modul) == RX)
-	{
-		printf("Ovo je RX modul.\n");
-	}
-	else if (nRF_get_mode(&rf_modul) == TX)
-	{
-		printf("Ovo je TX modul.\n");
-	}
-	else
-	{
-		printf("Krivi mod: %d\n", rf_modul.mode);
-	}
+	*/
 
 	nRF_set_output_power(&rf_modul, power_0dBm);
 	nRF_set_datarate	(&rf_modul, datarate_2Mbps);
@@ -152,41 +142,28 @@ int8_t nRF_main(void)
 	nRF_set_address_width(&rf_modul, NRF_ADDRESS_WIDTH);
 
 	uint8_t mode = nRF_get_mode(&rf_modul);
-	if (mode == TX)
-	{
+	//if (mode == TX)
+	//{
+#ifdef NRF_TX
+		printf("Ovo je TX modul.\n");
+
 		nRF_set_TX_address	(&rf_modul, addr);
 		nRF_set_RX_address	(&rf_modul, P0, addr);
 		// TX modul treba i RX adresu zbog ACK
-	}
-	else if (mode == RX)
-	{
-		nRF_set_RX_address	(&rf_modul, P0, addr);
-	}
+	//}
+#endif
+	//else if (mode == RX)
+	//{
+#ifdef NRF_RX
+		printf("Ovo je RX modul.\n");
 
-	/*
-	if (mode == TX)
-	{
-		nRF_set_TX_address	(&rf_modul, addr_tx);
-		nRF_set_RX_address	(&rf_modul, P0, addr_rx);
-	}
-	else if (mode == RX)
-	{
-		//nRF_set_TX_address	(&rf_modul, addr_rx);	// salje na adresi na kojoj TX slusa
-		//nRF_set_RX_address	(&rf_modul, P0, addr_tx);	// slusa na adresi na kojoj TX salje
-		// static
-		nRF_set_RX_address	(&rf_modul, P0, addr_rx);
-	}
-	*/
+		nRF_set_TX_address	(&rf_modul, addr);
+		nRF_set_RX_address	(&rf_modul, P0, addr);
+#endif
+	//}
 
 	nRF_enable_CRC(&rf_modul);			// CRC is forced if AutoACK is enabled
 	nRF_set_CRC_length(&rf_modul, CRC_LENGTH_1BTYE);
-
-	/*
-	nRF_enable_auto_ack(&rf_modul, P0);	// iako su po defaultu omogucene za sve pajpove
-
-	nRF_set_payload_size(&rf_modul, 0, payload_size);
-	nRF_enable_pipe(&rf_modul, 0);
-	*/
 
 #ifdef NRF_TX
 	nRF_enable_auto_ack(&rf_modul, P0);	// iako su po defaultu omogucene za sve pajpove
@@ -194,20 +171,18 @@ int8_t nRF_main(void)
 	nRF_set_retransmit_delay(&rf_modul, DELAY_500us);	// ARD=500µs is long enough for any ACK payload length in 1 or 2Mbps mode.
 	nRF_set_retransmit_count(&rf_modul, 15);			// 1 to 15 retries
 
+	nRF_set_mode(&rf_modul, TX);
 	nRF_power_on(&rf_modul);
-	delay_ms(150);	// bezveze
-	ce(&rf_modul, 0);	// nije RX, ne slusa
-	// ce je po defaultu vec nula, al ajde
 #endif
 
 #ifdef NRF_RX
+	nRF_set_mode(&rf_modul, RX);
 	nRF_power_on(&rf_modul);
-	delay_ms(150);	// bezveze
-	nRF_start_listening(&rf_modul);
 #endif
 
 	nRF_debug(&rf_modul);
 	delay_ms(1500);
+
 	return 0;	// bezveze
 }
 

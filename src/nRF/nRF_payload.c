@@ -68,8 +68,6 @@ bool nRF_read_payload(nRF_hw_t *nRF0)
 		cs(nRF0, 0);
 		spi_rw(spi_port, CMD_R_RX_PAYLOAD);
 
-		printf("%s(): pipe: %d, size: %d\n\t\t", __func__, pipe, payload_size);
-
 		for (uint8_t i=0; i<payload_size; i++)
 		{
 			// zapisivanje u globalni buffer

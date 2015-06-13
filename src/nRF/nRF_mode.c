@@ -36,6 +36,7 @@ void nRF_set_mode(nRF_hw_t *nRF0, nRF_mode_t mode)
 		if (mode == RX)
 		{
 			delay_ms(5);	// worst case Tpd2stby
+			//nRF_flush_RX(nRF0);
 			ce(nRF0, 1);
 			reg_tmp[PRIM_RX] = 1;
 			write_reg(nRF0, REG_CONFIG);
