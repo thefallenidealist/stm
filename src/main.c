@@ -180,6 +180,7 @@ void main(void)
 
 
 		// pametnija verzija koja provjeri jel dobila ACK nazad
+		//nRF_write(grf, tx_buffer, strlen(tx_buffer));
 		nRF_write(grf, tx_buffer, strlen(tx_buffer));
 
 		printf("main(): nRF poslao: \"%s\", uptime_us: %u\n", tx_buffer, get_uptime_us());

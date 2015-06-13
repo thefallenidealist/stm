@@ -27,7 +27,7 @@ extern "C"
 // postavke za nRF
 #define NRF_ADDRESS_WIDTH	5
 #define NRF_FIFO_SIZE		32
-#define NRF_PAYLOAD_SIZE	12
+#define NRF_PAYLOAD_SIZE	32
 
 typedef enum
 {
@@ -200,8 +200,8 @@ int8_t		nRF_set_TX_address	(nRF_hw_t *nRF0, uint8_t address[]);
 void nRF_print_RX_address		(nRF_hw_t *nRF0, nRF_pipe_t pipe);
 void nRF_print_TX_address		(nRF_hw_t *nRF0);
 
-int8_t		nRF_set_payload_size	(nRF_hw_t *nRF0, nRF_pipe_t pipe, uint8_t payload_size);
-int8_t		nRF_get_payload_size	(nRF_hw_t *nRF0, nRF_pipe_t pipe);
+uint8_t		nRF_set_payload_size	(nRF_hw_t *nRF0, nRF_pipe_t pipe, uint8_t payload_size);
+uint8_t		nRF_get_payload_size	(nRF_hw_t *nRF0, nRF_pipe_t pipe);
 
 void 		nRF_power_on			(nRF_hw_t *nRF0);
 void 		nRF_power_off			(nRF_hw_t *nRF0);

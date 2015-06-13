@@ -8,16 +8,30 @@ void nRF_write_payload(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 	// puta i nije uspio... posalje novi bez explicitnog flushanja iz main()
 	// nRF_flush_TX(nRF0);
 
+	uint8_t spi_port = nRF0->spi_port;
+	uint8_t payload_length = nRF_get_payload_size(nRF0, P0);	// TODO not hardcoded pipe
+	uint8_t empty_payload = 0;
+
+	// TODO preimenovat varijable i printfova da imaju smisla, ne znam ni na hrvatskom rec da ima smisla
 
 	if (length > 32)
 	{
+		// pipe maksimalno moze imat 32 znaka
 		printf("%s(): Zajeb, length (%d) larger than 32, exiting\n", __func__, length);
 		return;
 	}
+	else if (length > payload_length)
+	{
+		//printf("%s(): Warning: pipe payload width is %d, argument length is %d, trimming\n", __func__, payload_length, length);
+		length = payload_length;	// ne moze poslat vise bajtova nego sto je payload length
+	}
+	else if (length < payload_length)
+	{
+		empty_payload = payload_length - length;
+		//printf("%s(): Info: payload (%d) is smaller than pipe width (%d)\n", __func__, length, payload_length);
+	}
+	//printf("\t\t\t\t%s(): arg_length: %d, pipe_length: %d, empty_payload: %d\n", __func__, length, payload_length, empty_payload);
 
-	uint8_t spi_port = nRF0->spi_port;
-
-	// 150602 novo3,  moj pokusaj
   	// write payload
 	cs(nRF0, 0);
 	spi_rw(spi_port, CMD_W_TX_PAYLOAD);
@@ -25,27 +39,18 @@ void nRF_write_payload(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 	{
 		spi_rw(spi_port, *buffer++);
 	}
+	while (empty_payload--)
+	{
+		spi_rw(spi_port, ' ');
+	}
+	// prazni payload
+	
 	cs(nRF0, 1);
 
 	// pulse CE for transmission
 	ce(nRF0, 1);
 	delay_us(11);	// 10+ us
 	ce(nRF0, 0);
-
-	/*
-	The nRF24L01+ stays in TX mode until it finishes transmitting a packet. If CE = 0, nRF24L01+ returns to 
-	standby-I mode. If CE = 1, the status of the TX FIFO determines the next action. If the TX FIFO is not 
-	empty the nRF24L01+ remains in TX mode and transmits the next packet. If the TX FIFO is empty the 
-	nRF24L01+ goes into standby-II mode. The nRF24L01+ transmitter PLL operates in open loop when in TX 
-	mode. It is important never to keep the nRF24L01+ in TX mode for more than 4ms at a time. If the 
-	Enhanced ShockBurst™ features are enabled, nRF24L01+ is never in TX mode longer than 4ms.
-	*/
-
-	/*
-	   nakon slanja paketa ne radi nista 130us
-	   onda se presalta u RX mode i ocekuje ACK
-	   			page 	45
-	   */
 }
 
 /*************************************************************************************************

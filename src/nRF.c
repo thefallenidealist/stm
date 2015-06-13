@@ -38,6 +38,8 @@
 
 // XXX jebena magija: veliki ARM sjebe nRF, osim ako se ne resetira lijevim prstenjakom
 // TODO moguce rjesenje magije 100nF + 1-10uF C na Vcc i GND
+//
+// TODO payload_size i payload_width preimenova u payload_length da bude manje zbunjujuce
 
 // mora ici vamo jer se kompajlira modul po modul, nije sve jedan veliki main.c
 #define NRF_SPI	1				// F1, F4
