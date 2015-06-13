@@ -1,0 +1,11 @@
+# 
+dobro provjerit jel omogucen clock na pravoj sabirnici
+npr USART2
+APB2 GPIOA
+APB1 USART2
+
+# RTC
+vjerojatno isto zajebi sa clockovima za backup
+
+# brickanje
+Ako se pozove SPI2 init i salje na SPI1, tijekom uploada programa ce se zabrickat i treba obrisat cijeli cip (preko ST Link windows utila)

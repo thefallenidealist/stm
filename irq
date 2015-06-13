@@ -1,0 +1,5 @@
+# NVIC_IRQChannelPreemptionPriority
+With this parameter you set interrupt priority, number from 0x00 to 0x0F. Let’s say we have to use USART receive interrupt and ADC conversion finished interrupt. USART is more important than ADC, so USART will have lower number than ADC.
+
+#NVIC_IRQChannelSubPriority
+With this parameter you set interrupt priority, number from 0x00 to 0x0F. Let’s say you have 2 USARTs enabled, but USART1 is more important than USART2. So USART1 will have lower number than USART2.

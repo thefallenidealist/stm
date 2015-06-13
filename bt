@@ -1,0 +1,33 @@
+# izlistaj sta je u dometu
+hccontrol -n ubt0hci inquiry
+# pogledat BD_ADDR
+# spojit se
+hccontrol -n ubt0hci remote_name_request 30:14:11:04:16:62
+# izlistaj
+hccontrol -n ubt0hci read_connection_list
+
+# pokazi listu divajsova
+ngctl list 
+
+
+
+# kinez
+ne ustetak EN pin
+stisnit tipku, drzat i upalit
+Kad polako blinka znaci da je u AT modu
+serial postavke: 38400N1
+
+# kinez AT
+AT
+AT+RESET
+AT+VERSION	"+VERSION:2.0-20100601\r\nOK\r\n"
+# restore 
+AT+ORGL
+AT+ADDR		"+ADDR:3014:11:41662\r\nOK\r\n"	Bluetooth address will show as this way: NAP: UAP: LAP(Hexadecimal) 
+AT+NAME=kinezBT
+AT+NAME?	ne vrati nista, ni OK ni ERROR
+AT+RNAME	# TODO
+#ERROR:(1A)
+AT+ROLE		"+ROLE:0"	# 0 - slave, 1 - master, 2 - slave-loop
+AT+CLASS	# TODO
+AT+IAC		# TODO

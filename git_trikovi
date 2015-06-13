@@ -1,0 +1,56 @@
+# https://git-scm.herokuapp.com/doc
+
+####################################################################################################################################################
+#		branch
+####################################################################################################################################################
+# branch create
+git branch testing
+# branch switch
+git checkout testing
+# sada sprema sve u testing, master ne dira, sa branch se moze prebacit na master pa tamo igrat
+# HEAD pokazuje na trenutno koristeni branch
+#
+# To create a branch and switch to it at the same time, you can run the git checkout command with the -b switch:
+git checkout -b iss53
+> Switched to a new branch "iss53"
+# ili
+git branch iss53
+git checkout iss53
+
+# branch merge
+git merge novaB
+# promjene iz novaB mergea sa master
+# ne treba vise novaB, obrisi ju
+git branch -d novaB
+####################################################################################################################################################
+#		tag
+####################################################################################################################################################
+# create
+git tag -a v0.1 -m "version 0.1"
+# show
+git tag 
+git show v0.1
+# tagiranje starog commita
+git tag -a v1.2 9fceb02
+
+# Sharing Tags
+# da update na remote server
+git push origin v1.5
+####################################################################################################################################################
+#		aliases
+####################################################################################################################################################
+git config --global alias.co checkout
+git config --global --add alias.l "log --decorate"
+git config --global alias.last 'log -1 HEAD'
+
+####################################################################################################################################################
+#		misc
+####################################################################################################################################################
+# vrati samo fajl od nekog od proslih commita
+git checkout e29b1268e5bdfccc058c438f153ccbe2094a1cef -- src/baro.c
+# da ispise u kojim branchama je fajl
+git log --decorate
+# diff kao
+git show
+# vracanje na neki od prethodnih commita, obrisve sve novije commitove od navedenog
+git reset --hard 6b1886f21ecf4c5b75c04ee7ebee48db5df99bf2

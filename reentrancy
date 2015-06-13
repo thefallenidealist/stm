@@ -1,0 +1,6 @@
+#
+Rule # 1. It uses all shared variables in an atomic way, unless each is allocated to a specific instance of the function.
+Rule # 2. It does not call nonreentrant functions.
+Rule 3. It does not use the hardware in a nonatomic way. 
+
+Globals are the source of no end of debugging woes and failed code. Use automatic variables or dynamically allocated memory.

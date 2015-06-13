@@ -1,0 +1,5 @@
+Came here to say this. Semantic versioning is x.y.z, where:
+
+x is incremented to show an API change that breaks back compatibility
+y is incremented to show feature additions that are back-compatible, and
+z is incremented to show back-compatible bug fixes.

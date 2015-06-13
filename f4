@@ -1,0 +1,33 @@
+#
+# LEDs
+orange	PD13
+green	PD12
+red	PD14
+blue	PD15
+
+USB1	PA9	Vbus present
+USB2	PD5	Vbus overcurrent
+
+# button
+B1	PA0
+B2	NRST
+
+# DAC
+I2C	I2S
+
+# motion	MB997C 	PCB rev C
+SPI
+
+# USART1
+TX	PA9
+RX	PA10
+
+# SPI1
+SCK	PA5
+MISO	PA6
+MOSI	PA7
+
+# SPI2
+SCK	PB10
+MISO	
+MOSI	

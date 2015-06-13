@@ -1,0 +1,149 @@
+# http://blog.frankvh.com/2012/01/13/stm32f2xx-stm32f4xx-dma-maximum-transactions/
+Ne smije bit vise od 2 istovremena DMA transfera
+#the DMA stream will NOT start up if its interrupt status bits are set
+
+# tmp1
+DMA_Init(DMA1_Stream1, &DMA_InitStructure);
+DMA_InitStructure.DMA_Channel = DMA_Channel_5;
+DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)rx2buffer;
+DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&USART6->DR;
+DMA_Init(DMA2_Stream1, &DMA_InitStructure);
+#/* Enable the USART Rx DMA request */
+USART_DMACmd(USART3, USART_DMAReq_Rx, ENABLE);
+USART_DMACmd(USART6, USART_DMAReq_Rx, ENABLE);
+DMA_ITConfig(DMA1_Stream1, DMA_IT_TC, ENABLE);
+DMA_ITConfig(DMA2_Stream1, DMA_IT_TC, ENABLE);
+#/* Enable the DMA RX Stream */
+DMA_Cmd(DMA1_Stream1, ENABLE);
+DMA_Cmd(DMA2_Stream1, ENABLE);
+
+################################################################################
+# USART RX DMA
+#define BUFFER_SIZE 1000
+uint8_t inputBuffer[BUFFER_SIZE];
+uint16_t inputBufferPosition = 0;    
+
+#// setup DMA reception USART2 RX => DMA1, Stream 6, Channel 4
+RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1, ENABLE);
+DMA_InitTypeDef dmaInit;
+DMA_StructInit(&dmaInit);
+dmaInit.DMA_Channel = DMA_Channel_4;
+dmaInit.DMA_PeripheralBaseAddr = ((uint32_t) USART2 + 0x04);
+dmaInit.DMA_Memory0BaseAddr = (uint32_t) inputBuffer;
+dmaInit.DMA_DIR = DMA_DIR_PeripheralToMemory;
+dmaInit.DMA_BufferSize = BUFFER_SIZE;
+dmaInit.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
+dmaInit.DMA_MemoryInc = DMA_MemoryInc_Enable;
+dmaInit.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;
+dmaInit.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;
+dmaInit.DMA_Mode = DMA_Mode_Circular;
+dmaInit.DMA_Priority = DMA_Priority_Medium;
+dmaInit.DMA_FIFOMode = DMA_FIFOMode_Disable;
+dmaInit.DMA_MemoryBurst = DMA_MemoryBurst_Single;
+dmaInit.DMA_PeripheralBurst = DMA_PeripheralBurst_Single;
+DMA_Init(DMA1_Stream5, &dmaInit);
+USART_DMACmd(port, USART_DMAReq_Rx, ENABLE);
+
+// loop infinitely
+while(true)
+{
+	#// read out from the DMA buffer
+    uint16_t dataCounter = DMA_GetCurrDataCounter(DMA1_Stream5);
+    uint16_t bufferPos = BUFFER_SIZE - dataCounter;
+
+	#// if we wrapped, we consume everything to the end of the buffer
+    if (bufferPos < inputBufferPosition)
+    {
+        while (inputBufferPosition < BUFFER_SIZE)
+            processByte(inputBuffer[inputBufferPosition++]);
+        inputBufferPosition = 0;
+    }
+
+    // consume the beginning of the buffer
+    while (inputBufferPosition < bufferPos)
+        processByte(inputBuffer[inputBufferPosition++]);
+
+	#// do other things...
+}
+# What's nice in this setup is that there is no interrupt code -- everything runs synchronously. 
+#Thanks to DMA, received data just "magically" appears in inputBuffer. The size of inputBuffer should be carefully determined though. 
+#It should be large enough to contain all the data you can possibly receive during a loop iteration. 
+#For example, with a baud rate of 115200 (about 11KB/s) and a maximum loop time of 50 ms, the buffer size should be at least 11KB/s * 50 ms = 550 bytes.
+################################################################################
+If you want to restart DMA, it seems you'll have to call not just:
+
+DMA_Cmd(DMA2_Stream5, ENABLE);
+
+but
+
+DMA_ClearFlag(DMA1_Stream5, DMA_FLAG_TCIF5);
+
+as well. Even though I didn't enable interrupts it seems this is still required.
+################################################################################
+For SPI you set peripheral data bus to 8bit. One pixel has 2 bytes so 2x8bit will be send for one pixel.
+################################################################################
+When circular mode is enabled, once NDTR counts down to zero, the following takes place:
+
+    The TCIF flag is set (which can generate an interrupt if enabled)
+    The “M0AR shadow register” is reloaded to its initial (M0AR) value, so the DMA will continue writing at the start of the buffer once again
+    NDTR is reloaded to its initial value
+
+	In short, the DMA will keep writing to the same buffer, over and over again, triggering an interrupt each time it fills the buffer, and it’ll do this forever until its disabled (usually by software writing to the DMA configuration register).
+################################################################################
+Burst Mode
+be aware that your buffer needs to be aligned on a 1kB address boundary. If its not, if the burst straddles a 1kB boundary, it’ll generate an AHB bus error.
+################################################################################
+If you turn off the DMA and want to know if the flush is complete, all you need do is wait on the TCIF flag becoming set, and at that point you know the DMA stream is finished and idle
+
+ If you plan on restarting the DMA, to have it continue on from where you stopped it, remember you need to update the M0AR (and/or possibly the M1AR) register, because the address register will still be pointing to the start of your buffer, and not to where the DMA just finished writing to.
+################################################################################
+If you clear the interrupt at the very bottom of your interrupt service routine code, immediately before you exit your interrupt routine, the clearing of the interrupt might not have propagated through the processor before your interrupt routine exited, meaning that the interrupt will be immediately triggered again.
+# ispravak
+pending interrupts
+################################################################################
+# ST AN4031
+#General recommendations:
+•The high-speed/high-bandwidth peripherals must have the highest DMA priorities. This 
+ ensures that the maximum data latency is respected for these peripherals and over-
+ /under-run conditions are avoided.
+•In case of equal bandwidth requirements, it is recommended to assign a higher priority 
+ to the peripherals working in Slave mode (which have no control on the data transfer 
+ speed) compared with the ones working in Master mode (which may control the data 
+ flow).
+•As the two DMAs can work in parallel based on the bus matrix multi-layer structure, 
+ high-speed peripherals’ requests can be balanced between the two DMAs when 
+ possible.
+
+#1.Software sequence to disable DMA
+To switch off a peripheral connected to a DMA stream request, it is mandatory to:
+•switch off the DMA stream to which the peripheral is connected,
+•wait until the EN bit in DMA_SxCR register is reset (“0”).
+Only then can the peripheral be safely disabled.
+In both cases, a Transfer Complete Interrupt Flag (TCIF in DMA_LISR or DMA_HISR) is set 
+to indicate the end of transfer due to the stream disable.
+
+#2. DMA flag management before enabling a new transfer
+Before enabling a new transfer, the user must ensure that the Transfer Complete Interrupt 
+Flag (TCIF) in DMA_LISR or DMA_HISR is cleared.
+As a general recommendation, it is advised to clear all flags in the DMA_LIFCR and 
+DMA_HIFCR registers before starting a new transfer.
+
+#3. Software sequence to enable DMA
+The following software sequence applies when enabling DMA:
+•Configure the suitable DMA stream.
+•Enable the DMA stream used (set the EN bit in the DMA_SxCR register).
+•Enable the peripheral used.
+If the user enables the used peripheral before the corresponding DMA stream, a “FEIF” 
+
+#7. Best DMA throughput configuration
+When using STM32F4xx with reduced AHB frequency while DMA is servicing a high-speed 
+peripheral, it is recommended to put the stack and heap in the CCM (which can be 
+addressed directly by the CPU through D-bus) instead of putting them on the SRAM, which 
+would create an additional concurrency between CPU and DMA accessing the SRAM 
+memory.
+################################################################################
+################################################################################
+################################################################################
+################################################################################
+################################################################################
+################################################################################

@@ -1,0 +1,16 @@
+# INFO objasnjenja LD_FLAGS INFO
+# -nostartupfiles			# ne linka crt*.o objektne fajlove
+# -nostartfiles 
+# -nostdlib 
+# -nostartupfiles 
+# --gc-sections 			# ne smije bit za GCC
+# --no-enum-size-warning 	# da se ne buni za cudno kompajlirani newlib
+
+-mfloat-abi=soft -- ignore all FPU and NEON instructions, use only the core register set and emulate all floating-point operations using library calls.
+
+-mfloat-abi=softfp -- use the same calling conventions as -float-abi=soft, but use floating-point and NEON instructions as appropriate. This option is binary compatible with -mfloat-abi=soft and can be used to improve the performance of code that has to conform to a soft-float environment but where it is known that the relevant hardware instructions will be available.
+
+-mfloat-abi=hard -- use the floating-point and NEON instructions as appropriate and also change the ABI calling conventions in order to generate more efficient function calls; floating-point and vector types can now be passed between functions in the extension registers which not only saves a significant amount of copying but also means that fewer calls need to pass arguments on the stack.
+
+in most cases it will be perfectly safe to use the option -ffast-math to relax the rules and enable vectorization.
+You should also be aware of floating-point constants (literals) that end up forcing the compiler to perform a calculation in double precision. In C and C++ write '1.0F' not '1.0' to ensure that the compiler knows what you mean.

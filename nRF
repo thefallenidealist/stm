@@ -1,0 +1,94 @@
+# packet handling methods
+• ShockBurst™ (compatible with nRF2401, nRF24E1, nRF2402 and nRF24E2 with 1Mbps data rate, see page 24) 
+• Enhanced ShockBurst™
+
+In ShockBurst™ RX, IRQ notifies the MCU when a valid address and payload is 
+received respectively. The MCU can then clock out the received payload from an 
+nRF24L01 RX FIFO.
+In ShockBurst™ TX, nRF24L01 automatically generates preamble and CRC, see 
+Table 12. IRQ notifies the MCU that the transmission is completed. 
+
+nRF24L01 has a three level deep RX FIFO (shared between 6 pipes) and a three level deep TX FIFO. 
+
+# ESB
+The idea with Enhanced ShockBurst™ is to let 
+nRF24L01 handle both acknowledgement of received packets and retransmissions of 
+lost packets, without involvement from the microcontroller.
+
+# multiprimac
+svi moraju bit na istom kanalu
+
+In the PTX device data pipe 0 is used to received the acknowledge, and therefore 
+the receive address for data pipe 0 has to be equal to the transmit address to be able to 
+receive the acknowledge. 
+#tl;dr: RX_addr(TX_modul) = TX_addr(TX_modul);
+#		RX_addr(RX_modul) = TX/RX_addr(TX_modul);
+
+After
+the packet has been transmitted, nRF24L01 will switch on its receiver and expect an 
+acknowledgement to arrive from the terminating part. If this acknowledgement fails to 
+arrive, nRF24L01 will retransmit the same packet until it receives an 
+acknowledgement or the number of retries exceeds the number of allowed retries 
+given in the SETUP_RETR_ARC register. If the number of retries exceeds the 
+number of allowed retries, this will show in the STATUS register bit MAX_RT and 
+gives an interrupt.
+# TODO funkciju, khm, API za ovo
+Whenever an acknowledgement is received by an nRF24L01 it will consider the last 
+transmitted packet as delivered. It will then be cleared from the TX FIFO, and the 
+TX_DS IRQ source will be set high. 
+
+
+#####################
+# slanje tereta
+#####################
+PRIM_RX = 0
+set TX address
+# CS = 0
+SPI send TX_PLD
+# CS = 1
+The width of TX-payload is counted from number of bytes written into the TX FIFO from the MCU. TX_PLD must be written continuously
+If the PTX device shall receive acknowledge, data pipe 0 has to be configured to receive the acknowledge. The receive address for data pipe 0 (RX_ADDR_P0) has to be equal to the transmit address (TX_ADDR)
+A high pulse on CE starts the transmission. The minimum pulse width on CE is 10 µs. 
+
+# AACK = 1, uspjesno slanje:
+RX_DS = 1, payload removed from TX FIFO
+# neuspjesno slanje
+MAX_RT = 1, payload not removed from TX FIFO
+# ako je neuspjesno slanje onda stane, da nastavi:
+MAX_RT postavit u 0
+# INFO
+ARC_CNT counter for single packet
+PLOS_CNT counts even after maximum numbers of retries
+
+# pri kraju slanja tereta
+if (CE = 0)
+	Divajs goes to Standby-I
+else
+	Divajs will send next payload in TX FIFO
+if (FIFO == empty) && (CE = 1)
+	Go to Standby-II
+if (Standby-II) && (CE = 0)
+	Go to Standby-I
+# wheeeee
+
+#####################
+# primanje tereta
+#####################
+PRIM_RX=1, CE=1
+delay_us(130)
+if (valid package)	#define valid (address and CRC oke)
+	store it to RX FIFO
+	RX_DR = 1
+	IRQ pin active
+	check RX_P_NO for pipe
+if (AACK == 1)
+	send ACK
+MCU sets CE = 0
+	go to Standby-I	# pff
+
+citaj teret
+salji, primaj, gasi ili zapali
+
+
+###
+AutoACK je samo za primaca

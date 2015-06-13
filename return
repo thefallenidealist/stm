@@ -1,0 +1,10 @@
+(14:46:05) Karlo: mi smo imali wrapper stil 
+(14:46:14) Karlo: znaci imas wrapper objekt koji je u nasem slucaju imao
+(14:46:19) Karlo: status code
+(14:46:22) Karlo: error message 
+(14:46:25) Karlo: i result 
+(14:46:28) Karlo: status code je enum 
+(14:46:32) Karlo: error message string
+(14:46:39) Karlo: result je void pointer 
+(14:46:41) Karlo: znaci bilo sta
+(14:47:01) Karlo: i onda mozes taj wrapper koristit za razne funkcije kao return 
