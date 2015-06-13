@@ -11,6 +11,7 @@ void nRF_start_listening(nRF_hw_t *nRF0)
 
 	// TODO postavit RX address?
 
+	// TODO? Treba bit PRIM_RX=1 prije CE
 	ce(nRF0, 1);	// Activate PRX mode by setting the CE pin high. page 37
 	delay_us(130);	// datasheet v1.0, page 76
 }

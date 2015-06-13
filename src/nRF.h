@@ -1,6 +1,10 @@
 #ifndef NRF_H
 #define NRF_H
 
+#ifdef __cplusplus
+extern "C"
+#endif
+
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
@@ -250,8 +254,7 @@ void nRF_set_ACK_payload(nRF_hw_t *nRF0, nRF_pipe_t pipe, char *data, uint8_t le
 void nRF_write(nRF_hw_t *nRF0, char *buffer, uint8_t length);
 void nRF_print_enabled_pipe(nRF_hw_t *nRF0);
 
-
-
-
-
-#endif
+#ifdef __cplusplus
+extern "C"
+#endif	// __cplusplus
+#endif	// NRF_H
