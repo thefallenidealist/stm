@@ -120,7 +120,6 @@ void nRF_write(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 	delay_us(150);	// 130
 	nRF_write_payload(nRF0, buffer, length);
 
-	
 	// cekaj na ACK ili da posalje maksimalni broj puta
 	uint32_t sent_at = get_uptime_us();
 	do
