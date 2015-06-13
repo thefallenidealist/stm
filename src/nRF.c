@@ -69,29 +69,6 @@ nRF_hw_t *grf = &rf_modul;
 char nRF_TX_buffer[NRF_FIFO_SIZE] = {};
 char nRF_RX_buffer[NRF_FIFO_SIZE] = {};
 
-/*
-void nrf_check(void)
-{
-#ifdef NRF_TX
-	while (nRF_is_TX_data_sent(grf) == 0)
-	{
-		if (nRF_get_retransmitted_packets(grf) == 15)
-		{
-			printf("Dosli smo do maximalno retransmitanih paketa, izlazim\n");
-			return;
-		}
-		printf("TX Still sending payload: %d\n", nRF_is_TX_data_sent(grf));
-
-		static uint8_t counter;
-
-		delay_ms(TX_SINGLE_TIMEOUT);
-		counter++;
-	}
-#endif
-}
-*/
-
-
 /*************************************************************************************************
 				nRF_main()
 *************************************************************************************************/
@@ -153,18 +130,19 @@ int8_t nRF_main(void)
 	nRF_set_CRC_length(&rf_modul, CRC_LENGTH_1BTYE);
 	nRF_enable_auto_ack(&rf_modul, P0);	// iako su po defaultu omogucene za sve pajpove
 
+	nRF_enable_dynamic_payload(&rf_modul);
+
 #ifdef NRF_TX
 	nRF_set_retransmit_delay(&rf_modul, DELAY_500us);	// ARD=500µs is long enough for any ACK payload length in 1 or 2Mbps mode.
 	nRF_set_retransmit_count(&rf_modul, 15);			// 1 to 15 retries
 
 	nRF_set_mode(&rf_modul, TX);
-	nRF_power_on(&rf_modul);
 #endif
 
 #ifdef NRF_RX
 	nRF_set_mode(&rf_modul, RX);
-	nRF_power_on(&rf_modul);
 #endif
+	nRF_power_on(&rf_modul);
 
 	nRF_debug(&rf_modul);
 	delay_ms(1500);
