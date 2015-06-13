@@ -1,4 +1,6 @@
+// TODO globalne varijable bas i nece radit u slucaju vise modula, stavit ovo unutar objekta
 static bool g_reg_feature_enabled = 0;
+static bool g_dynamic_payload_enabled = 0;
 /*************************************************************************************************
 				nRF_enable_dynamic_payload()
 *************************************************************************************************/
@@ -33,6 +35,8 @@ void nRF_enable_dynamic_payload(nRF_hw_t *nRF0)
 	// INFO override the pipes "RX_PW" setting
 	reg_tmp[EN_DPL] = 1;
 	write_reg(nRF0, REG_FEATURE);
+
+	g_dynamic_payload_enabled = 1;
 }
 
 /*************************************************************************************************
@@ -42,6 +46,24 @@ void nRF_disable_dynamic_payload(nRF_hw_t *nRF0)
 {
 	reg_tmp[EN_DPL] = 0;
 	write_reg(nRF0, REG_FEATURE);
+
+	g_dynamic_payload_enabled = 0;
+}
+
+/*************************************************************************************************
+				nRF_is_dynamic_payload_enabled()
+*************************************************************************************************/
+uint8_t nRF_is_dynamic_payload_enabled(nRF_hw_t *nRF0)
+{
+	/*
+	uint8_t readed = read_reg(nRF0, REG_FEATURE);
+	uint8_t dynamic_payload_enabled = ((readed >> EN_DPL) & 1);
+
+	//printf("%s(): %d\n", __func__, dynamic_payload_enabled);
+
+	return dynamic_payload_enabled;
+	*/
+	return g_dynamic_payload_enabled;
 }
 
 /*************************************************************************************************
@@ -149,81 +171,3 @@ uint8_t nRF_get_dynamic_payload_length(nRF_hw_t *nRF0)
 
 	return length;
 }
-
-/*************************************************************************************************
-**************************************************************************************************
-**************************************************************************************************
-**************************************************************************************************
-**************************************************************************************************
-*************************************************************************************************/
-// novo 150609
-void nRF_enable_feature_dynPL(nRF_hw_t *nRF0, nRF_pipe_t pipe)
-{
-	// ACTIVATE
-	uint8_t spi_port = nRF0->spi_port;
-
-	cs(nRF0, 0);
-	spi_rw(spi_port, CMD_ACTIVATE);
-	spi_rw(spi_port, 0x73);
-	cs(nRF0, 1);
-
-	// activate EN_DPL
-	reg_tmp[EN_DPL] = 1;
-	write_reg(nRF0, REG_FEATURE);
-
-	// enable pipe
-	nRF_enable_dynamic_pipe(nRF0, pipe);
-}
-
-//NRF24L01_EnableFeatureAckPL
-void nRF_enable_feature_ackPL(nRF_hw_t *nRF0)
-{
-	nRF_enable_feature_dynPL(nRF0, P0);
-	// set ARD TODO
-	// enable autoACK
-	reg_tmp[EN_ACK_PAY] = 1;
-	write_reg(nRF0, REG_FEATURE);
-}
-
-// SetAckPayload
-void nRF_set_ACK_payload(nRF_hw_t *nRF0, nRF_pipe_t pipe, char *buffer, uint8_t length)
-{
-	// moj pokusaj
-
-	nRF_set_mode(nRF0, TX);
-	delay_us(130);
-
-
-
-
-	bool TX_full = nRF_is_TX_full(nRF0);
-
-	if (TX_full == 1)
-	{
-		printf("TX is full\n");
-	}
-	else
-	{
-		uint8_t spi_port = nRF0->spi_port;
-
-		cs(nRF0, 0);
-		spi_rw(spi_port, CMD_W_ACK_PAYLOAD);
-		while (length--)
-		{
-			spi_rw(spi_port, *buffer++);
-		}
-		cs(nRF0, 1);
-
-		// pulse CE for transmission
-		ce(nRF0, 1);
-		delay_us(11);	// 10+ us
-		ce(nRF0, 0);
-	}
-
-	nRF_set_mode(nRF0, RX);
-	delay_us(130);
-
-	printf("%s() kraj\n", __func__);
-}
-
-

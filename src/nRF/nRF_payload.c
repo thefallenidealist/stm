@@ -9,7 +9,20 @@ void nRF_write_payload(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 	// nRF_flush_TX(nRF0);
 
 	uint8_t spi_port = nRF0->spi_port;
-	uint8_t payload_length = nRF_get_payload_size(nRF0, P0);	// TODO not hardcoded pipe
+	uint8_t payload_length = 0;
+	// TODO odma na pocetku provjerit jel length <=32
+	bool dynamic_payload_enabled = nRF_is_dynamic_payload_enabled(nRF0);	// da samo jednom pozove funkciju
+
+	//if (nRF_is_dynamic_payload_enabled(nRF0) == 1)
+	if (dynamic_payload_enabled == 1)
+	{
+		payload_length = length;
+	}
+	else
+	{
+		payload_length = nRF_get_payload_size(nRF0, P0);	// TODO not hardcoded pipe
+	}
+
 	uint8_t empty_payload = 0;
 
 	// TODO preimenovat varijable i printfova da imaju smisla, ne znam ni na hrvatskom rec da ima smisla
@@ -30,10 +43,6 @@ void nRF_write_payload(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 		empty_payload = payload_length - length;
 		//printf("%s(): Info: payload (%d) is smaller than pipe width (%d)\n", __func__, length, payload_length);
 	}
-	//printf("\t\t\t\t%s(): arg_length: %d, pipe_length: %d, empty_payload: %d\n", __func__, length, payload_length, empty_payload);
-
-	// 161113 jadni pokusaj u nadi da mozda treba postavit koliko velik payload prije svakog slanja
-	//nRF_set_payload_size(nRF0, P0, 8);	// XXX i dalje dynamic length 0
 
   	// write payload
 	cs(nRF0, 0);
@@ -42,11 +51,14 @@ void nRF_write_payload(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 	{
 		spi_rw(spi_port, *buffer++);
 	}
-	while (empty_payload--)
+	if (dynamic_payload_enabled == 0)
 	{
-		spi_rw(spi_port, ' ');
+		// ako buffer ima manje bajtova, popuni sa praznima
+		while (empty_payload--)
+		{
+			spi_rw(spi_port, ' ');
+		}
 	}
-	// prazni payload
 	
 	cs(nRF0, 1);
 
@@ -62,18 +74,26 @@ void nRF_write_payload(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 bool nRF_read_payload(nRF_hw_t *nRF0)
 {
 	// novo 150602
+	uint8_t spi_port 	 = nRF0->spi_port;
+	uint8_t payload_size = 1;
 
 	bool data_ready = nRF_is_RX_data_ready(nRF0);	// provjeri RX_DR
 
 	if (data_ready == 1)	// dobili smo nesta
 	{
-		uint8_t spi_port 	 = nRF0->spi_port;
 		uint8_t pipe		 = nRF_get_payload_pipe(nRF0);			// provjeri u kojem pajpu je teret
-		uint8_t payload_size = nRF_get_payload_size(nRF0, pipe);	// provjeri koliko je velik teret
-				// vjerojatno nije potrebno ako nije dynamic payload, al neka se nadje
-		uint8_t dynamic_size = nRF_get_dynamic_payload_length(nRF0);
 
-		printf("%s(): dynamic_size length: %d\n", __func__, dynamic_size);
+		if (nRF_is_dynamic_payload_enabled(nRF0) == 1)
+		{
+			payload_size = nRF_get_dynamic_payload_length(nRF0);
+		}
+		else
+		{
+			payload_size = nRF_get_payload_size(nRF0, pipe);
+		}
+
+		//printf("%s(): payload_size: %d\n", __func__, payload_size);
+		nRF_clear_buffer(nRF_RX_buffer);
 
 		// reading RX FIFO
 		cs(nRF0, 0);
@@ -83,10 +103,9 @@ bool nRF_read_payload(nRF_hw_t *nRF0)
 		{
 			// zapisivanje u globalni buffer
 			nRF_RX_buffer[i] = spi_rw(spi_port, CMD_NOP);
-			//printf("%c", nRF_RX_buffer[i]);		// DEBUG idemo oprintat
 		}
 		cs(nRF0, 1);
-		//printf("\n");
+		nRF_RX_buffer[payload_size] = '\0';	// neka se nadje
 
 		//nRF_clear_bits(nRF0); // ocisti RX_DR, TX_DS, MAX_RT
 		nRF_clear_RX_data_ready(nRF0); // INFO mora se pocistit inace se razjebat

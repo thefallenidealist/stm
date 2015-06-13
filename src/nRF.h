@@ -134,8 +134,8 @@ typedef enum
 	CRC_LENGTH_2BTYE = 1
 } nRF_crc_length_t;
 
-extern char nRF_RX_buffer[32];	// treba
-extern char nRF_TX_buffer[32];	// vjerojatno nije potreban
+extern char nRF_RX_buffer[NRF_FIFO_SIZE+1];	// treba, +1 za NULL char
+extern char nRF_TX_buffer[NRF_FIFO_SIZE+1];	// vjerojatno nije potreban
 extern nRF_hw_t *grf;
 
 /*************************************************************************************************
@@ -149,6 +149,7 @@ static void 	print_reg		(nRF_hw_t *nRF0, uint8_t reg);
 static uint8_t 	write_reg		(nRF_hw_t *nRF0, uint8_t reg);
 static void print_address(nRF_hw_t *nRF0, uint8_t mode);
 */
+static inline void nRF_clear_buffer(char *buffer);
 static uint8_t 	write_reg_full	(nRF_hw_t *nRF0, uint8_t reg, uint8_t value)
 	__attribute__((unused));	// [-Wunused-function]
 
@@ -253,6 +254,8 @@ void nRF_set_ACK_payload(nRF_hw_t *nRF0, nRF_pipe_t pipe, char *data, uint8_t le
 
 void nRF_write(nRF_hw_t *nRF0, char *buffer, uint8_t length);
 void nRF_print_enabled_pipe(nRF_hw_t *nRF0);
+uint8_t nRF_is_dynamic_payload_enabled(nRF_hw_t *nRF0);
+
 
 #ifdef __cplusplus
 extern "C"

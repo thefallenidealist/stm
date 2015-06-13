@@ -35,6 +35,7 @@
 #include "src/nRF/nRF_ack.c"
 #include "src/nRF/nRF_feature.c"
 #include "src/nRF/nRF_present.c"
+#include "src/nRF/nRF_buffer.c"
 
 // XXX jebena magija: veliki ARM sjebe nRF, osim ako se ne resetira lijevim prstenjakom
 // TODO moguce rjesenje magije 100nF + 1-10uF C na Vcc i GND
@@ -59,15 +60,15 @@
 	#define NRF_IRQ	"PA5"	// XXX, NC, treba lemit
 #endif
 
-uint8_t addr[5] = "qwert";
+uint8_t addr[6] = "qwert";
 //uint8_t addr_tx[5] = "addrT";
 //uint8_t addr_rx[5] = "addrR";
 
 nRF_hw_t rf_modul;
 nRF_hw_t *grf = &rf_modul;
 
-char nRF_TX_buffer[NRF_FIFO_SIZE] = {};
-char nRF_RX_buffer[NRF_FIFO_SIZE] = {};
+char nRF_TX_buffer[NRF_FIFO_SIZE+1] = {};
+char nRF_RX_buffer[NRF_FIFO_SIZE+1] = {};
 
 /*************************************************************************************************
 				nRF_main()
@@ -107,7 +108,8 @@ int8_t nRF_main(void)
 	// nRF software init
 	nRF_set_output_power(&rf_modul, power_0dBm);
 	nRF_set_datarate	(&rf_modul, datarate_2Mbps);
-	nRF_set_payload_size(&rf_modul, P0, payload_size);
+	//nRF_set_payload_size(&rf_modul, P0, payload_size);
+	nRF_set_payload_size(&rf_modul, P0, 5);
 	nRF_set_channel		(&rf_modul, 50);
 	nRF_enable_pipe		(&rf_modul, P0);
 	nRF_set_address_width(&rf_modul, NRF_ADDRESS_WIDTH);
