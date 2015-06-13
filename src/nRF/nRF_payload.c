@@ -70,6 +70,8 @@ bool nRF_read_payload(nRF_hw_t *nRF0)
 				// vjerojatno nije potrebno ako nije dynamic payload, al neka se nadje
 		uint8_t dynamic_size = nRF_get_dynamic_payload_length(nRF0);
 
+		printf("%s(): dynamic_size length: %d\n", __func__, dynamic_size);
+
 		// reading RX FIFO
 		cs(nRF0, 0);
 		spi_rw(spi_port, CMD_R_RX_PAYLOAD);
