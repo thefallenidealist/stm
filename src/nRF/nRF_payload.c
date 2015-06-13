@@ -32,6 +32,9 @@ void nRF_write_payload(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 	}
 	//printf("\t\t\t\t%s(): arg_length: %d, pipe_length: %d, empty_payload: %d\n", __func__, length, payload_length, empty_payload);
 
+	// 161113 jadni pokusaj u nadi da mozda treba postavit koliko velik payload prije svakog slanja
+	//nRF_set_payload_size(nRF0, P0, 8);	// XXX i dalje dynamic length 0
+
   	// write payload
 	cs(nRF0, 0);
 	spi_rw(spi_port, CMD_W_TX_PAYLOAD);
