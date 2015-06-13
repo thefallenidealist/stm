@@ -55,9 +55,9 @@ bool nRF_read_payload(nRF_hw_t *nRF0)
 {
 	// novo 150602
 
-	//bool data_ready = nRF_is_RX_data_ready(nRF0);	// provjeri RX_DR
+	bool data_ready = nRF_is_RX_data_ready(nRF0);	// provjeri RX_DR
 
-	//if (data_ready == 1)	// dobili smo nesta
+	if (data_ready == 1)	// dobili smo nesta
 	{
 		uint8_t spi_port 	 = nRF0->spi_port;
 		uint8_t pipe		 = nRF_get_payload_pipe(nRF0);			// provjeri u kojem pajpu je teret
@@ -74,30 +74,32 @@ bool nRF_read_payload(nRF_hw_t *nRF0)
 		{
 			// zapisivanje u globalni buffer
 			nRF_RX_buffer[i] = spi_rw(spi_port, CMD_NOP);
-			printf("%c", nRF_RX_buffer[i]);		// DEBUG idemo oprintat
+			//printf("%c", nRF_RX_buffer[i]);		// DEBUG idemo oprintat
 		}
 		cs(nRF0, 1);
-		printf("\n");
+		//printf("\n");
 
-		nRF_clear_bits(nRF0); // ocisti RX_DR, TX_DS, MAX_RT
+		//nRF_clear_bits(nRF0); // ocisti RX_DR, TX_DS, MAX_RT
 		nRF_clear_RX_data_ready(nRF0); // INFO mora se pocistit inace se razjebat
-
-		// TODO posalji ACK ako je DYNPD?
-		// W_ACK_PAYLOAD
-		char buffer[] = "PRX salje nazad";
-		nRF_set_ACK_payload(nRF0, pipe, buffer, 10);	// TODO probat sa drugim pajpom
-
 
 		return 1;
 	}
-	/*
 	else
 	{
 		//printf("Nothing received\n");
 		return 0;
 	}
-	*/
 }
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -125,8 +127,7 @@ void nRF_write(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 	uint32_t sent_at = get_uptime_us();
 	do
 	{
-		//printf("%s(): Jos uvijek se salje paket, uptime_us: %ld\n", __func__, get_uptime_us());
-		printf("S");
+		printf("%s(): Jos uvijek se salje paket, uptime_us: %ld\n", __func__, get_uptime_us());
 	}
 	// treba radit sve dok nije poslao		ili		sve dok nije ispucao sanse		ili 	timeouto
 	while ( !((nRF_is_TX_data_sent(nRF0) == 1) || (nRF_is_TX_data_failed(nRF0) == 1) || (get_uptime_us() - sent_at > timeout_us)));
@@ -138,8 +139,7 @@ void nRF_write(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 	}
 	else if (nRF_is_TX_data_failed(nRF0) == 1)
 	{
-		//printf("%s(): MAX_RT: %d Maksimalno se potrudio i svejedno fejlao\n", __func__, nRF_get_retransmit_count(nRF0));
-		printf("M");
+		printf("%s(): MAX_RT: %d Maksimalno se potrudio i svejedno fejlao\n", __func__, nRF_get_retransmit_count(nRF0));
 		nRF_clear_bits(nRF0);
 	}
 	else if (nRF_is_RX_data_ready(nRF0) == 1)
@@ -149,8 +149,7 @@ void nRF_write(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 	}
 	else
 	{
-		//printf("%s(): Timeout od %d us se dogodio pa je ovaj iziso, zadani timeout: %d\n", __func__, get_uptime_us()-sent_at, timeout_us);
-		printf("T");
+		printf("%s(): Timeout od %d us se dogodio pa je ovaj iziso, zadani timeout: %d\n", __func__, get_uptime_us()-sent_at, timeout_us);
 	}
 
 	// power_down

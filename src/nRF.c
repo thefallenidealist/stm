@@ -58,8 +58,8 @@
 #endif
 
 uint8_t addr[5] = "qwert";
-uint8_t addr_tx[5] = "addrT";
-uint8_t addr_rx[5] = "addrR";
+//uint8_t addr_tx[5] = "addrT";
+//uint8_t addr_rx[5] = "addrR";
 
 nRF_hw_t rf_modul;
 nRF_hw_t *grf = &rf_modul;
@@ -144,64 +144,70 @@ int8_t nRF_main(void)
 		printf("Krivi mod: %d\n", rf_modul.mode);
 	}
 
-	nRF_set_channel		(&rf_modul, 1);
-	nRF_set_datarate	(&rf_modul, datarate_2Mbps);
 	nRF_set_output_power(&rf_modul, power_0dBm);
-	nRF_enable_pipe		(&rf_modul, P0);
-	nRF_enable_pipe		(&rf_modul, P1);
-	/*
-	//nRF_enable_pipe		(&rf_modul, P2);
-	//nRF_enable_pipe		(&rf_modul, P3);
-	nRF_enable_pipe		(&rf_modul, P4);
-	nRF_enable_pipe		(&rf_modul, P5);
-	*/
-	nRF_enable_auto_ack	(&rf_modul, P0);
-	nRF_enable_auto_ack	(&rf_modul, P1);
-	/*
-	nRF_enable_auto_ack	(&rf_modul, P2);
-	nRF_enable_auto_ack	(&rf_modul, P3);
-	nRF_enable_auto_ack	(&rf_modul, P4);
-	nRF_enable_auto_ack	(&rf_modul, P5);
-	*/
-	nRF_enable_dynamic_payload	(&rf_modul);
-	nRF_enable_dynamic_pipe		(&rf_modul, P0);
-	nRF_enable_dynamic_pipe		(&rf_modul, P1);
-
-	/*
-	delay_ms(10);
-	printf("\t\t idemo provjerit jel stvarno uspjelo\n");
-	print_reg(&rf_modul, REG_FEATURE);
-	print_reg(&rf_modul, REG_DYNPD);
-	*/
-
-	nRF_set_CRC_length	(&rf_modul, CRC_LENGTH_1BTYE);
-	nRF_set_retransmit_delay(&rf_modul, DELAY_500us);
-	nRF_set_retransmit_count(&rf_modul, 15);
-
-
-	// XXX 150611 pokusaj iako ko ne bi trebalo
-	nRF_set_payload_size(&rf_modul, P0, payload_size);
-	nRF_set_payload_size(&rf_modul, P1, payload_size);
+	nRF_set_datarate	(&rf_modul, datarate_2Mbps);
+	nRF_set_payload_size(&rf_modul, 0, payload_size);
+	nRF_set_channel		(&rf_modul, 0);
+	nRF_enable_pipe		(&rf_modul, 0);
+	nRF_set_address_width(&rf_modul, NRF_ADDRESS_WIDTH);
 
 	uint8_t mode = nRF_get_mode(&rf_modul);
 	if (mode == TX)
 	{
+		nRF_set_TX_address	(&rf_modul, addr);
+		nRF_set_RX_address	(&rf_modul, P0, addr);
+		// TX modul treba i RX adresu zbog ACK
+	}
+	else if (mode == RX)
+	{
+		nRF_set_RX_address	(&rf_modul, P0, addr);
+	}
+
+	/*
+	if (mode == TX)
+	{
 		nRF_set_TX_address	(&rf_modul, addr_tx);
-		//nRF_set_RX_address	(&rf_modul, P1, addr_rx);
 		nRF_set_RX_address	(&rf_modul, P0, addr_rx);
 	}
 	else if (mode == RX)
 	{
-		nRF_set_TX_address	(&rf_modul, addr_rx);	// salje na adresi na kojoj TX slusa
-		//nRF_set_RX_address	(&rf_modul, P1, addr_tx);	// slusa na adresi na kojoj TX salje
-		nRF_set_RX_address	(&rf_modul, P0, addr_tx);	// slusa na adresi na kojoj TX salje
+		//nRF_set_TX_address	(&rf_modul, addr_rx);	// salje na adresi na kojoj TX slusa
+		//nRF_set_RX_address	(&rf_modul, P0, addr_tx);	// slusa na adresi na kojoj TX salje
+		// static
+		nRF_set_RX_address	(&rf_modul, P0, addr_rx);
 	}
+	*/
+
+	nRF_enable_CRC(&rf_modul);			// CRC is forced if AutoACK is enabled
+	nRF_set_CRC_length(&rf_modul, CRC_LENGTH_1BTYE);
+
+	/*
+	nRF_enable_auto_ack(&rf_modul, P0);	// iako su po defaultu omogucene za sve pajpove
+
+	nRF_set_payload_size(&rf_modul, 0, payload_size);
+	nRF_enable_pipe(&rf_modul, 0);
+	*/
+
+#ifdef NRF_TX
+	nRF_enable_auto_ack(&rf_modul, P0);	// iako su po defaultu omogucene za sve pajpove
+
+	nRF_set_retransmit_delay(&rf_modul, DELAY_500us);	// ARD=500µs is long enough for any ACK payload length in 1 or 2Mbps mode.
+	nRF_set_retransmit_count(&rf_modul, 15);			// 1 to 15 retries
+
 	nRF_power_on(&rf_modul);
+	delay_ms(150);	// bezveze
+	ce(&rf_modul, 0);	// nije RX, ne slusa
+	// ce je po defaultu vec nula, al ajde
+#endif
+
+#ifdef NRF_RX
+	nRF_power_on(&rf_modul);
+	delay_ms(150);	// bezveze
+	nRF_start_listening(&rf_modul);
+#endif
 
 	nRF_debug(&rf_modul);
-#ifdef NRF_TX
-	delay_s(3);
-#endif
+	delay_ms(1500);
 	return 0;	// bezveze
 }
 

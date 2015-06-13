@@ -161,7 +161,7 @@ static void print_address(nRF_hw_t *nRF0, uint8_t mode, nRF_pipe_t pipe)		// mod
 
 	for (uint8_t i=0; i<length; i++)
 	{
-		printf("0x%X ", *address++);
+		printf("0x%02X ", *address++);
 	}
 
 	printf("\t");
@@ -175,7 +175,7 @@ static void print_address(nRF_hw_t *nRF0, uint8_t mode, nRF_pipe_t pipe)		// mod
 		}
 		else
 		{
-			printf("[0x%X]", *address++);	// print hex
+			printf("[0x%02X]", *address++);	// print hex
 		}
 	}
 

@@ -144,56 +144,27 @@ void main(void)
 #endif
 
 #ifdef NRF_RX
-		// INFO moze i preko interrupta TODO
-		/*
-		bool payload_ready = nRF_read_payload(grf);
-		if (payload_ready)
-		{
-			// dynamic payload
-			// odgovori nazad
-			char ack[] = "RF odgovara";
-			nRF_set_ACK_payload(grf, P0, ack, 7);
-			//nRF_clear_bits(grf);
-			nRF_start_listening(grf);
+		bool data_ready = nRF_read_payload(grf);	// vrati 1 kad payload zapise u polje
 
+		if (data_ready)
+		{
 			//printf("nRF RX je dobio: %s\n", nRF_RX_buffer);
+			printf("nRF RX je dobio: ");
+			for (int i=0; i<30; i++)
+			{
+				printf("%c", nRF_RX_buffer[i]);
+			}
+			printf("\n");
+
+			/*
 			// obrisi buffer
 			for (uint8_t i=0; i<NRF_FIFO_SIZE; i++)
 			{
 				nRF_RX_buffer[i] = '\0';
 			}
-		}
-		*/
-
-		if (nRF_is_RX_data_ready(grf) == 1)
-		{
-			printf("nRF je dobio nesto\n");
-
-			/*
-			//uint8_t packet_size = nRF_get_dynamic_payload_length(grf, P0);
-			//printf("velicina paketa: %d\n", packet_size);
-			uint8_t pipe		 = nRF_get_payload_pipe(grf);			// provjeri u kojem pajpu je teret
-			uint8_t payload_size = nRF_get_payload_size(grf, pipe);	// provjeri koliko je velik teret
-
-			printf("pipe: %d \t, size: %d\n", pipe, payload_size);
 			*/
-
-			nRF_read_payload(grf);
-
-			/*
-			printf("Idemo isprintat 2-3 bajta: ");
-			for (uint8_t i=0; i<4; i++)
-			{
-			}
-			*/
-
-			//printf("Flusamo RX\n");
-			//nRF_flush_RX(grf);
-			//nRF_clear_RX_data_ready(grf);
 		}
 
-
-		//printf("nRF data ready: %d\n", nRF_is_RX_data_ready(grf));
 #endif	// NRF_RX
 
 
@@ -203,10 +174,11 @@ void main(void)
 
 #if defined BARO_H && defined STM32F4
 		float temperature = bmp180_get_temperature();
-		snprintf(tx_buffer, NRF_FIFO_SIZE, "baro: %.1f °C", temperature);
+		snprintf(tx_buffer, NRF_FIFO_SIZE, "baro: %.1f C", temperature);
 
-		nRF_write(grf, tx_buffer, strlen(tx_buffer));
-		//printf("main(): nRF poslao: \"%s\", uptime_us: %ld\n", tx_buffer, get_uptime_us());
+		//nRF_write(grf, tx_buffer, strlen(tx_buffer));
+		nRF_write_payload(grf, tx_buffer, strlen(tx_buffer));
+		printf("main(): nRF poslao: \"%s\", uptime_us: %u\n", tx_buffer, get_uptime_us());
 #endif	// BARO_H STM32F4
 #endif	// NRF_TX
 	}

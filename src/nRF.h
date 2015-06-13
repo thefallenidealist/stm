@@ -27,7 +27,7 @@ extern "C"
 // postavke za nRF
 #define NRF_ADDRESS_WIDTH	5
 #define NRF_FIFO_SIZE		32
-#define NRF_PAYLOAD_SIZE	16
+#define NRF_PAYLOAD_SIZE	12
 
 typedef enum
 {
