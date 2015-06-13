@@ -125,49 +125,33 @@ int8_t nRF_main(void)
 		//return -1;
 	}
 
-	/*
-#ifdef NRF_TX
-	nRF_set_mode(&rf_modul, TX);
-#endif
-#ifdef NRF_RX
-	nRF_set_mode(&rf_modul, RX);
-#endif
-	*/
-
+	// nRF software init
 	nRF_set_output_power(&rf_modul, power_0dBm);
 	nRF_set_datarate	(&rf_modul, datarate_2Mbps);
-	nRF_set_payload_size(&rf_modul, 0, payload_size);
-	nRF_set_channel		(&rf_modul, 0);
-	nRF_enable_pipe		(&rf_modul, 0);
+	nRF_set_payload_size(&rf_modul, P0, payload_size);
+	nRF_set_channel		(&rf_modul, 50);
+	nRF_enable_pipe		(&rf_modul, P0);
 	nRF_set_address_width(&rf_modul, NRF_ADDRESS_WIDTH);
 
-	uint8_t mode = nRF_get_mode(&rf_modul);
-	//if (mode == TX)
-	//{
+	//uint8_t mode = nRF_get_mode(&rf_modul);
 #ifdef NRF_TX
 		printf("Ovo je TX modul.\n");
 
 		nRF_set_TX_address	(&rf_modul, addr);
 		nRF_set_RX_address	(&rf_modul, P0, addr);
-		// TX modul treba i RX adresu zbog ACK
-	//}
 #endif
-	//else if (mode == RX)
-	//{
 #ifdef NRF_RX
 		printf("Ovo je RX modul.\n");
 
 		nRF_set_TX_address	(&rf_modul, addr);
 		nRF_set_RX_address	(&rf_modul, P0, addr);
 #endif
-	//}
 
 	nRF_enable_CRC(&rf_modul);			// CRC is forced if AutoACK is enabled
 	nRF_set_CRC_length(&rf_modul, CRC_LENGTH_1BTYE);
-
-#ifdef NRF_TX
 	nRF_enable_auto_ack(&rf_modul, P0);	// iako su po defaultu omogucene za sve pajpove
 
+#ifdef NRF_TX
 	nRF_set_retransmit_delay(&rf_modul, DELAY_500us);	// ARD=500µs is long enough for any ACK payload length in 1 or 2Mbps mode.
 	nRF_set_retransmit_count(&rf_modul, 15);			// 1 to 15 retries
 

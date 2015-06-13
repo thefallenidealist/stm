@@ -134,6 +134,8 @@ void nRF_write(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 	if (nRF_is_TX_data_sent(nRF0) == 1)
 	{
 		printf("%s(): TX_DS Paket je poslan\n", __func__);
+		nRF_clear_bits(nRF0);	// INFO rijesi magiju i da se moze startat prvo TX pa RX
+		// INFO rijesi ovo: "radi dobro, ali ako se usred slanja ugasi RX ovaj i dalje javlja da je uspjesno poslao sve"
 	}
 	else if (nRF_is_TX_data_failed(nRF0) == 1)
 	{

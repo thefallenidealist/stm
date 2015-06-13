@@ -35,8 +35,13 @@ void nRF_set_mode(nRF_hw_t *nRF0, nRF_mode_t mode)
 		*/
 		if (mode == RX)
 		{
+			/*
 			delay_ms(5);	// worst case Tpd2stby
+
+			//nRF_clear_bits(nRF0);
+			//nRF_flush_TX(nRF0);
 			//nRF_flush_RX(nRF0);
+
 			ce(nRF0, 1);
 			reg_tmp[PRIM_RX] = 1;
 			write_reg(nRF0, REG_CONFIG);
@@ -45,13 +50,35 @@ void nRF_set_mode(nRF_hw_t *nRF0, nRF_mode_t mode)
 			// zapisi i u objekt
 			nRF0->mode = mode;
 			// sad je u RX modu
+			*/
+			
+			//
+			// pokusaj da se ne mora startat prvo RX modul pa onda TX
+			delay_ms(5);	// worst case Tpd2stby
+
+			nRF_clear_bits(nRF0);
+			nRF_flush_TX(nRF0);
+			nRF_flush_RX(nRF0);
+
+			reg_tmp[PRIM_RX] = 1;
+			write_reg(nRF0, REG_CONFIG);
+
+			ce(nRF0, 1);	// start listening
+			delay_us(130);	// TX/RX settling, datasheet page 22
+
+
+			// zapisi i u objekt
+			nRF0->mode = mode;
+			// sad je u RX modu
 		}
 		else if (mode == TX)
 		{
 			delay_ms(5);	// worst case Tpd2stby
-			ce(nRF0, 0);
+
 			reg_tmp[PRIM_RX] = 0;
 			write_reg(nRF0, REG_CONFIG);
+
+			ce(nRF0, 0);
 			delay_us(130);	// TX/RX settling, datasheet page 22
 
 			// zapisi i u objekt

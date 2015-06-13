@@ -176,8 +176,12 @@ void main(void)
 		float temperature = bmp180_get_temperature();
 		snprintf(tx_buffer, NRF_FIFO_SIZE, "baro: %.1f C", temperature);
 
-		//nRF_write(grf, tx_buffer, strlen(tx_buffer));
-		nRF_write_payload(grf, tx_buffer, strlen(tx_buffer));
+		//nRF_write_payload(grf, tx_buffer, strlen(tx_buffer));	// samo salji
+
+
+		// pametnija verzija koja provjeri jel dobila ACK nazad
+		nRF_write(grf, tx_buffer, strlen(tx_buffer));
+
 		printf("main(): nRF poslao: \"%s\", uptime_us: %u\n", tx_buffer, get_uptime_us());
 #endif	// BARO_H STM32F4
 #endif	// NRF_TX
