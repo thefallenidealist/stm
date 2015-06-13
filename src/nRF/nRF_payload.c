@@ -149,7 +149,8 @@ void nRF_write(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 	}
 	else
 	{
-		printf("%s(): Timeout od %d us se dogodio pa je ovaj iziso, zadani timeout: %d\n", __func__, get_uptime_us()-sent_at, timeout_us);
+		// u slucaju zesceg zajeba, ne bi nikad trebao doc ovamo nego bi trebao javit MAX_RT=1 ako nije poslao
+		printf("%s(): Timeout od %d us se dogodio\n", __func__, get_uptime_us()-sent_at);
 	}
 
 	// power_down
