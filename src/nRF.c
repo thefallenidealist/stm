@@ -131,6 +131,7 @@ int8_t nRF_main(void)
 	nRF_enable_auto_ack(&rf_modul, P0);	// iako su po defaultu omogucene za sve pajpove
 
 	nRF_enable_dynamic_payload(&rf_modul);
+	nRF_enable_dynamic_pipe(&rf_modul, P0);
 
 #ifdef NRF_TX
 	nRF_set_retransmit_delay(&rf_modul, DELAY_500us);	// ARD=500µs is long enough for any ACK payload length in 1 or 2Mbps mode.
