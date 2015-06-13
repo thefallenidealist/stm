@@ -190,8 +190,4 @@ void nRF_debug(nRF_hw_t *nRF0)
 	{
 		print_reg(nRF0, i);
 	}
-
-	printf("nRF pipe0 payload size: %d\n", 	nRF_get_payload_size(nRF0, P0));
-	printf("nRF get dynamic payload length: %d\n", nRF_get_dynamic_payload_length(nRF0, P0));
-
 }

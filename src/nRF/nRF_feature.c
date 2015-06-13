@@ -123,7 +123,7 @@ void nRF_disable_dynamic_pipe(nRF_hw_t *nRF0, nRF_pipe_t pipe)
 /*************************************************************************************************
 				nRF_get_dynamic_payload_length()
 *************************************************************************************************/
-uint8_t nRF_get_dynamic_payload_length(nRF_hw_t *nRF0, nRF_pipe_t pipe)
+uint8_t nRF_get_dynamic_payload_length(nRF_hw_t *nRF0)
 {
 	// The length of the received payload is read by the SPI command "R_RX_PL_WID."
 

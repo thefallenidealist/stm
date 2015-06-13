@@ -68,6 +68,7 @@ bool nRF_read_payload(nRF_hw_t *nRF0)
 		uint8_t pipe		 = nRF_get_payload_pipe(nRF0);			// provjeri u kojem pajpu je teret
 		uint8_t payload_size = nRF_get_payload_size(nRF0, pipe);	// provjeri koliko je velik teret
 				// vjerojatno nije potrebno ako nije dynamic payload, al neka se nadje
+		uint8_t dynamic_size = nRF_get_dynamic_payload_length(nRF0);
 
 		// reading RX FIFO
 		cs(nRF0, 0);
@@ -148,7 +149,7 @@ void nRF_write(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 	}
 	else if (nRF_is_RX_data_ready(nRF0) == 1)
 	{
-		uint8_t length = nRF_get_dynamic_payload_length(nRF0, P0);		// XXX hardcoded pipe0
+		uint8_t length = nRF_get_dynamic_payload_length(nRF0);
 		printf("%s(): RX_DR Izgleda da smo dobili ACK, duzina: %d\n", __func__, length);
 	}
 	else
