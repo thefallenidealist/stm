@@ -130,11 +130,11 @@ uint8_t nRF_get_dynamic_payload_length(nRF_hw_t *nRF0)
 	uint8_t spi_port = nRF0->spi_port;
 	uint8_t length = 0xFF;
 
-	ce(nRF0, 0);
-	length = spi_rw(spi_port, CMD_R_RX_PL_WID);
-	//spi_rw(spi_port, CMD_R_RX_PL_WID);
-	//length = spi_rw(spi_port, CMD_NOP);		// pokusaj
-	ce(nRF0, 1);
+	cs(nRF0, 0);
+	//length = spi_rw(spi_port, CMD_R_RX_PL_WID);
+	spi_rw(spi_port, CMD_R_RX_PL_WID);
+	length = spi_rw(spi_port, 0);		// pokusaj
+	cs(nRF0, 1);
 
 	/*
 	Always check if the packet width reported is 32 bytes or shorter when using the 
