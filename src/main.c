@@ -17,7 +17,9 @@ void main(void);
 #endif
 //#include "eeprom.h" 	// 3.3V
 #if defined STM32F4 || defined STM32F4XX
-#include "baro.h" 	// 5V
+//#include "baro.h" 	// 5V
+//#include "oled_novo.h"
+#include "oled.h"
 #endif
 //#include "oled.h" 	// 5V
 //#include "src/visak/oled.h" 	// 5V
@@ -89,6 +91,9 @@ void main(void)
 	glcd_init();
 	glcd_set_orientation(L1);
 #endif
+#ifdef OLED_H
+	oled_example();
+#endif
 
 #ifdef NRF_H
 	#if defined STM32F4 || defined STM32F4XX
@@ -108,10 +113,6 @@ void main(void)
 #if defined BARO_H && defined STM32F4
 	bmp180_init();
 	//bmp180_example();
-#endif
-
-#ifdef OLED_H
-	oled_example();
 #endif
 
 	printf("sad ide while\n");
