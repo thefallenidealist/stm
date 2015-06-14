@@ -1,14 +1,44 @@
 /*************************************************************************************************
+				nRF_write_TX_FIFO()
+*************************************************************************************************/
+static inline void nRF_write_TX_FIFO(nRF_hw_t *nRF0, char *buffer, uint8_t length, bool dynamic_payload, uint8_t empty_payload)
+{
+	uint8_t spi_port = nRF0->spi_port;
+
+  	// write payload
+	cs(nRF0, 0);
+	spi_rw(spi_port, CMD_W_TX_PAYLOAD);
+	while (length--)
+	{
+		spi_rw(spi_port, *buffer++);
+	}
+	if (dynamic_payload == 0)
+	{
+		// ako buffer ima manje bajtova, popuni sa praznima
+		while (empty_payload--)
+		{
+			spi_rw(spi_port, ' ');
+		}
+	}
+	cs(nRF0, 1);
+
+	// pulse CE for transmission
+	ce(nRF0, 1);
+	delay_us(11);	// 10+ us
+	ce(nRF0, 0);
+}
+
+/*************************************************************************************************
 				nRF_write_payload()
 *************************************************************************************************/
-void nRF_write_payload(nRF_hw_t *nRF0, char *buffer, uint8_t length)
+//void nRF_write_payload(nRF_hw_t *nRF0, char *buffer, uint8_t length)
+static inline void nRF_write_payload(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 {
 	// INFO
 	// moguce mu rec da flusha TX tako da u slucaju da je pokusao prosli paket poslat maksimalno
 	// puta i nije uspio... posalje novi bez explicitnog flushanja iz main()
 	// nRF_flush_TX(nRF0);
 
-	uint8_t spi_port = nRF0->spi_port;
 	uint8_t payload_length = 0;
 	uint8_t empty_payload = 0;
 	bool	dynamic_payload_enabled = nRF_is_dynamic_payload_enabled(nRF0);	// da samo jednom pozove funkciju
@@ -23,7 +53,6 @@ void nRF_write_payload(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 	{
 		payload_length = nRF_get_payload_size(nRF0, P0);	// TODO not hardcoded pipe
 	}
-
 
 	// TODO preimenovat varijable i printfova da imaju smisla, ne znam ni na hrvatskom rec da ima smisla
 
@@ -42,43 +71,42 @@ void nRF_write_payload(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 		empty_payload = payload_length - length;
 	}
 
-  	// write payload
+	nRF_write_TX_FIFO(nRF0, buffer, length, dynamic_payload_enabled, empty_payload);
+}
+/*************************************************************************************************
+				nRF_read_RX_FIFO
+*************************************************************************************************/
+static inline void nRF_read_RX_FIFO(nRF_hw_t *nRF0, uint8_t payload_size)
+{
+	uint8_t spi_port 	 = nRF0->spi_port;
+
 	cs(nRF0, 0);
-	spi_rw(spi_port, CMD_W_TX_PAYLOAD);
-	while (length--)
+	spi_rw(spi_port, CMD_R_RX_PAYLOAD);
+
+	for (uint8_t i=0; i<payload_size; i++)
 	{
-		spi_rw(spi_port, *buffer++);
-	}
-	if (dynamic_payload_enabled == 0)
-	{
-		// ako buffer ima manje bajtova, popuni sa praznima
-		while (empty_payload--)
-		{
-			spi_rw(spi_port, ' ');
-		}
+		// zapisivanje u globalni buffer
+		nRF_RX_buffer[i] = spi_rw(spi_port, CMD_NOP);
 	}
 	cs(nRF0, 1);
-
-	// pulse CE for transmission
-	ce(nRF0, 1);
-	delay_us(11);	// 10+ us
-	ce(nRF0, 0);
+	nRF_RX_buffer[payload_size] = '\0';	// neka se nadje
 }
 
 /*************************************************************************************************
 				nRF_read_payload()
 *************************************************************************************************/
-bool nRF_read_payload(nRF_hw_t *nRF0)
+//bool nRF_read_payload(nRF_hw_t *nRF0)
+bool nRF_read(nRF_hw_t *nRF0)
 {
-	// novo 150602
-	uint8_t spi_port 	 = nRF0->spi_port;
+	//uint8_t spi_port 	 = nRF0->spi_port;
 	uint8_t payload_size = 1;
+	uint8_t pipe = 0xFF;
 
 	bool data_ready = nRF_is_RX_data_ready(nRF0);	// provjeri RX_DR
 
 	if (data_ready == 1)	// dobili smo nesta
 	{
-		uint8_t pipe = nRF_get_payload_pipe(nRF0);			// provjeri u kojem pajpu je teret
+		pipe = nRF_get_payload_pipe(nRF0);			// provjeri u kojem pajpu je teret
 
 		if (nRF_is_dynamic_payload_enabled(nRF0) == 1)
 		{
@@ -91,17 +119,7 @@ bool nRF_read_payload(nRF_hw_t *nRF0)
 
 		nRF_clear_buffer(nRF_RX_buffer);
 
-		// reading RX FIFO
-		cs(nRF0, 0);
-		spi_rw(spi_port, CMD_R_RX_PAYLOAD);
-
-		for (uint8_t i=0; i<payload_size; i++)
-		{
-			// zapisivanje u globalni buffer
-			nRF_RX_buffer[i] = spi_rw(spi_port, CMD_NOP);
-		}
-		cs(nRF0, 1);
-		nRF_RX_buffer[payload_size] = '\0';	// neka se nadje
+		nRF_read_RX_FIFO(nRF0, payload_size);
 
 		//nRF_clear_bits(nRF0); // ocisti RX_DR, TX_DS, MAX_RT
 		nRF_clear_RX_data_ready(nRF0); // INFO mora se pocistit inace se razjebat
@@ -110,64 +128,42 @@ bool nRF_read_payload(nRF_hw_t *nRF0)
 	}
 	else
 	{
-		//printf("Nothing received\n");
 		return 0;
 	}
 }
 
-
-
-
-
-
-
-
 /*************************************************************************************************
 				nRF_write()
 *************************************************************************************************/
-//void nRF_write(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 nRF_write_status_t nRF_write(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 {
 	// kao pametniji write_payload gdje pokusava vise puta poslat i stalno provjerava jel poslano
 	uint8_t  ARC = nRF_get_retransmit_count(nRF0);
 	uint16_t ARD = nRF_get_retransmit_delay_in_us(nRF0);
 	uint32_t timeout_us = ARC*ARD*2;	// 15ms
+	uint32_t sent_at = 0;
 
 	nRF_write_status_t status = NRF_SEND_INVALID;
 
 	nRF_stop_listening(nRF0);
 
-	reg_tmp[PWR_UP] = 1;
-	reg_tmp[PRIM_RX] = 0;
-	delay_us(150);	// 130
-	nRF_write_payload(nRF0, buffer, length);
+	// pretpostavka da je power_on() i set_mode(TX)
 
-	// cekaj na ACK ili da posalje maksimalni broj puta
-	uint32_t sent_at = get_uptime_us();
-	/*
-	do
-	{
-		//printf("%s(): Jos uvijek se salje paket, uptime_us: %ld\n", __func__, get_uptime_us());
-		//return NRF_SEND_IN_PROGRESS;
-		// ne smije bit return jer ce uvijek vratit to gore
-		status = NRF_SEND_IN_PROGRESS;
-	}
-	*/
+	nRF_write_payload(nRF0, buffer, length);
+	sent_at = get_uptime_us();
+
 	// treba radit sve dok nije poslao		ili		sve dok nije ispucao sanse		ili 	timeouto
-	while ( !((nRF_is_TX_data_sent(nRF0) == 1) || (nRF_is_TX_data_failed(nRF0) == 1) || (get_uptime_us() - sent_at > timeout_us)));
+	while ( !((nRF_is_TX_data_sent(nRF0) == 1) || (nRF_is_TX_data_failed(nRF0) == 1) || ((get_uptime_us() - sent_at) > timeout_us)));
 
 	// ili je poslao ili fejlao
 	if (nRF_is_TX_data_sent(nRF0) == 1)
 	{
-		//printf("%s(): TX_DS Paket je poslan\n", __func__);
 		status = NRF_SEND_SUCCESS;
-		nRF_clear_bits(nRF0);	// INFO rijesi magiju i da se moze startat prvo TX pa RX
-		// INFO rijesi ovo: "radi dobro, ali ako se usred slanja ugasi RX ovaj i dalje javlja da je uspjesno poslao sve"
+		nRF_clear_bits(nRF0);	// INFO rijesi magiju da se morao startat prvo RX pa TX
+								// INFO moguce da je magija sama od sebe rijesena kad se TX uspije ispravno startat
 	}
 	else if (nRF_is_TX_data_failed(nRF0) == 1)
 	{
-		//printf("%s(): MAX_RT: %d Maksimalno se potrudio i svejedno fejlao\n", __func__, nRF_get_retransmit_count(nRF0));
-		//return NRF_SEND_FAILED;
 		status = NRF_SEND_FAILED;
 		nRF_clear_bits(nRF0);
 	}

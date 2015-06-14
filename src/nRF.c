@@ -60,7 +60,7 @@ uint8_t addr[6] = "qwert";
 
 nRF_hw_t *grf = NULL;
 
-char nRF_TX_buffer[NRF_FIFO_SIZE+1] = {};
+// TODO ovo bas i nije OO:
 char nRF_RX_buffer[NRF_FIFO_SIZE+1] = {};
 
 /*************************************************************************************************
@@ -70,7 +70,6 @@ int8_t nRF_main(void)
 {
 	// moj pokusaj
 	printf("%s() kaze zdravo\n", __func__);
-	uint8_t payload_size = NRF_PAYLOAD_SIZE;
 
 	static nRF_hw_t rf_modul;
 	grf = &rf_modul;
@@ -103,6 +102,7 @@ int8_t nRF_main(void)
 
 	nRF_set_output_power(&rf_modul, power_0dBm);
 	nRF_set_datarate	(&rf_modul, datarate_2Mbps);
+	//uint8_t payload_size = NRF_PAYLOAD_SIZE;
 	//nRF_set_payload_size(&rf_modul, P0, payload_size);
 	nRF_set_channel		(&rf_modul, 50);
 	nRF_enable_pipe		(&rf_modul, P0);
@@ -144,7 +144,7 @@ int8_t nRF_main(void)
 	nRF_debug(&rf_modul);
 	delay_ms(1500);
 
-	return 0;	// bezveze
+	return 0;
 }
 
 void nRF_debug(nRF_hw_t *nRF0)
@@ -160,7 +160,6 @@ void nRF_debug(nRF_hw_t *nRF0)
 	printf("nRF get datarate: %d\n", nRF_get_datarate(nRF0));
 	printf("nRF get payload pipe: %d\n", nRF_get_payload_pipe(nRF0));
 	nRF_print_enabled_pipe(nRF0);
-
 	nRF_print_RX_address(nRF0, P0);
 	nRF_print_RX_address(nRF0, P1);
 	nRF_print_TX_address(nRF0);
@@ -170,7 +169,7 @@ void nRF_debug(nRF_hw_t *nRF0)
 
 	printf("nRF_is_RX_data_ready: %d\n", nRF_is_RX_data_ready(nRF0));
 
-	// DEBUG oprintaj koji registar
+	// DEBUG oprintaj sve registre
 	for (int i=0; i<0x1E; i++)
 	{
 		print_reg(nRF0, i);

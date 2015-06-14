@@ -142,6 +142,9 @@ static inline void nRF_start_listening	(nRF_hw_t *nRF0);
 static inline void nRF_stop_listening	(nRF_hw_t *nRF0);
 static inline void nRF_flush_TX		(nRF_hw_t *nRF0);
 static inline void nRF_flush_RX		(nRF_hw_t *nRF0);
+static inline void nRF_write_TX_FIFO(nRF_hw_t *nRF0, char *buffer, uint8_t length, bool dynamic_payload, uint8_t empty_payload);
+static inline void nRF_read_RX_FIFO(nRF_hw_t *nRF0, uint8_t payload_size);
+static inline void nRF_write_payload(nRF_hw_t *nRF0, char *buffer, uint8_t length);
 
 
 /*************************************************************************************************
@@ -206,10 +209,11 @@ uint8_t	nRF_get_CRC_length	(nRF_hw_t *nRF0);
 void 	nRF_enable_CRC		(nRF_hw_t *nRF0);
 void 	nRF_disable_CRC		(nRF_hw_t *nRF0);
 
-bool	nRF_read_payload			(nRF_hw_t *nRF0);	// 1 ako je zapisao novi payload u buffer, 0 ako nije
-void 	nRF_write_payload			(nRF_hw_t *nRF0, char *buffer, uint8_t length);
+//bool	nRF_read_payload			(nRF_hw_t *nRF0);	// 1 ako je zapisao novi payload u buffer, 0 ako nije
+bool	nRF_read					(nRF_hw_t *nRF0);	// 1 ako je zapisao novi payload u buffer, 0 ako nije
+//void 	nRF_write_payload			(nRF_hw_t *nRF0, char *buffer, uint8_t length);
 void 	nRF_write_payload_no_ack	(nRF_hw_t *nRF0, char *buffer, uint8_t length);
-nRF_write_status_t nRF_write(nRF_hw_t *nRF0, char *buffer, uint8_t length);
+nRF_write_status_t nRF_write		(nRF_hw_t *nRF0, char *buffer, uint8_t length);
 
 nRF_pipe_t 	nRF_get_enabled_pipe			(nRF_hw_t *nRF0);
 void 		nRF_enable_auto_ack				(nRF_hw_t *nRF0, nRF_pipe_t pipe);

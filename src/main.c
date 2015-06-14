@@ -149,7 +149,8 @@ void main(void)
 #endif
 
 #ifdef NRF_RX
-		bool data_ready = nRF_read_payload(grf);	// vrati 1 kad payload zapise u polje
+		//bool data_ready = nRF_read_payload(grf);	// vrati 1 kad payload zapise u polje
+		bool data_ready = nRF_read(grf);	// vrati 1 kad payload zapise u polje
 
 		if (data_ready)
 		{
@@ -165,9 +166,8 @@ void main(void)
 
 #if defined BARO_H && defined STM32F4
 		float temperature = bmp180_get_temperature();
-		snprintf(tx_buffer, NRF_FIFO_SIZE, "baro: %.1f °C, uptime_us: %u", temperature, get_uptime_us());
+		snprintf(tx_buffer, NRF_FIFO_SIZE, "baro: %.1f °C, uptime_us: %lu", temperature, get_uptime_us());
 
-		//printf("main(): nRF salje: \"%s\", uptime_us: %u\n", tx_buffer, get_uptime_us());
 		nRF_write_status_t status = nRF_write(grf, tx_buffer, strlen(tx_buffer));
 		if (status == NRF_SEND_SUCCESS)
 		{
