@@ -10,10 +10,11 @@ void nRF_write_payload(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 
 	uint8_t spi_port = nRF0->spi_port;
 	uint8_t payload_length = 0;
-	// TODO odma na pocetku provjerit jel length <=32
-	bool dynamic_payload_enabled = nRF_is_dynamic_payload_enabled(nRF0);	// da samo jednom pozove funkciju
+	uint8_t empty_payload = 0;
+	bool	dynamic_payload_enabled = nRF_is_dynamic_payload_enabled(nRF0);	// da samo jednom pozove funkciju
 
-	//if (nRF_is_dynamic_payload_enabled(nRF0) == 1)
+	// TODO odma na pocetku provjerit jel length <=32
+
 	if (dynamic_payload_enabled == 1)
 	{
 		payload_length = length;
@@ -23,7 +24,6 @@ void nRF_write_payload(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 		payload_length = nRF_get_payload_size(nRF0, P0);	// TODO not hardcoded pipe
 	}
 
-	uint8_t empty_payload = 0;
 
 	// TODO preimenovat varijable i printfova da imaju smisla, ne znam ni na hrvatskom rec da ima smisla
 
@@ -35,13 +35,11 @@ void nRF_write_payload(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 	}
 	else if (length > payload_length)
 	{
-		//printf("%s(): Warning: pipe payload width is %d, argument length is %d, trimming\n", __func__, payload_length, length);
 		length = payload_length;	// ne moze poslat vise bajtova nego sto je payload length
 	}
 	else if (length < payload_length)
 	{
 		empty_payload = payload_length - length;
-		//printf("%s(): Info: payload (%d) is smaller than pipe width (%d)\n", __func__, length, payload_length);
 	}
 
   	// write payload
@@ -91,7 +89,6 @@ bool nRF_read_payload(nRF_hw_t *nRF0)
 			payload_size = nRF_get_payload_size(nRF0, pipe);
 		}
 
-		//printf("%s(): payload_size: %d\n", __func__, payload_size);
 		nRF_clear_buffer(nRF_RX_buffer);
 
 		// reading RX FIFO

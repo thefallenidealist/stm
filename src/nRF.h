@@ -9,8 +9,6 @@ extern "C"
 #include <stdint.h>
 #include <string.h>
 #include <stdbool.h>
-//#include <ctype.h> 		// isprint()		// XXX ne radi sa ovim sa PC-ac:w
-
 
 #include "debug.h"
 #include "gpio.h"
@@ -18,13 +16,7 @@ extern "C"
 #include "delay.h"
 #include "convert.h"
 
-#if defined STM32F4 || defined STM32F4XX
-#include "rtc2.h"
-#endif
-
-// TODO zasad napravljeno da samo koristi pipe0
-
-// postavke za nRF
+#define NRF_SPI	1				// F1, F4
 #define NRF_ADDRESS_WIDTH	5
 #define NRF_FIFO_SIZE		32
 #define NRF_PAYLOAD_SIZE	32
@@ -47,22 +39,7 @@ typedef struct
 	char	*cs;
 	char	*ce;
 	char	*irq;
-	//char	*power;
-	// XXX zapravo ne pripada vamo, al mi se jos ne da mijenjt sve
-
-	// ipak trebaju zbog returna funkcija
-	// ovo je ono sto bi trebalo bit, u kodu se kasnije moze usporedjivat
-	// odgovaraju li ove vrijednosti onima procitanima sa hw uredjaja
-
-	//uint8_t address_width;
-	// INFO ovo direktno cita sa uredjaja
-	/*
-	uint8_t address_width;
-	uint8_t	rx_address[6][6];	// 6 pipes with max 5 bytes of address (+ NULL)
-	uint8_t tx_address[6];
-	*/
-	//uint8_t rx_payload_size[6];	// procita direktno sa divajsa, valjda
-	nRF_mode_t	mode;	// RX or TX
+	bool	dynamic_payload;
 } nRF_hw_t;
 
 typedef enum
@@ -139,14 +116,13 @@ typedef enum
 	NRF_SEND_IN_PROGRESS	= 0,	// TX_DS = 0, MAX_RT = 0
 	NRF_SEND_FAILED			= 1,	// MAX_RT = 1
 	NRF_SEND_SUCCESS		= 2,	// TX_DS = 1
-	NRF_SEND_TIMEOUT		= 3,	// Zajeb, software timeout
+	NRF_SEND_TIMEOUT		= 3,	// software timeout
 	NRF_SEND_INVALID
 } nRF_write_status_t;
 
 
 extern char nRF_RX_buffer[NRF_FIFO_SIZE+1];	// treba, +1 za NULL char
-extern char nRF_TX_buffer[NRF_FIFO_SIZE+1];	// vjerojatno nije potreban
-extern nRF_hw_t *grf;
+extern nRF_hw_t *grf;	// pointer na objekt/struct
 
 /*************************************************************************************************
 				private function prototypes
@@ -159,9 +135,14 @@ static void 	print_reg		(nRF_hw_t *nRF0, uint8_t reg);
 static uint8_t 	write_reg		(nRF_hw_t *nRF0, uint8_t reg);
 static void print_address(nRF_hw_t *nRF0, uint8_t mode);
 */
+// INFO static funkcije moraju bit inline ili __atribute__((unused)) da ne javi warning
 static inline void nRF_clear_buffer(char *buffer);
-static uint8_t 	write_reg_full	(nRF_hw_t *nRF0, uint8_t reg, uint8_t value)
-	__attribute__((unused));	// [-Wunused-function]
+static uint8_t 	write_reg_full	(nRF_hw_t *nRF0, uint8_t reg, uint8_t value) __attribute__((unused));	// [-Wunused-function]
+static inline void nRF_start_listening	(nRF_hw_t *nRF0);
+static inline void nRF_stop_listening	(nRF_hw_t *nRF0);
+static inline void nRF_flush_TX		(nRF_hw_t *nRF0);
+static inline void nRF_flush_RX		(nRF_hw_t *nRF0);
+
 
 /*************************************************************************************************
 				public function prototypes
@@ -169,7 +150,6 @@ static uint8_t 	write_reg_full	(nRF_hw_t *nRF0, uint8_t reg, uint8_t value)
 int8_t	nRF_main(void);
 int8_t 	nRF_hw_init(nRF_hw_t *nRF0);
 
-void nRF_clear_RX_data_ready(nRF_hw_t *nRF0);
 
 void	nRF_set_address_width		(nRF_hw_t *nRF0, uint8_t width);
 uint8_t nRF_get_address_width		(nRF_hw_t *nRF0);
@@ -199,6 +179,7 @@ bool 	nRF_is_RX_empty			(nRF_hw_t *nRF0);
 bool 	nRF_is_RX_full			(nRF_hw_t *nRF0);
 bool	nRF_is_present			(nRF_hw_t *nRF0);
 void 	nRF_clear_bits			(nRF_hw_t *nRF0);
+void	nRF_clear_RX_data_ready(nRF_hw_t *nRF0);
 
 int8_t  			nRF_enable_pipe		(nRF_hw_t *nRF0, nRF_pipe_t pipe);
 nRF_payload_pipe_t 	nRF_get_payload_pipe(nRF_hw_t *nRF0);
@@ -217,8 +198,8 @@ void 		nRF_power_off			(nRF_hw_t *nRF0);
 bool 		nRF_is_powered			(nRF_hw_t *nRF0);
 void 		nRF_set_output_power	(nRF_hw_t *nRF0, nRF_output_power_t power);
 
-void 		nRF_set_mode(nRF_hw_t *nRF0, nRF_mode_t mode);
-nRF_mode_t 	nRF_get_mode(nRF_hw_t *nRF0);
+void 		nRF_set_mode	(nRF_hw_t *nRF0, nRF_mode_t mode);
+nRF_mode_t 	nRF_get_mode	(nRF_hw_t *nRF0);
 
 int8_t 	nRF_set_CRC_length	(nRF_hw_t *nRF0, nRF_crc_length_t crc_length);
 uint8_t	nRF_get_CRC_length	(nRF_hw_t *nRF0);
@@ -228,12 +209,7 @@ void 	nRF_disable_CRC		(nRF_hw_t *nRF0);
 bool	nRF_read_payload			(nRF_hw_t *nRF0);	// 1 ako je zapisao novi payload u buffer, 0 ako nije
 void 	nRF_write_payload			(nRF_hw_t *nRF0, char *buffer, uint8_t length);
 void 	nRF_write_payload_no_ack	(nRF_hw_t *nRF0, char *buffer, uint8_t length);
-
-// TODO i ovo ispod vjerojatno moze bit privatno
-void nRF_start_listening	(nRF_hw_t *nRF0);
-void nRF_stop_listening		(nRF_hw_t *nRF0);
-void nRF_flush_TX			(nRF_hw_t *nRF0);
-void nRF_flush_RX			(nRF_hw_t *nRF0);
+nRF_write_status_t nRF_write(nRF_hw_t *nRF0, char *buffer, uint8_t length);
 
 nRF_pipe_t 	nRF_get_enabled_pipe			(nRF_hw_t *nRF0);
 void 		nRF_enable_auto_ack				(nRF_hw_t *nRF0, nRF_pipe_t pipe);
@@ -244,25 +220,16 @@ void		nRF_enable_enhanced_shockburst	(nRF_hw_t *nRF0);
 uint8_t 	nRF_get_payload_width			(nRF_hw_t *nRF0);
 void		nRF_write_ack					(nRF_hw_t *nRF0, nRF_pipe_t pipe);
 
-//void nRF_enable_FEATURE				(nRF_hw_t *nRF0);
-void nRF_enable_dynamic_payload		(nRF_hw_t *nRF0);
-void nRF_disable_dynamic_payload	(nRF_hw_t *nRF0);
-void nRF_enable_dynamic_payload_ack	(nRF_hw_t *nRF0);
-void nRF_disable_dynamic_payload_ack(nRF_hw_t *nRF0);
-void nRF_enable_dynamic_pipe		(nRF_hw_t *nRF0, nRF_pipe_t pipe);
-void nRF_disable_dynamic_pipe		(nRF_hw_t *nRF0, nRF_pipe_t pipe);
+void	nRF_enable_dynamic_payload			(nRF_hw_t *nRF0);
+void	nRF_disable_dynamic_payload			(nRF_hw_t *nRF0);
+void	nRF_enable_dynamic_payload_ack		(nRF_hw_t *nRF0);
+void	nRF_disable_dynamic_payload_ack		(nRF_hw_t *nRF0);
+void	nRF_enable_dynamic_pipe				(nRF_hw_t *nRF0, nRF_pipe_t pipe);
+void	nRF_disable_dynamic_pipe			(nRF_hw_t *nRF0, nRF_pipe_t pipe);
 uint8_t	nRF_get_dynamic_payload_length		(nRF_hw_t *nRF0);
 void	nRF_enable_dynamic_payload_noack	(nRF_hw_t *nRF0);
 void	nRF_disable_dynamic_payload_noack	(nRF_hw_t *nRF0);
-
-// novo, pokusi
-//void nRF_enable_feature_dynPL(nRF_hw_t *nRF0, nRF_pipe_t pipe);
-//void nRF_enable_feature_ackPL(nRF_hw_t *nRF0);
-//void nRF_set_ACK_payload(nRF_hw_t *nRF0, nRF_pipe_t pipe, char *data, uint8_t length);
-
-//void nRF_write(nRF_hw_t *nRF0, char *buffer, uint8_t length);
-nRF_write_status_t nRF_write(nRF_hw_t *nRF0, char *buffer, uint8_t length);
-uint8_t nRF_is_dynamic_payload_enabled(nRF_hw_t *nRF0);
+bool	nRF_is_dynamic_payload_enabled(nRF_hw_t *nRF0);
 
 
 #ifdef __cplusplus

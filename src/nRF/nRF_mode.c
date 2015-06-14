@@ -17,42 +17,8 @@ void nRF_set_mode(nRF_hw_t *nRF0, nRF_mode_t mode)
 	}
 	else
 	{
-		/*
-		if ( (mode == RX) || (mode == TX) )
-		{
-			reg_tmp[PRIM_RX] = mode;
-			write_reg(nRF0, REG_CONFIG);
-			delay_us(130);	// TX/RX settling, datasheet page 22
-			// zapisi i u objekt
-			nRF0->mode = mode;
-		}
-		*/
-		// CHANGED 160613
-		/*
-		For nRF24L01+ to go from power down mode to TX or RX mode it must first pass through stand-by mode. 
-		There must be a delay of Tpd2stby (see Table 16.) after the nRF24L01+ leaves power down mode before 
-		the CE is set high.
-		*/
 		if (mode == RX)
 		{
-			/*
-			delay_ms(5);	// worst case Tpd2stby
-
-			//nRF_clear_bits(nRF0);
-			//nRF_flush_TX(nRF0);
-			//nRF_flush_RX(nRF0);
-
-			ce(nRF0, 1);
-			reg_tmp[PRIM_RX] = 1;
-			write_reg(nRF0, REG_CONFIG);
-			delay_us(130);	// TX/RX settling, datasheet page 22
-
-			// zapisi i u objekt
-			nRF0->mode = mode;
-			// sad je u RX modu
-			*/
-			
-			//
 			// pokusaj da se ne mora startat prvo RX modul pa onda TX
 			delay_ms(5);	// worst case Tpd2stby
 
@@ -68,7 +34,7 @@ void nRF_set_mode(nRF_hw_t *nRF0, nRF_mode_t mode)
 
 
 			// zapisi i u objekt
-			nRF0->mode = mode;
+			//nRF0->mode = mode;
 			// sad je u RX modu
 		}
 		else if (mode == TX)
@@ -82,7 +48,7 @@ void nRF_set_mode(nRF_hw_t *nRF0, nRF_mode_t mode)
 			delay_us(130);	// TX/RX settling, datasheet page 22
 
 			// zapisi i u objekt
-			nRF0->mode = mode;
+			//nRF0->mode = mode;
 			// sad je u TX modu
 		}
 		else

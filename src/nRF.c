@@ -37,13 +37,7 @@
 #include "src/nRF/nRF_present.c"
 #include "src/nRF/nRF_buffer.c"
 
-// XXX jebena magija: veliki ARM sjebe nRF, osim ako se ne resetira lijevim prstenjakom
-// TODO moguce rjesenje magije 100nF + 1-10uF C na Vcc i GND
-//
 // TODO payload_size i payload_width preimenova u payload_length da bude manje zbunjujuce
-
-// mora ici vamo jer se kompajlira modul po modul, nije sve jedan veliki main.c
-#define NRF_SPI	1				// F1, F4
 
 #ifdef STM32F1
 	#define NRF_RX
@@ -64,8 +58,7 @@ uint8_t addr[6] = "qwert";
 //uint8_t addr_tx[5] = "addrT";
 //uint8_t addr_rx[5] = "addrR";
 
-nRF_hw_t rf_modul;
-nRF_hw_t *grf = &rf_modul;
+nRF_hw_t *grf = NULL;
 
 char nRF_TX_buffer[NRF_FIFO_SIZE+1] = {};
 char nRF_RX_buffer[NRF_FIFO_SIZE+1] = {};
@@ -78,6 +71,9 @@ int8_t nRF_main(void)
 	// moj pokusaj
 	printf("%s() kaze zdravo\n", __func__);
 	uint8_t payload_size = NRF_PAYLOAD_SIZE;
+
+	static nRF_hw_t rf_modul;
+	grf = &rf_modul;
 
 	// hw init
 	rf_modul.spi_port 	= NRF_SPI;
