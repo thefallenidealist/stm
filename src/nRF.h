@@ -223,7 +223,7 @@ void 		nRF_debug						(nRF_hw_t *nRF0);
 //void		nRF_disable_enhanced_shockburst	(nRF_hw_t *nRF0);
 //void		nRF_enable_enhanced_shockburst	(nRF_hw_t *nRF0);
 uint8_t 	nRF_get_payload_width			(nRF_hw_t *nRF0);
-void		nRF_write_ack					(nRF_hw_t *nRF0, nRF_pipe_t pipe);
+void		nRF_write_ack					(nRF_hw_t *nRF0);
 
 void	nRF_enable_dynamic_payload			(nRF_hw_t *nRF0);
 void	nRF_disable_dynamic_payload			(nRF_hw_t *nRF0);
