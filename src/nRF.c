@@ -54,14 +54,10 @@
 	#define NRF_IRQ	"PA5"	// XXX, NC, treba lemit
 #endif
 
+nRF_hw_t *grf = NULL;
 uint8_t addr[6] = "qwert";
 //uint8_t addr_tx[5] = "addrT";
 //uint8_t addr_rx[5] = "addrR";
-
-nRF_hw_t *grf = NULL;
-
-// TODO ovo bas i nije OO:
-//char nRF_RX_buffer[NRF_FIFO_SIZE+1] = {};
 
 /*************************************************************************************************
 				nRF_main()
