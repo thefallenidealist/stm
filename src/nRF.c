@@ -31,7 +31,7 @@
 #include "src/nRF/nRF_payload.c"
 #include "src/nRF/nRF_auto_ack.c"
 #include "src/nRF/nRF_listening.c"
-#include "src/nRF/nRF_enhanced_shockburst.c"
+//#include "src/nRF/nRF_enhanced_shockburst.c"
 #include "src/nRF/nRF_ack.c"
 #include "src/nRF/nRF_feature.c"
 #include "src/nRF/nRF_present.c"
@@ -105,16 +105,16 @@ int8_t nRF_main(void)
 	nRF_set_address_width(&rf_modul, NRF_ADDRESS_WIDTH);
 
 #ifdef NRF_TX
-		printf("Ovo je TX modul.\n");
+	printf("Ovo je TX modul.\n");
 
-		nRF_set_TX_address	(&rf_modul, addr);
-		nRF_set_RX_address	(&rf_modul, P0, addr);
+	nRF_set_TX_address	(&rf_modul, addr);
+	nRF_set_RX_address	(&rf_modul, P0, addr);
 #endif
 #ifdef NRF_RX
-		printf("Ovo je RX modul.\n");
+	printf("Ovo je RX modul.\n");
 
-		nRF_set_TX_address	(&rf_modul, addr);
-		nRF_set_RX_address	(&rf_modul, P0, addr);
+	nRF_set_TX_address	(&rf_modul, addr);
+	nRF_set_RX_address	(&rf_modul, P0, addr);
 #endif
 
 	nRF_enable_CRC(&rf_modul);			// CRC is forced if AutoACK is enabled

@@ -50,7 +50,7 @@ void nRF_set_channel(nRF_hw_t *nRF0, uint8_t ch)					// reg 0x05
 *************************************************************************************************/
 uint8_t nRF_get_channel(nRF_hw_t *nRF0)
 {
-	uint8_t status = read_reg(nRF0, REG_RF_CH);
+	uint8_t reg_value = read_reg(nRF0, REG_RF_CH);
 
-	return status-2;
+	return reg_value-2;
 }

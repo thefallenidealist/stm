@@ -3,8 +3,6 @@
 *************************************************************************************************/
 void nRF_set_mode(nRF_hw_t *nRF0, nRF_mode_t mode)
 {
-	// INFO PWR_UP treba bit 1 prije stimanja?
-	// TODO
 	if (nRF0 == NULL)
 	{
 		ERROR("Wrong nRF module address\n");
@@ -31,11 +29,6 @@ void nRF_set_mode(nRF_hw_t *nRF0, nRF_mode_t mode)
 
 			ce(nRF0, 1);	// start listening
 			delay_us(130);	// TX/RX settling, datasheet page 22
-
-
-			// zapisi i u objekt
-			//nRF0->mode = mode;
-			// sad je u RX modu
 		}
 		else if (mode == TX)
 		{
@@ -46,10 +39,6 @@ void nRF_set_mode(nRF_hw_t *nRF0, nRF_mode_t mode)
 
 			ce(nRF0, 0);
 			delay_us(130);	// TX/RX settling, datasheet page 22
-
-			// zapisi i u objekt
-			//nRF0->mode = mode;
-			// sad je u TX modu
 		}
 		else
 		{

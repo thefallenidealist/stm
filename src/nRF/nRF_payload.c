@@ -31,7 +31,6 @@ static inline void nRF_write_TX_FIFO(nRF_hw_t *nRF0, char *buffer, uint8_t lengt
 /*************************************************************************************************
 				nRF_write_payload()
 *************************************************************************************************/
-//void nRF_write_payload(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 static inline void nRF_write_payload(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 {
 	// INFO

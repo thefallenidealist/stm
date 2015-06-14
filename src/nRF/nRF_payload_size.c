@@ -47,33 +47,3 @@ uint8_t nRF_get_payload_size(nRF_hw_t *nRF0, nRF_pipe_t pipe)			// reg 0x{11,12,
 		return payload_size;
 	}
 }
-
-
-
-
-// TODO ispitat kako ovo radi
-/*************************************************************************************************
-				nRF_get_payload_width()
-*************************************************************************************************/
-// INFO koristit nRF_get_dynamic_payload_length()
-	/*
-uint8_t nRF_get_payload_width(nRF_hw_t *nRF0)
-{
-	uint8_t spi_port = nRF0->spi_port;
-
-	cs(nRF0, 0);
-	uint8_t width = spi_rw(spi_port, CMD_R_RX_PL_WID);
-	cs(nRF0, 1);
-
-	if (width > 32)
-	{
-		nRF_flush_RX(nRF0);
-		return 0;
-	}
-	else
-	{
-		return width;
-	}
-	
-}
-	*/

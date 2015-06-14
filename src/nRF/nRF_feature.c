@@ -26,13 +26,7 @@ void nRF_disable_dynamic_payload(nRF_hw_t *nRF0)
 *************************************************************************************************/
 bool nRF_is_dynamic_payload_enabled(nRF_hw_t *nRF0)
 {
-	/*
-	uint8_t readed = read_reg(nRF0, REG_FEATURE);
-	uint8_t dynamic_payload_enabled = ((readed >> EN_DPL) & 1);
-
-	return dynamic_payload_enabled;
-	*/
-	// faster
+	// faster than register read
 	return nRF0->dynamic_payload;
 }
 

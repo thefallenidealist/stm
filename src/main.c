@@ -167,7 +167,7 @@ void main(void)
 
 #if defined BARO_H && defined STM32F4
 		float temperature = bmp180_get_temperature();
-		snprintf(tx_buffer, NRF_FIFO_SIZE, "baro: %.1f °C, uptime_us: %lu", temperature, get_uptime_us());
+		snprintf(tx_buffer, NRF_FIFO_SIZE, "baro: %.1f °C, uptime_us: %u", temperature, get_uptime_us());
 
 		nRF_write_status_t status = nRF_write(grf, tx_buffer, strlen(tx_buffer));
 		if (status == NRF_SEND_SUCCESS)
@@ -186,8 +186,6 @@ void main(void)
 		{
 			printf("%s(): nRF TX software timeout\n", __func__);
 		}
-
-
 #endif	// BARO_H STM32F4
 #endif	// NRF_TX
 	}

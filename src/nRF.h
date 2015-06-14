@@ -39,6 +39,7 @@ typedef struct
 	char	*cs;
 	char	*ce;
 	char	*irq;
+	// ovo ispod i nije bas hw, al kjebat ga
 	bool	dynamic_payload;
 	char	RX_buffer[NRF_FIFO_SIZE+1];	// +1 for char NULL
 } nRF_hw_t;
@@ -131,18 +132,19 @@ static void 	ce				(nRF_hw_t *nRF0, state_t state)	__attribute__((unused));
 static void 	cs				(nRF_hw_t *nRF0, state_t state);
 static uint8_t 	read_reg		(nRF_hw_t *nRF0, uint8_t reg);
 static void 	print_reg		(nRF_hw_t *nRF0, uint8_t reg);
-static uint8_t 	write_reg		(nRF_hw_t *nRF0, uint8_t reg);
+static void		write_reg		(nRF_hw_t *nRF0, uint8_t reg);
 static void print_address(nRF_hw_t *nRF0, uint8_t mode);
 */
 // INFO static funkcije moraju bit inline ili __atribute__((unused)) da ne javi warning
 static inline void nRF_clear_buffer(char *buffer);
-static uint8_t 	write_reg_full	(nRF_hw_t *nRF0, uint8_t reg, uint8_t value) __attribute__((unused));	// [-Wunused-function]
+//static uint8_t 	write_reg_full	(nRF_hw_t *nRF0, uint8_t reg, uint8_t value) __attribute__((unused));	// [-Wunused-function]
+static void write_reg_full	(nRF_hw_t *nRF0, uint8_t reg, uint8_t value) __attribute__((unused));	// [-Wunused-function]
 static inline void nRF_start_listening	(nRF_hw_t *nRF0);
 static inline void nRF_stop_listening	(nRF_hw_t *nRF0);
 static inline void nRF_flush_TX		(nRF_hw_t *nRF0);
 static inline void nRF_flush_RX		(nRF_hw_t *nRF0);
 static inline void nRF_write_TX_FIFO(nRF_hw_t *nRF0, char *buffer, uint8_t length, bool dynamic_payload, uint8_t empty_payload);
-static inline void nRF_read_RX_FIFO(nRF_hw_t *nRF0, uint8_t payload_size);
+static inline void nRF_read_RX_FIFO	(nRF_hw_t *nRF0, uint8_t payload_size);
 static inline void nRF_write_payload(nRF_hw_t *nRF0, char *buffer, uint8_t length);
 
 
@@ -218,8 +220,8 @@ nRF_pipe_t 	nRF_get_enabled_pipe			(nRF_hw_t *nRF0);
 void 		nRF_enable_auto_ack				(nRF_hw_t *nRF0, nRF_pipe_t pipe);
 void 		nRF_disable_auto_ack			(nRF_hw_t *nRF0, nRF_pipe_t pipe);
 void 		nRF_debug						(nRF_hw_t *nRF0);
-void		nRF_disable_enhanced_shockburst	(nRF_hw_t *nRF0);
-void		nRF_enable_enhanced_shockburst	(nRF_hw_t *nRF0);
+//void		nRF_disable_enhanced_shockburst	(nRF_hw_t *nRF0);
+//void		nRF_enable_enhanced_shockburst	(nRF_hw_t *nRF0);
 uint8_t 	nRF_get_payload_width			(nRF_hw_t *nRF0);
 void		nRF_write_ack					(nRF_hw_t *nRF0, nRF_pipe_t pipe);
 
