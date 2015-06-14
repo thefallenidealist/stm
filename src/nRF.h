@@ -134,6 +134,16 @@ typedef enum
 	CRC_LENGTH_2BTYE = 1
 } nRF_crc_length_t;
 
+typedef enum
+{
+	NRF_SEND_IN_PROGRESS	= 0,	// TX_DS = 0, MAX_RT = 0
+	NRF_SEND_FAILED			= 1,	// MAX_RT = 1
+	NRF_SEND_SUCCESS		= 2,	// TX_DS = 1
+	NRF_SEND_TIMEOUT		= 3,	// Zajeb, software timeout
+	NRF_SEND_INVALID
+} nRF_write_status_t;
+
+
 extern char nRF_RX_buffer[NRF_FIFO_SIZE+1];	// treba, +1 za NULL char
 extern char nRF_TX_buffer[NRF_FIFO_SIZE+1];	// vjerojatno nije potreban
 extern nRF_hw_t *grf;
@@ -192,14 +202,12 @@ void 	nRF_clear_bits			(nRF_hw_t *nRF0);
 
 int8_t  			nRF_enable_pipe		(nRF_hw_t *nRF0, nRF_pipe_t pipe);
 nRF_payload_pipe_t 	nRF_get_payload_pipe(nRF_hw_t *nRF0);
+void				nRF_print_enabled_pipe(nRF_hw_t *nRF0);
 
-//int8_t		nRF_set_RX_address	(nRF_hw_t *nRF0, uint8_t address[]);
-int8_t		nRF_set_RX_address	(nRF_hw_t *nRF0, nRF_pipe_t pipe, uint8_t address[]);
-int8_t		nRF_set_TX_address	(nRF_hw_t *nRF0, uint8_t address[]);
-//uint8_t*	nRF_get_RX_address	(nRF_hw_t *nRF0);
-//uint8_t*	nRF_get_TX_address	(nRF_hw_t *nRF0);	
-void nRF_print_RX_address		(nRF_hw_t *nRF0, nRF_pipe_t pipe);
-void nRF_print_TX_address		(nRF_hw_t *nRF0);
+int8_t		nRF_set_RX_address		(nRF_hw_t *nRF0, nRF_pipe_t pipe, uint8_t address[]);
+int8_t		nRF_set_TX_address		(nRF_hw_t *nRF0, uint8_t address[]);
+void		nRF_print_RX_address	(nRF_hw_t *nRF0, nRF_pipe_t pipe);
+void		nRF_print_TX_address	(nRF_hw_t *nRF0);
 
 uint8_t		nRF_set_payload_size	(nRF_hw_t *nRF0, nRF_pipe_t pipe, uint8_t payload_size);
 uint8_t		nRF_get_payload_size	(nRF_hw_t *nRF0, nRF_pipe_t pipe);
@@ -252,8 +260,8 @@ void	nRF_disable_dynamic_payload_noack	(nRF_hw_t *nRF0);
 //void nRF_enable_feature_ackPL(nRF_hw_t *nRF0);
 //void nRF_set_ACK_payload(nRF_hw_t *nRF0, nRF_pipe_t pipe, char *data, uint8_t length);
 
-void nRF_write(nRF_hw_t *nRF0, char *buffer, uint8_t length);
-void nRF_print_enabled_pipe(nRF_hw_t *nRF0);
+//void nRF_write(nRF_hw_t *nRF0, char *buffer, uint8_t length);
+nRF_write_status_t nRF_write(nRF_hw_t *nRF0, char *buffer, uint8_t length);
 uint8_t nRF_is_dynamic_payload_enabled(nRF_hw_t *nRF0);
 
 

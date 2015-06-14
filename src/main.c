@@ -17,9 +17,9 @@ void main(void);
 #endif
 //#include "eeprom.h" 	// 3.3V
 #if defined STM32F4 || defined STM32F4XX
-//#include "baro.h" 	// 5V
+#include "baro.h" 	// 5V
 //#include "oled_novo.h"
-#include "oled.h"
+//#include "oled.h"
 #endif
 //#include "oled.h" 	// 5V
 //#include "src/visak/oled.h" 	// 5V
@@ -35,12 +35,12 @@ void main(void);
 //#include "wlan.h"
 //#include "rtc_ext.h"
 //#include "rom.h"
-//#include "nRF.h"
+#include "nRF.h"
 //#include "flash.h"
 //#include "pwm.h"
 //#include "src/exti.h"
 //#include "src/compass.h"
-#include "uid.h"
+//#include "uid.h"
 
 #define BLINKY_F1	"PA0"
 
@@ -167,8 +167,25 @@ void main(void)
 		float temperature = bmp180_get_temperature();
 		snprintf(tx_buffer, NRF_FIFO_SIZE, "baro: %.1f °C, uptime_us: %u", temperature, get_uptime_us());
 
-		printf("main(): nRF salje: \"%s\", uptime_us: %u\n", tx_buffer, get_uptime_us());
-		nRF_write(grf, tx_buffer, strlen(tx_buffer));
+		//printf("main(): nRF salje: \"%s\", uptime_us: %u\n", tx_buffer, get_uptime_us());
+		nRF_write_status_t status = nRF_write(grf, tx_buffer, strlen(tx_buffer));
+		if (status == NRF_SEND_SUCCESS)
+		{
+			printf("%s(): nRF TX uspjesno poslao: \"%s\"\n", __func__, tx_buffer);
+		}
+		else if (status == NRF_SEND_IN_PROGRESS)
+		{
+			printf("%s(): nRF TX still sending\n", __func__);
+		}
+		else if (status == NRF_SEND_FAILED)
+		{
+			printf("%s(): nRF TX send failed\n", __func__);
+		}
+		else if (status == NRF_SEND_TIMEOUT)
+		{
+			printf("%s(): nRF TX software timeout\n", __func__);
+		}
+
 
 #endif	// BARO_H STM32F4
 #endif	// NRF_TX

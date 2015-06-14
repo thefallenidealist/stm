@@ -59,7 +59,6 @@ void nRF_write_payload(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 			spi_rw(spi_port, ' ');
 		}
 	}
-	
 	cs(nRF0, 1);
 
 	// pulse CE for transmission
@@ -81,7 +80,7 @@ bool nRF_read_payload(nRF_hw_t *nRF0)
 
 	if (data_ready == 1)	// dobili smo nesta
 	{
-		uint8_t pipe		 = nRF_get_payload_pipe(nRF0);			// provjeri u kojem pajpu je teret
+		uint8_t pipe = nRF_get_payload_pipe(nRF0);			// provjeri u kojem pajpu je teret
 
 		if (nRF_is_dynamic_payload_enabled(nRF0) == 1)
 		{
@@ -126,22 +125,18 @@ bool nRF_read_payload(nRF_hw_t *nRF0)
 
 
 
-
-
-
-
-
-
-
 /*************************************************************************************************
 				nRF_write()
 *************************************************************************************************/
-void nRF_write(nRF_hw_t *nRF0, char *buffer, uint8_t length)
+//void nRF_write(nRF_hw_t *nRF0, char *buffer, uint8_t length)
+nRF_write_status_t nRF_write(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 {
 	// kao pametniji write_payload gdje pokusava vise puta poslat i stalno provjerava jel poslano
 	uint8_t  ARC = nRF_get_retransmit_count(nRF0);
 	uint16_t ARD = nRF_get_retransmit_delay_in_us(nRF0);
 	uint32_t timeout_us = ARC*ARD*2;	// 15ms
+
+	nRF_write_status_t status = NRF_SEND_INVALID;
 
 	nRF_stop_listening(nRF0);
 
@@ -152,35 +147,45 @@ void nRF_write(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 
 	// cekaj na ACK ili da posalje maksimalni broj puta
 	uint32_t sent_at = get_uptime_us();
+	/*
 	do
 	{
-		printf("%s(): Jos uvijek se salje paket, uptime_us: %ld\n", __func__, get_uptime_us());
+		//printf("%s(): Jos uvijek se salje paket, uptime_us: %ld\n", __func__, get_uptime_us());
+		//return NRF_SEND_IN_PROGRESS;
+		// ne smije bit return jer ce uvijek vratit to gore
+		status = NRF_SEND_IN_PROGRESS;
 	}
+	*/
 	// treba radit sve dok nije poslao		ili		sve dok nije ispucao sanse		ili 	timeouto
 	while ( !((nRF_is_TX_data_sent(nRF0) == 1) || (nRF_is_TX_data_failed(nRF0) == 1) || (get_uptime_us() - sent_at > timeout_us)));
 
 	// ili je poslao ili fejlao
 	if (nRF_is_TX_data_sent(nRF0) == 1)
 	{
-		printf("%s(): TX_DS Paket je poslan\n", __func__);
+		//printf("%s(): TX_DS Paket je poslan\n", __func__);
+		status = NRF_SEND_SUCCESS;
 		nRF_clear_bits(nRF0);	// INFO rijesi magiju i da se moze startat prvo TX pa RX
 		// INFO rijesi ovo: "radi dobro, ali ako se usred slanja ugasi RX ovaj i dalje javlja da je uspjesno poslao sve"
 	}
 	else if (nRF_is_TX_data_failed(nRF0) == 1)
 	{
-		printf("%s(): MAX_RT: %d Maksimalno se potrudio i svejedno fejlao\n", __func__, nRF_get_retransmit_count(nRF0));
+		//printf("%s(): MAX_RT: %d Maksimalno se potrudio i svejedno fejlao\n", __func__, nRF_get_retransmit_count(nRF0));
+		//return NRF_SEND_FAILED;
+		status = NRF_SEND_FAILED;
 		nRF_clear_bits(nRF0);
 	}
 	else if (nRF_is_RX_data_ready(nRF0) == 1)
 	{
 		uint8_t length = nRF_get_dynamic_payload_length(nRF0);
 		printf("%s(): RX_DR Izgleda da smo dobili ACK, duzina: %d\n", __func__, length);
+		// TODO neki return
 	}
 	else
 	{
 		// u slucaju zesceg zajeba, ne bi nikad trebao doc ovamo nego bi trebao javit MAX_RT=1 ako nije poslao
 		printf("%s(): Timeout od %d us se dogodio\n", __func__, get_uptime_us()-sent_at);
+		status = NRF_SEND_TIMEOUT;
 	}
 
-	// power_down
+	return status;
 }

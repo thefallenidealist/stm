@@ -1,9 +1,10 @@
 // TODO globalne varijable bas i nece radit u slucaju vise modula, stavit ovo unutar objekta
-static bool g_reg_feature_enabled = 0;
-static bool g_dynamic_payload_enabled = 0;
+static volatile bool g_reg_feature_enabled = 0;
+static volatile bool g_dynamic_payload_enabled = 0;
 /*************************************************************************************************
 				nRF_enable_dynamic_payload()
 *************************************************************************************************/
+/*
 void nRF_enable_FEATURE(nRF_hw_t *nRF0)
 {
 	// only in power down or standby mode (when CE is 0);
@@ -24,13 +25,14 @@ void nRF_enable_FEATURE(nRF_hw_t *nRF0)
 				g_reg_feature_enabled);
 	}
 }
+*/
 
 /*************************************************************************************************
 				nRF_enable_dynamic_payload()
 *************************************************************************************************/
 void nRF_enable_dynamic_payload(nRF_hw_t *nRF0)
 {
-	nRF_enable_FEATURE(nRF0);
+	//nRF_enable_FEATURE(nRF0);
 
 	// INFO override the pipes "RX_PW" setting
 	reg_tmp[EN_DPL] = 1;

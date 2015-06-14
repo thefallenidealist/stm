@@ -30,27 +30,5 @@ void nRF_set_address_width(nRF_hw_t *nRF0, uint8_t width)				// reg 0x03
 *************************************************************************************************/
 uint8_t nRF_get_address_width(nRF_hw_t *nRF0)							// reg 0x03
 {
-	// XXX sjebe se ako se koristi citanje iz registra
-	//uint8_t width = nRF0->address_width;
-
-
-	/*
-	uint8_t status = read_reg(nRF0, REG_SETUP_AW);
-	printf("%s(): REG_SETUP_AW: %d\n", __func__, status);
-	uint8_t width  = status + 2;	// jer je 0b11 zapravo 5 bajtna adresa
-
-	if ( (width < 3) || (width > 5) )
-	{
-		//ERROR("Width should be 3, 4 or 5, not: %d\n", width);
-		printf("Width should be 3, 4 or 5, not: %d\n", width);
-	}
-
-	//printf("%s(): address width: %d\n", __func__, width);
-	return width;
-	*/
-
-	//printf("%s(): read_reg: %d\n", __func__, read_reg(nRF0, REG_SETUP_AW));
-
-	//return nRF0->address_width;
-	return (read_reg(nRF0, REG_SETUP_AW) + 2);
+	return (read_reg(nRF0, REG_SETUP_AW) + 2);	// +2 jer  0b01 znaci da je adresa siroka 3b
 }
