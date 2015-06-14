@@ -33,11 +33,12 @@ void main(void);
 //#include "wlan.h"
 //#include "rtc_ext.h"
 //#include "rom.h"
-#include "nRF.h"
+//#include "nRF.h"
 //#include "flash.h"
 //#include "pwm.h"
 //#include "src/exti.h"
 //#include "src/compass.h"
+#include "uid.h"
 
 #define BLINKY_F1	"PA0"
 
@@ -64,6 +65,9 @@ void main(void)
 	printf("________________________________________________________________________________\n");
 
 
+#ifdef UID_H
+	uid_example();
+#endif
 #ifdef RTC_H
 	rtc_main();
 #endif
@@ -149,23 +153,6 @@ void main(void)
 		if (data_ready)
 		{
 			printf("nRF RX je dobio: %s\n", nRF_RX_buffer);
-			//
-			/*
-			printf("nRF RX je dobio: ");
-			for (int i=0; i<30; i++)
-			{
-				printf("%c", nRF_RX_buffer[i]);
-			}
-			printf("\n");
-			*/
-
-			/*
-			// obrisi buffer
-			for (uint8_t i=0; i<NRF_FIFO_SIZE; i++)
-			{
-				nRF_RX_buffer[i] = '\0';
-			}
-			*/
 		}
 
 #endif	// NRF_RX
@@ -177,7 +164,7 @@ void main(void)
 
 #if defined BARO_H && defined STM32F4
 		float temperature = bmp180_get_temperature();
-		snprintf(tx_buffer, NRF_FIFO_SIZE, "baro: %.1f °C", temperature);
+		snprintf(tx_buffer, NRF_FIFO_SIZE, "baro: %.1f °C, uptime_us: %u", temperature, get_uptime_us());
 
 		printf("main(): nRF salje: \"%s\", uptime_us: %u\n", tx_buffer, get_uptime_us());
 		nRF_write(grf, tx_buffer, strlen(tx_buffer));

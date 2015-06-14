@@ -54,7 +54,7 @@ typedef struct
 	// ovo je ono sto bi trebalo bit, u kodu se kasnije moze usporedjivat
 	// odgovaraju li ove vrijednosti onima procitanima sa hw uredjaja
 
-	uint8_t address_width;
+	//uint8_t address_width;
 	// INFO ovo direktno cita sa uredjaja
 	/*
 	uint8_t address_width;
@@ -236,7 +236,7 @@ void		nRF_enable_enhanced_shockburst	(nRF_hw_t *nRF0);
 uint8_t 	nRF_get_payload_width			(nRF_hw_t *nRF0);
 void		nRF_write_ack					(nRF_hw_t *nRF0, nRF_pipe_t pipe);
 
-void nRF_enable_FEATURE				(nRF_hw_t *nRF0);
+//void nRF_enable_FEATURE				(nRF_hw_t *nRF0);
 void nRF_enable_dynamic_payload		(nRF_hw_t *nRF0);
 void nRF_disable_dynamic_payload	(nRF_hw_t *nRF0);
 void nRF_enable_dynamic_payload_ack	(nRF_hw_t *nRF0);
@@ -248,9 +248,9 @@ void	nRF_enable_dynamic_payload_noack	(nRF_hw_t *nRF0);
 void	nRF_disable_dynamic_payload_noack	(nRF_hw_t *nRF0);
 
 // novo, pokusi
-void nRF_enable_feature_dynPL(nRF_hw_t *nRF0, nRF_pipe_t pipe);
-void nRF_enable_feature_ackPL(nRF_hw_t *nRF0);
-void nRF_set_ACK_payload(nRF_hw_t *nRF0, nRF_pipe_t pipe, char *data, uint8_t length);
+//void nRF_enable_feature_dynPL(nRF_hw_t *nRF0, nRF_pipe_t pipe);
+//void nRF_enable_feature_ackPL(nRF_hw_t *nRF0);
+//void nRF_set_ACK_payload(nRF_hw_t *nRF0, nRF_pipe_t pipe, char *data, uint8_t length);
 
 void nRF_write(nRF_hw_t *nRF0, char *buffer, uint8_t length);
 void nRF_print_enabled_pipe(nRF_hw_t *nRF0);

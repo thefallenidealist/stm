@@ -21,7 +21,7 @@ void nRF_set_address_width(nRF_hw_t *nRF0, uint8_t width)				// reg 0x03
 		write_reg(nRF0, REG_SETUP_AW);
 
 		// write into object
-		nRF0->address_width = width;
+		//nRF0->address_width = width;
 	}
 }
 

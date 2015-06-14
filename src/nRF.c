@@ -105,16 +105,13 @@ int8_t nRF_main(void)
 		//return -1;
 	}
 
-	// nRF software init
 	nRF_set_output_power(&rf_modul, power_0dBm);
 	nRF_set_datarate	(&rf_modul, datarate_2Mbps);
 	//nRF_set_payload_size(&rf_modul, P0, payload_size);
-	nRF_set_payload_size(&rf_modul, P0, 5);
 	nRF_set_channel		(&rf_modul, 50);
 	nRF_enable_pipe		(&rf_modul, P0);
 	nRF_set_address_width(&rf_modul, NRF_ADDRESS_WIDTH);
 
-	//uint8_t mode = nRF_get_mode(&rf_modul);
 #ifdef NRF_TX
 		printf("Ovo je TX modul.\n");
 
@@ -154,18 +151,9 @@ int8_t nRF_main(void)
 	return 0;	// bezveze
 }
 
-// TODO nRF_send_payload_wait_ack()
-
 void nRF_debug(nRF_hw_t *nRF0)
 {
 	printf("\n\n\t\t\t\t\t\t%s()\n", __func__);
-
-
-	/*
-	printf("nRF pipe0 payload size: %d\n", 	nRF_get_payload_size(nRF0, 0));
-	printf("nRF_is_RX_data_ready: %d\n", nRF_is_RX_data_ready(nRF0));
-	printf("nRF_is_RX_data_ready: %d\n", nRF_is_RX_data_ready(nRF0));
-	*/
 
 	print_reg(nRF0, 0);
 	print_reg(nRF0, 3);
@@ -175,7 +163,6 @@ void nRF_debug(nRF_hw_t *nRF0)
 	printf("nRF get channel: %d\n", nRF_get_channel(nRF0));
 	printf("nRF get datarate: %d\n", nRF_get_datarate(nRF0));
 	printf("nRF get payload pipe: %d\n", nRF_get_payload_pipe(nRF0));
-	//printf("nRF get enabled pipe: %d\n", nRF_get_enabled_pipe(nRF0));
 	nRF_print_enabled_pipe(nRF0);
 
 	nRF_print_RX_address(nRF0, P0);
