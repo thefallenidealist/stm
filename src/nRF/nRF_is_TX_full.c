@@ -3,9 +3,9 @@
 *************************************************************************************************/
 bool nRF_is_TX_full(nRF_hw_t *nRF0)								// reg 0x17
 {
-	uint8_t status = read_reg(nRF0, REG_FIFO_STATUS);
+	uint8_t reg_value = read_reg(nRF0, REG_FIFO_STATUS);
 
-	return ((status >> TX_FULL2) & 1);	// default 0
+	return ((reg_value >> TX_FULL2) & 1);	// default 0
 }	
 
 /*************************************************************************************************
@@ -13,9 +13,9 @@ bool nRF_is_TX_full(nRF_hw_t *nRF0)								// reg 0x17
 *************************************************************************************************/
 bool nRF_is_TX_full2(nRF_hw_t *nRF0)									// reg 0x06, b0
 {
-	uint8_t status = read_reg(nRF0, REG_STATUS);
+	uint8_t reg_value = read_reg(nRF0, REG_STATUS);
 
-	return (status & 1);	// default 0
+	return (reg_value & 1);	// default 0
 }	
 
 /*************************************************************************************************
@@ -23,7 +23,7 @@ bool nRF_is_TX_full2(nRF_hw_t *nRF0)									// reg 0x06, b0
 *************************************************************************************************/
 bool nRF_is_TX_empty(nRF_hw_t *nRF0)								// reg 0x17
 {
-	uint8_t status = read_reg(nRF0, REG_FIFO_STATUS);
+	uint8_t reg_value = read_reg(nRF0, REG_FIFO_STATUS);
 
-	return ((status >> TX_EMPTY) & 1);	// default 1
+	return ((reg_value >> TX_EMPTY) & 1);	// default 1
 }	

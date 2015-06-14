@@ -55,8 +55,8 @@ nRF_mode_t nRF_get_mode(nRF_hw_t *nRF0)
 {
 	nRF_mode_t mode = MODE_ERROR;
 
-	uint8_t status = read_reg(nRF0, REG_CONFIG);
-	mode = status & 1;
+	uint8_t reg_value = read_reg(nRF0, REG_CONFIG);
+	mode = reg_value & 1;
 
 	return mode;
 }

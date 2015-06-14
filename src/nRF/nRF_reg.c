@@ -31,9 +31,9 @@ static void print_reg(nRF_hw_t *nRF0, uint8_t reg)
 								"RX_PW_P3", "RX_PW_P4", "RX_PW_P5", "FIFO_STATUS", "0x18", "0x19",
 								"0x1A", "0x1B", "REG_DYNPD", "REG_FEATURE"};
 
-	uint8_t status = read_reg(nRF0, reg);
+	uint8_t reg_value = read_reg(nRF0, reg);
 
-	printf("Reading reg: 0x%02X: %3d = 0b%s \t %s\n", reg, status, dec2bin8_str(status), REGISTERS[reg]);	
+	printf("Reading reg: 0x%02X: %3d = 0b%s \t %s\n", reg, reg_value, dec2bin8_str(reg_value), REGISTERS[reg]);	
 }
 
 #define REGISTER_EMPTY_BIT 		2	// bilo sto sto nije 0 ili 1

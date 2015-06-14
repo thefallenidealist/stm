@@ -13,8 +13,8 @@ nRF_payload_pipe_t nRF_get_payload_pipe(nRF_hw_t *nRF0)					// reg 0x07, b321
 	//110: Not Used
 	//111: RX FIFO Empty		default
 
-	uint8_t status = read_reg(nRF0, REG_STATUS);
-	nRF_payload_pipe_t pipe = (status >> 1) & 0b111;
+	uint8_t reg_value = read_reg(nRF0, REG_STATUS);
+	nRF_payload_pipe_t pipe = (reg_value >> 1) & 0b111;
 
 	/*
 	if (pipe == 0b110)

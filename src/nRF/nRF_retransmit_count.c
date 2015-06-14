@@ -31,7 +31,7 @@ void nRF_set_retransmit_count(nRF_hw_t *nRF0, uint8_t count)		// reg 0x04
 *************************************************************************************************/
 uint8_t nRF_get_retransmit_count(nRF_hw_t *nRF0)
 {
-	uint8_t status = read_reg(nRF0, REG_SETUP_RETR);
-	uint8_t count = status & 0b1111;
+	uint8_t reg_value = read_reg(nRF0, REG_SETUP_RETR);
+	uint8_t count = reg_value & 0b1111;
 	return count;
 }

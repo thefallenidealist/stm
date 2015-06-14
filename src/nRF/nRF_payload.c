@@ -141,7 +141,7 @@ nRF_write_status_t nRF_write(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 	uint32_t timeout_us = ARC*ARD*2;	// 15ms
 	uint32_t sent_at = 0;
 
-	nRF_write_status_t status = NRF_SEND_INVALID;
+	nRF_write_status_t reg_value = NRF_SEND_INVALID;
 
 	nRF_stop_listening(nRF0);
 
@@ -156,13 +156,13 @@ nRF_write_status_t nRF_write(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 	// ili je poslao ili fejlao
 	if (nRF_is_TX_data_sent(nRF0) == 1)
 	{
-		status = NRF_SEND_SUCCESS;
+		reg_value = NRF_SEND_SUCCESS;
 		nRF_clear_bits(nRF0);	// INFO rijesi magiju da se morao startat prvo RX pa TX
 								// INFO moguce da je magija sama od sebe rijesena kad se TX uspije ispravno startat
 	}
 	else if (nRF_is_TX_data_failed(nRF0) == 1)
 	{
-		status = NRF_SEND_FAILED;
+		reg_value = NRF_SEND_FAILED;
 		nRF_clear_bits(nRF0);
 	}
 	else if (nRF_is_RX_data_ready(nRF0) == 1)
@@ -175,8 +175,8 @@ nRF_write_status_t nRF_write(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 	{
 		// u slucaju zesceg zajeba, ne bi nikad trebao doc ovamo nego bi trebao javit MAX_RT=1 ako nije poslao
 		printf("%s(): Timeout od %d us se dogodio\n", __func__, get_uptime_us()-sent_at);
-		status = NRF_SEND_TIMEOUT;
+		reg_value = NRF_SEND_TIMEOUT;
 	}
 
-	return status;
+	return reg_value;
 }

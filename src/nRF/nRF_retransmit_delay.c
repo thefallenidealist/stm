@@ -38,8 +38,8 @@ int8_t nRF_set_retransmit_delay(nRF_hw_t *nRF0, nRF_delay_t delay)			// reg 0x04
 uint16_t nRF_get_retransmit_delay_in_us(nRF_hw_t *nRF0)
 {
 	// moze posluzit za racunaje softerskog timeouta kod slanja
-	uint8_t status = read_reg(nRF0, REG_SETUP_RETR);
-	uint8_t delay = (status >> 4) & 0b1111;
+	uint8_t reg_value = read_reg(nRF0, REG_SETUP_RETR);
+	uint8_t delay = (reg_value >> 4) & 0b1111;
 
 	switch (delay)
 	{
