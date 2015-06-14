@@ -40,6 +40,7 @@ typedef struct
 	char	*ce;
 	char	*irq;
 	bool	dynamic_payload;
+	char	RX_buffer[NRF_FIFO_SIZE+1];
 } nRF_hw_t;
 
 typedef enum
@@ -121,7 +122,7 @@ typedef enum
 } nRF_write_status_t;
 
 
-extern char nRF_RX_buffer[NRF_FIFO_SIZE+1];	// treba, +1 za NULL char
+//extern char nRF_RX_buffer[NRF_FIFO_SIZE+1];	// treba, +1 za NULL char
 extern nRF_hw_t *grf;	// pointer na objekt/struct
 
 /*************************************************************************************************

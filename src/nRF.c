@@ -61,7 +61,7 @@ uint8_t addr[6] = "qwert";
 nRF_hw_t *grf = NULL;
 
 // TODO ovo bas i nije OO:
-char nRF_RX_buffer[NRF_FIFO_SIZE+1] = {};
+//char nRF_RX_buffer[NRF_FIFO_SIZE+1] = {};
 
 /*************************************************************************************************
 				nRF_main()

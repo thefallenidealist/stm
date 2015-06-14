@@ -151,10 +151,11 @@ void main(void)
 #ifdef NRF_RX
 		//bool data_ready = nRF_read_payload(grf);	// vrati 1 kad payload zapise u polje
 		bool data_ready = nRF_read(grf);	// vrati 1 kad payload zapise u polje
+		char *buffer = grf->RX_buffer;
 
 		if (data_ready)
 		{
-			printf("nRF RX je dobio: %s\n", nRF_RX_buffer);
+			printf("nRF RX je dobio: %s\n", buffer);
 		}
 
 #endif	// NRF_RX

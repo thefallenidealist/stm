@@ -79,6 +79,7 @@ static inline void nRF_write_payload(nRF_hw_t *nRF0, char *buffer, uint8_t lengt
 static inline void nRF_read_RX_FIFO(nRF_hw_t *nRF0, uint8_t payload_size)
 {
 	uint8_t spi_port 	 = nRF0->spi_port;
+	char *buffer = nRF0->RX_buffer;
 
 	cs(nRF0, 0);
 	spi_rw(spi_port, CMD_R_RX_PAYLOAD);
@@ -86,10 +87,12 @@ static inline void nRF_read_RX_FIFO(nRF_hw_t *nRF0, uint8_t payload_size)
 	for (uint8_t i=0; i<payload_size; i++)
 	{
 		// zapisivanje u globalni buffer
-		nRF_RX_buffer[i] = spi_rw(spi_port, CMD_NOP);
+		//nRF_RX_buffer[i] = spi_rw(spi_port, CMD_NOP);
+		buffer[i] = spi_rw(spi_port, CMD_NOP);
 	}
 	cs(nRF0, 1);
-	nRF_RX_buffer[payload_size] = '\0';	// neka se nadje
+	//nRF_RX_buffer[payload_size] = '\0';	// neka se nadje
+	buffer[payload_size] = '\0';	// neka se nadje
 }
 
 /*************************************************************************************************
@@ -101,6 +104,7 @@ bool nRF_read(nRF_hw_t *nRF0)
 	//uint8_t spi_port 	 = nRF0->spi_port;
 	uint8_t payload_size = 1;
 	uint8_t pipe = 0xFF;
+	char *buffer = nRF0->RX_buffer;
 
 	bool data_ready = nRF_is_RX_data_ready(nRF0);	// provjeri RX_DR
 
@@ -117,7 +121,8 @@ bool nRF_read(nRF_hw_t *nRF0)
 			payload_size = nRF_get_payload_size(nRF0, pipe);
 		}
 
-		nRF_clear_buffer(nRF_RX_buffer);
+		//nRF_clear_buffer(nRF_RX_buffer);
+		nRF_clear_buffer(buffer);
 
 		nRF_read_RX_FIFO(nRF0, payload_size);
 
