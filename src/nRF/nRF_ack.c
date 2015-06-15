@@ -43,12 +43,13 @@ char *nRF_read_ack(nRF_hw_t *nRF0)
 
 	//static uint8_t ack_buffer[32] = {};
 	//static char ack_buffer[32] = {};
+	//char *ack_buffer = nRF0->RX_buffer;
 	char *ack_buffer = nRF0->RX_buffer;
 	uint8_t spi_port = nRF0->spi_port;
 
 	uint8_t length = nRF_get_dynamic_payload_length(nRF0);
 
-	printf("%s(): length: %d\n", __func__, length);
+	//printf("%s(): length: %d\n", __func__, length);
 
 	nRF_clear_buffer(ack_buffer);
 	ack_buffer = nRF0->RX_buffer;	// vrati pointer na pocetak
@@ -59,14 +60,16 @@ char *nRF_read_ack(nRF_hw_t *nRF0)
 	{
 		//ack_buffer[i] = spi_rw(spi_port, 0x00);
 		ack_buffer[i] = spi_rw(spi_port, CMD_NOP);
-		printf("%s(): cita: %c %d\n", __func__, ack_buffer[i], ack_buffer[i]);
+		//printf("%s(): cita: %c %d\n", __func__, ack_buffer[i], ack_buffer[i]);
 	}
 	cs(nRF0, 1);
 	ack_buffer = nRF0->RX_buffer;	// vrati pointer na pocetak
-	//printf("%s(): Evo nas pred kraj, idemo isprintat ack buffer: %s\n", __func__, ack_buffer);
+	//printf("%s(): Evo nas pred kraj, idemo isprintat ack buffer: %s\n", __func__, ack_buffer);	// dobro ispise
+	//printf("%s(): addr lokalni ack: 0x%X, globalni: 0x%X\n", __func__, ack_buffer, nRF0->RX_buffer);	// iste adrese, 0x20000DD1
 
 	nRF_clear_RX_data_ready(nRF0);
 
+	return ack_buffer;	// jebena konjino
 }
 
 /*************************************************************************************************

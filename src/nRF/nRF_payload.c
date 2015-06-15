@@ -172,15 +172,14 @@ nRF_write_status_t nRF_write(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 	print_reg(nRF0, REG_FEATURE);
 
 
-	/*
 	// provjeri jel dobio ACK od PRX
 	if (nRF_is_RX_data_ready(nRF0))
 	{
 		char *ack = nRF_read_ack(nRF0);
-		printf("%s(): izgleda da smo dobili ACK nazad, ack payload: %s\n", __func__, ack);
+		//printf("%s(): izgleda da smo dobili ACK nazad, ack payload: %s\n", __func__, ack);
+		printf("%s(): izgleda da smo dobili ACK nazad, ack payload: %s\n", __func__, nRF0->RX_buffer);
 		nRF_clear_bits(nRF0);
 	}
-	*/
 
 
 	// pretpostavka da je power_on() i set_mode(TX)
@@ -197,12 +196,14 @@ nRF_write_status_t nRF_write(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 	// treba radit sve dok *nije* poslao		ili		sve dok nije ispucao sanse		ili 	timeouto
 	while ( !((nRF_is_TX_data_sent(nRF0) == 1) || (nRF_is_TX_data_failed(nRF0) == 1) || ((get_uptime_us() - sent_at) > timeout_us)));
 
+	/*
 	if (nRF_is_RX_data_ready(nRF0))
 	{
 		char *ack = nRF_read_ack(nRF0);
 		printf("%s(): izgleda da smo dobili ACK nazad, ack payload: %s\n", __func__, ack);
 		nRF_clear_bits(nRF0);
 	}
+	*/
 	if (nRF_is_TX_data_sent(nRF0) == 1)
 	{
 		status = NRF_SEND_SUCCESS;
