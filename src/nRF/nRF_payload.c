@@ -99,6 +99,7 @@ bool nRF_read(nRF_hw_t *nRF0)
 	//printf("%s(): ", __func__);
 	//print_reg(nRF0, REG_FEATURE);
 
+	// kod PRX u TX FIFO zapisi odmah ACK payload
 	if (nRF_is_TX_empty(nRF0) == 1)
 	{
 		// nemoj zapunit FIFO ako ne dobiva pakete
@@ -112,6 +113,7 @@ bool nRF_read(nRF_hw_t *nRF0)
 
 	if (data_ready == 1)	// dobili smo nesta
 	{
+		// ovdje bi trebao automatski poslat ACK payload
 		if (nRF_is_RX_empty(nRF0) != 1)	// citaj teret sve dok ga ima u FIFOu
 		{
 			// buffer je vec spreman, ovo ce ga samo poslat kao ACK_PAYLOAD
@@ -170,21 +172,15 @@ nRF_write_status_t nRF_write(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 	print_reg(nRF0, REG_FEATURE);
 
 
+	/*
 	// provjeri jel dobio ACK od PRX
 	if (nRF_is_RX_data_ready(nRF0))
 	{
-		/*
-		uint8_t length = nRF_get_dynamic_payload_length(nRF0);
-		//uint8_t pipe = nRF_get_payload_pipe(nRF0);
-		uint8_t pipe = 0;	// dynamic payload pipe je uvijek 0?
-		nRF_read_RX_FIFO(nRF0, pipe);
-		char *ack = nRF0->RX_buffer;
-		printf("%s(): izgleda da smo dobili ACK nazad, pipe: %d, duzina: %d, payload: %s\n", __func__, pipe, length, ack);
-		*/
 		char *ack = nRF_read_ack(nRF0);
 		printf("%s(): izgleda da smo dobili ACK nazad, ack payload: %s\n", __func__, ack);
+		nRF_clear_bits(nRF0);
 	}
-
+	*/
 
 
 	// pretpostavka da je power_on() i set_mode(TX)
@@ -201,6 +197,12 @@ nRF_write_status_t nRF_write(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 	// treba radit sve dok *nije* poslao		ili		sve dok nije ispucao sanse		ili 	timeouto
 	while ( !((nRF_is_TX_data_sent(nRF0) == 1) || (nRF_is_TX_data_failed(nRF0) == 1) || ((get_uptime_us() - sent_at) > timeout_us)));
 
+	if (nRF_is_RX_data_ready(nRF0))
+	{
+		char *ack = nRF_read_ack(nRF0);
+		printf("%s(): izgleda da smo dobili ACK nazad, ack payload: %s\n", __func__, ack);
+		nRF_clear_bits(nRF0);
+	}
 	if (nRF_is_TX_data_sent(nRF0) == 1)
 	{
 		status = NRF_SEND_SUCCESS;

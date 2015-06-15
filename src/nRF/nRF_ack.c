@@ -1,27 +1,3 @@
-// TODO provjerit sve funkcije iz ovog fajla
-/*************************************************************************************************
-				nRF_write_ack()
-*************************************************************************************************/
-/*
-void nRF_prepare_ack(nRF_hw_t *nRF0)
-{
-	// zapisi samo ono sto cemo posalt kao ACK u TX FIFO
-	char ctx_buffer[] = "PRX salje nazad";
-	char *tx_buffer = ctx_buffer;
-	uint8_t spi_port = grf->spi_port;
-	uint8_t length = 5;
-
-	// zapuni buffer prije nego sto dobije podatke
-	cs(nRF0, 0);
-	spi_rw(spi_port, CMD_W_TX_PAYLOAD);
-	while (length--)
-	{
-		spi_rw(spi_port, *tx_buffer++);
-	}
-	cs(nRF0, 1);
-}
-*/
-
 /*************************************************************************************************
 				nRF_write_ack()
 *************************************************************************************************/
@@ -33,7 +9,7 @@ void nRF_write_ack(nRF_hw_t *nRF0)
 	// DEBUG TODO
 #define SIZE 10
 	uint8_t length = SIZE;
-	char cbuffer[SIZE] = "PRX ACK";
+	char cbuffer[] = "PRX ACK abcdefghjkl";
 	char *buffer = cbuffer;
 	uint8_t pipe = 0;
 
@@ -56,7 +32,7 @@ void nRF_write_ack(nRF_hw_t *nRF0)
 				nRF_read_ack()
 *************************************************************************************************/
 //uint8_t *nRF_read_ack(nRF_hw_t *nRF0)	// vrati pointer na svoj buffer;
-char *nRF_read_ack(nRF_hw_t *nRF0)	// vrati pointer na svoj buffer;
+char *nRF_read_ack(nRF_hw_t *nRF0)	
 {
 	if (nRF_is_RX_full(nRF0) == 1)
 	{
@@ -66,12 +42,16 @@ char *nRF_read_ack(nRF_hw_t *nRF0)	// vrati pointer na svoj buffer;
 	}
 
 	//static uint8_t ack_buffer[32] = {};
-	static char ack_buffer[32] = {};
+	//static char ack_buffer[32] = {};
+	char *ack_buffer = nRF0->RX_buffer;
 	uint8_t spi_port = nRF0->spi_port;
 
 	uint8_t length = nRF_get_dynamic_payload_length(nRF0);
 
 	printf("%s(): length: %d\n", __func__, length);
+
+	nRF_clear_buffer(ack_buffer);
+	ack_buffer = nRF0->RX_buffer;	// vrati pointer na pocetak
 
 	cs(nRF0, 0);
 	spi_rw(spi_port, CMD_R_RX_PAYLOAD);
@@ -79,8 +59,25 @@ char *nRF_read_ack(nRF_hw_t *nRF0)	// vrati pointer na svoj buffer;
 	{
 		//ack_buffer[i] = spi_rw(spi_port, 0x00);
 		ack_buffer[i] = spi_rw(spi_port, CMD_NOP);
+		printf("%s(): cita: %c %d\n", __func__, ack_buffer[i], ack_buffer[i]);
 	}
 	cs(nRF0, 1);
+
+	/*
+	*ack_buffer++ = 'a';
+	*ack_buffer++ = 'q';
+	*ack_buffer++ = 'w';
+	*ack_buffer++ = 'e';
+	*ack_buffer++ = 'r';
+	*ack_buffer++ = 't';
+	*ack_buffer++ = 'y';
+	*ack_buffer++ = 'u';
+	*ack_buffer++ = 'i';
+	*ack_buffer++ = 'o';
+	*ack_buffer++ = 'p';
+	*ack_buffer++ = '\0';
+	*/
+	ack_buffer = nRF0->RX_buffer;	// vrati pointer na pocetak
 
 	nRF_clear_RX_data_ready(nRF0);
 
