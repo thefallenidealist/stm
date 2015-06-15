@@ -1,11 +1,12 @@
 /*************************************************************************************************
 				nRF_write_ack()
 *************************************************************************************************/
-void nRF_write_ack(nRF_hw_t *nRF0)
+void nRF_write_ack(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 {
 	// samo zapisi payload u TX FIFO, nemoj slat (togglat CE)
 	uint8_t spi_port = nRF0->spi_port;
 
+	/*
 	// DEBUG TODO
 #define SIZE 16
 	uint8_t length = SIZE;
@@ -14,6 +15,7 @@ void nRF_write_ack(nRF_hw_t *nRF0)
 	char cbuffer[33] = {};
 	char *buffer = cbuffer;
 	snprintf(buffer, SIZE, "PRX ACK %02d", counter++);
+	*/
 
 	uint8_t pipe = 0;
 

@@ -217,14 +217,14 @@ bool	nRF_read					(nRF_hw_t *nRF0);	// 1 ako je zapisao novi payload u buffer, 0
 void 	nRF_write_payload_no_ack	(nRF_hw_t *nRF0, char *buffer, uint8_t length);
 nRF_write_status_t nRF_write		(nRF_hw_t *nRF0, char *buffer, uint8_t length);
 
-nRF_pipe_t 	nRF_get_enabled_pipe			(nRF_hw_t *nRF0);
-void 		nRF_enable_auto_ack				(nRF_hw_t *nRF0, nRF_pipe_t pipe);
-void 		nRF_disable_auto_ack			(nRF_hw_t *nRF0, nRF_pipe_t pipe);
-void 		nRF_debug						(nRF_hw_t *nRF0);
-//void		nRF_disable_enhanced_shockburst	(nRF_hw_t *nRF0);
-//void		nRF_enable_enhanced_shockburst	(nRF_hw_t *nRF0);
-uint8_t 	nRF_get_payload_width			(nRF_hw_t *nRF0);
-void		nRF_write_ack					(nRF_hw_t *nRF0);
+nRF_pipe_t 	nRF_get_enabled_pipe	(nRF_hw_t *nRF0);
+void 		nRF_enable_auto_ack		(nRF_hw_t *nRF0, nRF_pipe_t pipe);
+void 		nRF_disable_auto_ack	(nRF_hw_t *nRF0, nRF_pipe_t pipe);
+void 		nRF_debug				(nRF_hw_t *nRF0);
+uint8_t 	nRF_get_payload_width	(nRF_hw_t *nRF0);
+//void		nRF_write_ack			(nRF_hw_t *nRF0);
+void		nRF_write_ack			(nRF_hw_t *nRF0, char *buffer, uint8_t length);
+char		*nRF_read_ack			(nRF_hw_t *nRF0);
 
 void	nRF_enable_dynamic_payload			(nRF_hw_t *nRF0);
 void	nRF_disable_dynamic_payload			(nRF_hw_t *nRF0);
@@ -235,11 +235,7 @@ void	nRF_disable_dynamic_pipe			(nRF_hw_t *nRF0, nRF_pipe_t pipe);
 uint8_t	nRF_get_dynamic_payload_length		(nRF_hw_t *nRF0);
 void	nRF_enable_dynamic_payload_noack	(nRF_hw_t *nRF0);
 void	nRF_disable_dynamic_payload_noack	(nRF_hw_t *nRF0);
-bool	nRF_is_dynamic_payload_enabled(nRF_hw_t *nRF0);
-
-void nRF_prepare_ack(nRF_hw_t *nRF0);
-//uint8_t *nRF_read_ack(nRF_hw_t *nRF0);
-char *nRF_read_ack(nRF_hw_t *nRF0);
+bool	nRF_is_dynamic_payload_enabled		(nRF_hw_t *nRF0);
 
 
 #ifdef __cplusplus

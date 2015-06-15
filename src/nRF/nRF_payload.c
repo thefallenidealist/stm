@@ -98,7 +98,13 @@ bool nRF_read(nRF_hw_t *nRF0)
 	// kod PRX u TX FIFO zapisi odmah ACK payload
 	if (nRF_is_TX_empty(nRF0) == 1)		// nemoj zapunit FIFO ako ne dobiva pakete
 	{
-		nRF_write_ack(nRF0);	// kao prepare ACK, on ce ga automatski poslat kad dobije paket
+		static uint8_t counter;
+		char buffer[NRF_FIFO_SIZE] = {};
+		uint8_t length = sizeof(buffer);
+		snprintf(buffer, length, "PRX ACK salje nazad: %02d", counter++);
+
+		//nRF_write_ack(nRF0);	// kao prepare ACK, on ce ga automatski poslat kad dobije paket
+		nRF_write_ack(nRF0, buffer, length);	// kao prepare ACK, on ce ga automatski poslat kad dobije paket
 	}
 
 	bool data_ready = nRF_is_RX_data_ready(nRF0);	// provjeri RX_DR
