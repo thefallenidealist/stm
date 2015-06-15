@@ -101,10 +101,20 @@ bool nRF_read(nRF_hw_t *nRF0)
 	uint8_t pipe = 0xFF;
 	char *buffer = nRF0->RX_buffer;
 
+	if (nRF_is_TX_empty(nRF0) == 1)
+	{
+		// nemoj zapunit FIFO ako ne dobiva pakete
+		nRF_write_ack(nRF0);	// kao prepare ACK, on ce ga poslat kad dobije paket
+	}
+
 	bool data_ready = nRF_is_RX_data_ready(nRF0);	// provjeri RX_DR
 
 	if (data_ready == 1)	// dobili smo nesta
 	{
+		// buffer je vec spreman, ovo ce ga samo poslat kao ACK_PAYLOAD
+
+
+
 		pipe = nRF_get_payload_pipe(nRF0);			// provjeri u kojem pajpu je teret
 
 		if (nRF_is_dynamic_payload_enabled(nRF0) == 1)
@@ -119,10 +129,12 @@ bool nRF_read(nRF_hw_t *nRF0)
 		nRF_clear_buffer(buffer);
 		nRF_read_RX_FIFO(nRF0, payload_size);
 
+		//nRF_flush_RX(nRF0);	// ACK PD pokusaj
 
 		//nRF_clear_bits(nRF0); // ocisti RX_DR, TX_DS, MAX_RT
 		nRF_clear_RX_data_ready(nRF0); // INFO mora se pocistit inace se razjebat
 
+		//nRF_flush_TX(nRF0);
 		return 1;
 	}
 	else
@@ -162,10 +174,12 @@ nRF_write_status_t nRF_write(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 	nRF_write_payload(nRF0, buffer, length);
 	sent_at = get_uptime_us();
 
+	do
+	{
+		//printf("%s() jos salje\n", __func__);
+	}
 	// treba radit sve dok nije poslao		ili		sve dok nije ispucao sanse		ili 	timeouto
 	while ( !((nRF_is_TX_data_sent(nRF0) == 1) || (nRF_is_TX_data_failed(nRF0) == 1) || ((get_uptime_us() - sent_at) > timeout_us)));
-
-
 
 	// ili je poslao ili fejlao
 	if (nRF_is_TX_data_sent(nRF0) == 1)
@@ -183,16 +197,16 @@ nRF_write_status_t nRF_write(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 	if (nRF_is_TX_data_failed(nRF0) == 1)
 	{
 		reg_value = NRF_SEND_FAILED;
+		//nRF_flush_TX(nRF0);		// jer se nece sam ocistit
 		nRF_clear_bits(nRF0);
 	}
-	/*
 	else if (nRF_is_RX_data_ready(nRF0) == 1)
 	{
 		uint8_t length = nRF_get_dynamic_payload_length(nRF0);
 		printf("%s(): RX_DR Izgleda da smo dobili ACK, duzina: %d\n", __func__, length);
 		// TODO neki return
 	}
-	*/
+	/*
 	else
 	{
 		// u slucaju zesceg zajeba, ne bi nikad trebao doc ovamo nego bi trebao javit MAX_RT=1 ako nije poslao
@@ -200,6 +214,7 @@ nRF_write_status_t nRF_write(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 		reg_value = NRF_SEND_TIMEOUT;
 		nRF_clear_bits(nRF0);
 	}
+	*/
 
 	return reg_value;
 }

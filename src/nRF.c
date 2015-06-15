@@ -97,25 +97,31 @@ int8_t nRF_main(void)
 	}
 
 	nRF_set_output_power(&rf_modul, power_0dBm);
-	nRF_set_datarate	(&rf_modul, datarate_2Mbps);
+	nRF_set_datarate	(&rf_modul, datarate_1Mbps);
 	//uint8_t payload_size = NRF_PAYLOAD_SIZE;
 	//nRF_set_payload_size(&rf_modul, P0, payload_size);
-	nRF_set_channel		(&rf_modul, 50);
+	nRF_set_channel		(&rf_modul, 10);
 	nRF_enable_pipe		(&rf_modul, P0);
-	nRF_enable_pipe		(&rf_modul, P1);	// DYN ACK
+	//nRF_enable_pipe		(&rf_modul, P1);	// DYN ACK
 	nRF_set_address_width(&rf_modul, NRF_ADDRESS_WIDTH);
 
 #ifdef NRF_TX
 	printf("Ovo je TX modul.\n");
 
-	nRF_set_TX_address	(&rf_modul, addr);
-	nRF_set_RX_address	(&rf_modul, P0, addr);
+	//char tx_addr[] = "aTX123";
+	//nRF_set_TX_address	(&rf_modul, tx_addr);
+
+	//nRF_set_TX_address	(&rf_modul, addr);
+	//nRF_set_RX_address	(&rf_modul, P0, addr);
 #endif
 #ifdef NRF_RX
 	printf("Ovo je RX modul.\n");
 
-	nRF_set_TX_address	(&rf_modul, addr);
-	nRF_set_RX_address	(&rf_modul, P0, addr);
+	//char rx_addr[] = "aRX123";
+	//nRF_set_RX_address	(&rf_modul, P0, rx_addr);
+
+	//nRF_set_TX_address	(&rf_modul, addr);
+	//nRF_set_RX_address	(&rf_modul, P0, addr);
 	//nRF_set_RX_address	(&rf_modul, P1, addr);	// DYN ACK
 #endif
 
@@ -123,23 +129,19 @@ int8_t nRF_main(void)
 	nRF_set_CRC_length(&rf_modul, CRC_LENGTH_1BTYE);
 	nRF_enable_auto_ack(&rf_modul, P0);	// iako su po defaultu omogucene za sve pajpove
 
+	nRF_set_retransmit_delay(&rf_modul, DELAY_1500us);	// ARD=500µs is long enough for any ACK payload length in 1 or 2Mbps mode.
+	nRF_set_retransmit_count(&rf_modul, 15);			// 1 to 15 retries
+
 	nRF_enable_dynamic_payload(&rf_modul);
 	nRF_enable_dynamic_pipe(&rf_modul, P0);
 	nRF_enable_dynamic_pipe(&rf_modul, P1);	// DYN ACK
 	nRF_enable_dynamic_payload_ack(&rf_modul);
 
 #ifdef NRF_TX
-	nRF_set_retransmit_delay(&rf_modul, DELAY_500us);	// ARD=500µs is long enough for any ACK payload length in 1 or 2Mbps mode.
-	nRF_set_retransmit_count(&rf_modul, 15);			// 1 to 15 retries
-
 	nRF_set_mode(&rf_modul, TX);
 #endif
 
 #ifdef NRF_RX
-	// DYN ACK:
-	nRF_set_retransmit_delay(&rf_modul, DELAY_500us);	// ARD=500µs is long enough for any ACK payload length in 1 or 2Mbps mode.
-	nRF_set_retransmit_count(&rf_modul, 15);			// 1 to 15 retries
-
 	nRF_set_mode(&rf_modul, RX);
 #endif
 	nRF_power_on(&rf_modul);

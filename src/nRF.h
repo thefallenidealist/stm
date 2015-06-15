@@ -119,6 +119,7 @@ typedef enum
 	NRF_SEND_FAILED			= 1,	// MAX_RT = 1
 	NRF_SEND_SUCCESS		= 2,	// TX_DS = 1
 	NRF_SEND_TIMEOUT		= 3,	// software timeout
+	NRF_ACK					= 8,	// TODO preimenovat
 	NRF_SEND_INVALID
 } nRF_write_status_t;
 
@@ -236,6 +237,7 @@ void	nRF_enable_dynamic_payload_noack	(nRF_hw_t *nRF0);
 void	nRF_disable_dynamic_payload_noack	(nRF_hw_t *nRF0);
 bool	nRF_is_dynamic_payload_enabled(nRF_hw_t *nRF0);
 
+void nRF_prepare_ack(nRF_hw_t *nRF0);
 
 #ifdef __cplusplus
 extern "C"

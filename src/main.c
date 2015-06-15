@@ -153,6 +153,8 @@ void main(void)
 		bool data_ready = nRF_read(grf);	// vrati 1 kad payload zapise u polje
 		char *buffer = grf->RX_buffer;
 
+		//nRF_prepare_ack(grf);
+
 		if (data_ready)
 		{
 			printf("nRF RX je dobio: %s\n", buffer);

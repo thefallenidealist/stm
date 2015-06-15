@@ -3,6 +3,7 @@
 *************************************************************************************************/
 bool nRF_is_present(nRF_hw_t *nRF0)
 {
+	/*
 	uint8_t address1[] = {0x00, 0x01, 0x02, 0x03, 0x04};
 	uint8_t *address2 = NULL;
 	uint8_t address_width = nRF_get_address_width(nRF0);
@@ -14,6 +15,22 @@ bool nRF_is_present(nRF_hw_t *nRF0)
 	for (uint8_t i=0; i<address_width; i++)
 	{
 		if (address1[i] != *address2++)
+		{
+			return 0;
+		}
+	}
+	*/
+
+
+	// nova verzija, samo pokusa procitat defaultnu TX addresu
+	const uint8_t default_tx_address[] = {0xE7, 0xE7, 0xE7, 0xE7, 0xE7};
+	uint8_t *address = NULL;
+	uint8_t address_width = nRF_get_address_width(nRF0);
+	address = nRF_get_TX_address(nRF0);
+
+	for (uint8_t i=0; i<address_width; i++)
+	{
+		if (default_tx_address[i] != *address++)
 		{
 			return 0;
 		}
