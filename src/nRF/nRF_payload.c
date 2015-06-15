@@ -103,32 +103,35 @@ bool nRF_read(nRF_hw_t *nRF0)
 
 	bool data_ready = nRF_is_RX_data_ready(nRF0);	// provjeri RX_DR
 
+	//printf("%s(): RX FIFO empty: %d\n", __func__, nRF_is_RX_empty(nRF0));
+	static int counter = 0;
+
 	if (data_ready == 1)	// dobili smo nesta
 	{
-		// buffer je vec spreman, ovo ce ga samo poslat kao ACK_PAYLOAD
-
-
-
-		pipe = nRF_get_payload_pipe(nRF0);			// provjeri u kojem pajpu je teret
-
-		if (nRF_is_dynamic_payload_enabled(nRF0) == 1)
+		if (nRF_is_RX_empty(nRF0) != 1)	// citaj teret sve dok ga ima u FIFOu
 		{
-			payload_size = nRF_get_dynamic_payload_length(nRF0);
+			// buffer je vec spreman, ovo ce ga samo poslat kao ACK_PAYLOAD
+
+			pipe = nRF_get_payload_pipe(nRF0);			// provjeri u kojem pajpu je teret
+
+			// ovo ispod bi moglo u petlju level iznad jer se nece promijenit dok cita
+			if (nRF_is_dynamic_payload_enabled(nRF0) == 1)
+			{
+				payload_size = nRF_get_dynamic_payload_length(nRF0);
+			}
+			else
+			{
+				payload_size = nRF_get_payload_size(nRF0, pipe);
+			}
+
+			nRF_clear_buffer(buffer);	// zapisi nule u polje
+			nRF_read_RX_FIFO(nRF0, payload_size);
+
+			nRF_clear_RX_data_ready(nRF0); 
+			printf("%s(): Procitali smo %d. FIFO\n", __func__, counter);
+			counter++;
 		}
-		else
-		{
-			payload_size = nRF_get_payload_size(nRF0, pipe);
-		}
-
-		nRF_clear_buffer(buffer);
-		nRF_read_RX_FIFO(nRF0, payload_size);
-
-		//nRF_flush_RX(nRF0);	// ACK PD pokusaj
-
-		//nRF_clear_bits(nRF0); // ocisti RX_DR, TX_DS, MAX_RT
-		nRF_clear_RX_data_ready(nRF0); // INFO mora se pocistit inace se razjebat
-
-		//nRF_flush_TX(nRF0);
+		counter = 0;
 		return 1;
 	}
 	else
@@ -145,7 +148,8 @@ nRF_write_status_t nRF_write(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 	// kao pametniji write_payload gdje pokusava vise puta poslat i stalno provjerava jel poslano
 	uint8_t  ARC = nRF_get_retransmit_count(nRF0);
 	uint16_t ARD = nRF_get_retransmit_delay_in_us(nRF0);
-	uint32_t timeout_us = ARC*ARD*2;	// 15ms
+	//uint32_t timeout_us = ARC*ARD*2;	// 15ms
+	uint32_t timeout_us = 50000;	// fuck it, Venom, arg, 50 ms
 	uint32_t sent_at = 0;
 
 	nRF_write_status_t status = NRF_SEND_INVALID;
