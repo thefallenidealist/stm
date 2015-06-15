@@ -1,4 +1,23 @@
 /*************************************************************************************************
+				nRF_read_RX_FIFO
+*************************************************************************************************/
+static inline void nRF_read_RX_FIFO(nRF_hw_t *nRF0, uint8_t payload_size)
+{
+	uint8_t spi_port 	= nRF0->spi_port;
+	char    *buffer		= nRF0->RX_buffer;
+
+	cs(nRF0, 0);
+	spi_rw(spi_port, CMD_R_RX_PAYLOAD);
+
+	for (uint8_t i=0; i<payload_size; i++)
+	{
+		buffer[i] = spi_rw(spi_port, CMD_NOP);
+	}
+	cs(nRF0, 1);
+	buffer[payload_size] = '\0';	// neka se nadje
+}
+
+/*************************************************************************************************
 				nRF_write_TX_FIFO()
 *************************************************************************************************/
 static inline void nRF_write_TX_FIFO(nRF_hw_t *nRF0, char *buffer, uint8_t length, bool dynamic_payload, uint8_t empty_payload)
@@ -33,27 +52,9 @@ static inline void nRF_write_TX_FIFO(nRF_hw_t *nRF0, char *buffer, uint8_t lengt
 *************************************************************************************************/
 static inline void nRF_write_payload(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 {
-	// INFO
-	// moguce mu rec da flusha TX tako da u slucaju da je pokusao prosli paket poslat maksimalno
-	// puta i nije uspio... posalje novi bez explicitnog flushanja iz main()
-	// nRF_flush_TX(nRF0);
-
 	uint8_t payload_length = 0;
-	uint8_t empty_payload = 0;
+	uint8_t empty_payload_length = 0;
 	bool	dynamic_payload_enabled = nRF_is_dynamic_payload_enabled(nRF0);	// da samo jednom pozove funkciju
-
-	// TODO odma na pocetku provjerit jel length <=32
-
-	if (dynamic_payload_enabled == 1)
-	{
-		payload_length = length;
-	}
-	else
-	{
-		payload_length = nRF_get_payload_size(nRF0, P0);	// TODO not hardcoded pipe
-	}
-
-	// TODO preimenovat varijable i printfova da imaju smisla, ne znam ni na hrvatskom rec da ima smisla
 
 	if (length > 32)
 	{
@@ -61,34 +62,27 @@ static inline void nRF_write_payload(nRF_hw_t *nRF0, char *buffer, uint8_t lengt
 		printf("%s(): Zajeb, length (%d) larger than 32, exiting\n", __func__, length);
 		return;
 	}
-	else if (length > payload_length)
-	{
-		length = payload_length;	// ne moze poslat vise bajtova nego sto je payload length
-	}
-	else if (length < payload_length)
-	{
-		empty_payload = payload_length - length;
-	}
 
-	nRF_write_TX_FIFO(nRF0, buffer, length, dynamic_payload_enabled, empty_payload);
-}
-/*************************************************************************************************
-				nRF_read_RX_FIFO
-*************************************************************************************************/
-static inline void nRF_read_RX_FIFO(nRF_hw_t *nRF0, uint8_t payload_size)
-{
-	uint8_t spi_port 	 = nRF0->spi_port;
-	char *buffer = nRF0->RX_buffer;
-
-	cs(nRF0, 0);
-	spi_rw(spi_port, CMD_R_RX_PAYLOAD);
-
-	for (uint8_t i=0; i<payload_size; i++)
+	if (dynamic_payload_enabled == 1)
 	{
-		buffer[i] = spi_rw(spi_port, CMD_NOP);
+		payload_length = length;
 	}
-	cs(nRF0, 1);
-	buffer[payload_size] = '\0';	// neka se nadje
+	else	// static length payload
+	{
+		payload_length = nRF_get_payload_size(nRF0, P0);	// TODO not hardcoded pipe
+
+		if (length > payload_length)
+		{
+			// ako je kao arugment dobio duzinu manju od 32, ali vecu od pipe length, onda skrati length
+			length = payload_length;
+		}
+		else if (length < payload_length)
+		{
+			// ako je kao argument dobio kracu duzinu od pipe length, tad ostatak treba bit prazni teret
+			empty_payload_length = payload_length - length;
+		}
+	}
+	nRF_write_TX_FIFO(nRF0, buffer, length, dynamic_payload_enabled, empty_payload_length);
 }
 
 /*************************************************************************************************
@@ -104,7 +98,7 @@ bool nRF_read(nRF_hw_t *nRF0)
 	if (nRF_is_TX_empty(nRF0) == 1)
 	{
 		// nemoj zapunit FIFO ako ne dobiva pakete
-		nRF_write_ack(nRF0);	// kao prepare ACK, on ce ga poslat kad dobije paket
+		nRF_write_ack(nRF0);	// kao prepare ACK, on ce ga automatski poslat kad dobije paket
 	}
 
 	bool data_ready = nRF_is_RX_data_ready(nRF0);	// provjeri RX_DR
@@ -154,18 +148,18 @@ nRF_write_status_t nRF_write(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 	uint32_t timeout_us = ARC*ARD*2;	// 15ms
 	uint32_t sent_at = 0;
 
-	nRF_write_status_t reg_value = NRF_SEND_INVALID;
+	nRF_write_status_t status = NRF_SEND_INVALID;
 
 	nRF_stop_listening(nRF0);
 
 
-
+	/*
 	// provjeri jel dobio ACK od PRX
 	if (nRF_is_RX_data_ready(nRF0))
 	{
 		printf("%s(): izgleda da smo dobili ACK nazad\n", __func__);
 	}
-
+	*/
 
 
 
@@ -177,34 +171,32 @@ nRF_write_status_t nRF_write(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 	do
 	{
 		//printf("%s() jos salje\n", __func__);
+		status = NRF_SEND_IN_PROGRESS;
 	}
-	// treba radit sve dok nije poslao		ili		sve dok nije ispucao sanse		ili 	timeouto
+	// treba radit sve dok *nije* poslao		ili		sve dok nije ispucao sanse		ili 	timeouto
 	while ( !((nRF_is_TX_data_sent(nRF0) == 1) || (nRF_is_TX_data_failed(nRF0) == 1) || ((get_uptime_us() - sent_at) > timeout_us)));
 
-	// ili je poslao ili fejlao
 	if (nRF_is_TX_data_sent(nRF0) == 1)
 	{
-		reg_value = NRF_SEND_SUCCESS;
+		status = NRF_SEND_SUCCESS;
 		//nRF_clear_bits(nRF0);	// INFO rijesi magiju da se morao startat prvo RX pa TX
 								// INFO moguce da je magija sama od sebe rijesena kad se TX uspije ispravno startat
+		// pokusaj
+		nRF_flush_TX(nRF0);
+		nRF_clear_bits(nRF0);
 	}
 	if (nRF_is_RX_data_ready(nRF0) == 1)
 	{
 		uint8_t length = nRF_get_dynamic_payload_length(nRF0);
 		printf("%s(): RX_DR Izgleda da smo dobili ACK, duzina: %d\n", __func__, length);
+		status = NRF_ACK;
 	}
 
 	if (nRF_is_TX_data_failed(nRF0) == 1)
 	{
-		reg_value = NRF_SEND_FAILED;
-		//nRF_flush_TX(nRF0);		// jer se nece sam ocistit
+		status = NRF_SEND_FAILED;
+		nRF_flush_TX(nRF0);		// jer se nece sam ocistit
 		nRF_clear_bits(nRF0);
-	}
-	else if (nRF_is_RX_data_ready(nRF0) == 1)
-	{
-		uint8_t length = nRF_get_dynamic_payload_length(nRF0);
-		printf("%s(): RX_DR Izgleda da smo dobili ACK, duzina: %d\n", __func__, length);
-		// TODO neki return
 	}
 	/*
 	else
@@ -216,5 +208,5 @@ nRF_write_status_t nRF_write(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 	}
 	*/
 
-	return reg_value;
+	return status;
 }

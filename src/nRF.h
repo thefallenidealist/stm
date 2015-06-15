@@ -41,7 +41,7 @@ typedef struct
 	char	*irq;
 	// ovo ispod i nije bas hw, al kjebat ga
 	bool	dynamic_payload;
-	char	RX_buffer[NRF_FIFO_SIZE+1];	// +1 for char NULL
+	char	RX_buffer[NRF_FIFO_SIZE+1];	// +1 for NULL char
 } nRF_hw_t;
 
 typedef enum

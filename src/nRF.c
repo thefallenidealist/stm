@@ -55,7 +55,7 @@
 #endif
 
 nRF_hw_t *grf = NULL;
-uint8_t addr[6] = "qwert";
+const uint8_t addr[6] = "qwert";
 //uint8_t addr_tx[5] = "addrT";
 //uint8_t addr_rx[5] = "addrR";
 
