@@ -62,23 +62,8 @@ char *nRF_read_ack(nRF_hw_t *nRF0)
 		printf("%s(): cita: %c %d\n", __func__, ack_buffer[i], ack_buffer[i]);
 	}
 	cs(nRF0, 1);
-
-	/*
-	*ack_buffer++ = 'a';
-	*ack_buffer++ = 'q';
-	*ack_buffer++ = 'w';
-	*ack_buffer++ = 'e';
-	*ack_buffer++ = 'r';
-	*ack_buffer++ = 't';
-	*ack_buffer++ = 'y';
-	*ack_buffer++ = 'u';
-	*ack_buffer++ = 'i';
-	*ack_buffer++ = 'o';
-	*ack_buffer++ = 'p';
-	*ack_buffer++ = '\0';
-	*/
 	ack_buffer = nRF0->RX_buffer;	// vrati pointer na pocetak
-	printf("%s(): Evo nas pred kraj, idemo isprintat ack buffer: %s\n", __func__, ack_buffer);
+	//printf("%s(): Evo nas pred kraj, idemo isprintat ack buffer: %s\n", __func__, ack_buffer);
 
 	nRF_clear_RX_data_ready(nRF0);
 
