@@ -153,6 +153,7 @@ void main(void)
 		if (data_ready)
 		{
 			printf("nRF RX je dobio: %s\n", buffer);
+			//printf("nRF RX je dobio: %s \t poslat ce nazad: %s\n", buffer);
 		}
 
 #endif	// NRF_RX

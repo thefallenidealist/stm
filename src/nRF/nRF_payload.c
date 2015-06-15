@@ -109,7 +109,6 @@ bool nRF_read(nRF_hw_t *nRF0)
 
 	bool data_ready = nRF_is_RX_data_ready(nRF0);	// provjeri RX_DR
 
-	//printf("%s(): RX FIFO empty: %d\n", __func__, nRF_is_RX_empty(nRF0));
 	static int counter = 0;
 
 	if (data_ready == 1)	// dobili smo nesta
@@ -176,7 +175,8 @@ nRF_write_status_t nRF_write(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 	if (nRF_is_RX_data_ready(nRF0))
 	{
 		char *ack = nRF_read_ack(nRF0);
-		printf("%s(): ACK payload: %s\n", __func__, ack);
+		//printf("%s(): ACK payload: %s\n", __func__, ack);
+		printf("%s(): PRX nam je poslao nazad: %s\n", __func__, ack);
 		nRF_clear_bits(nRF0);
 	}
 
@@ -197,12 +197,14 @@ nRF_write_status_t nRF_write(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 	{
 		status = NRF_SEND_SUCCESS;
 	}
+	/*
 	else if (nRF_is_RX_data_ready(nRF0) == 1)
 	{
 		uint8_t length = nRF_get_dynamic_payload_length(nRF0);
 		printf("%s(): RX_DR Izgleda da smo dobili ACK, duzina: %d\n", __func__, length);
 		status = NRF_ACK;
 	}
+	*/
 	else if (nRF_is_TX_data_failed(nRF0) == 1)
 	{
 		status = NRF_SEND_FAILED;
