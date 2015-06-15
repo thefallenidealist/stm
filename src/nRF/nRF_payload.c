@@ -171,7 +171,8 @@ nRF_write_status_t nRF_write(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 	if (nRF_is_RX_data_ready(nRF0))
 	{
 		uint8_t length = nRF_get_dynamic_payload_length(nRF0);
-		uint8_t pipe = nRF_get_payload_pipe(nRF0);
+		//uint8_t pipe = nRF_get_payload_pipe(nRF0);
+		uint8_t pipe = 0;	// dynamic payload pipe je uvijek 0?
 		nRF_read_RX_FIFO(nRF0, pipe);
 		char *ack = nRF0->RX_buffer;
 		printf("%s(): izgleda da smo dobili ACK nazad, pipe: %d, duzina: %d, payload: %s\n", __func__, pipe, length, ack);

@@ -31,8 +31,9 @@ void nRF_write_ack(nRF_hw_t *nRF0)
 	uint8_t spi_port = nRF0->spi_port;
 
 	// DEBUG TODO
-	uint8_t length = 5;
-	char cbuffer[] = "PRX ACK";
+#define SIZE 10
+	uint8_t length = SIZE;
+	char cbuffer[SIZE] = "PRX ACK";
 	char *buffer = cbuffer;
 	uint8_t pipe = 0;
 
