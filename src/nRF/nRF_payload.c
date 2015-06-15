@@ -91,18 +91,13 @@ static inline void nRF_write_payload(nRF_hw_t *nRF0, char *buffer, uint8_t lengt
 *************************************************************************************************/
 bool nRF_read(nRF_hw_t *nRF0)
 {
-	//uint8_t spi_port 	 = nRF0->spi_port;
 	uint8_t payload_size = 1;
 	uint8_t pipe = 0xFF;
 	char *buffer = nRF0->RX_buffer;
 
-	//printf("%s(): ", __func__);
-	//print_reg(nRF0, REG_FEATURE);
-
 	// kod PRX u TX FIFO zapisi odmah ACK payload
-	if (nRF_is_TX_empty(nRF0) == 1)
+	if (nRF_is_TX_empty(nRF0) == 1)		// nemoj zapunit FIFO ako ne dobiva pakete
 	{
-		// nemoj zapunit FIFO ako ne dobiva pakete
 		nRF_write_ack(nRF0);	// kao prepare ACK, on ce ga automatski poslat kad dobije paket
 	}
 
@@ -133,8 +128,9 @@ bool nRF_read(nRF_hw_t *nRF0)
 			nRF_clear_buffer(buffer);	// zapisi nule u polje
 			nRF_read_RX_FIFO(nRF0, payload_size);
 
+			// TODO ova stvar oko 3 FIFO levela
 			nRF_clear_RX_data_ready(nRF0); 
-			printf("%s(): Procitali smo %d. FIFO\n", __func__, counter);
+			//printf("%s(): Procitali smo %d. FIFO\n", __func__, counter);
 			counter++;
 		}
 		counter = 0;
@@ -158,15 +154,13 @@ nRF_write_status_t nRF_write(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 	*/
 
 	// kao pametniji write_payload gdje pokusava vise puta poslat i stalno provjerava jel poslano
-	//uint8_t  ARC = nRF_get_retransmit_count(nRF0);
-	//uint16_t ARD = nRF_get_retransmit_delay_in_us(nRF0);
-	//uint32_t timeout_us = ARC*ARD*2;	// 15ms
-	uint32_t timeout_us = 50000;	// fuck it, Venom, arg, 50 ms
+	uint8_t  ARC = nRF_get_retransmit_count(nRF0);
+	uint16_t ARD = nRF_get_retransmit_delay_in_us(nRF0);
+	uint32_t timeout_us = ARC*ARD*2;	// 15ms
+	//uint32_t timeout_us = 50000;	// fuck it, Venom, arg, 50 ms
 	uint32_t sent_at = 0;
 
 	nRF_write_status_t status = NRF_SEND_INVALID;
-
-	//nRF_stop_listening(nRF0);
 
 	printf("%s(): REG_FEATURE: ", __func__);
 	print_reg(nRF0, REG_FEATURE);
@@ -176,8 +170,7 @@ nRF_write_status_t nRF_write(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 	if (nRF_is_RX_data_ready(nRF0))
 	{
 		char *ack = nRF_read_ack(nRF0);
-		printf("%s(): izgleda da smo dobili ACK nazad, ack payload: \t\t\t %s\n", __func__, ack);
-		//printf("%s(): izgleda da smo dobili ACK nazad, ack payload: %s\n", __func__, nRF0->RX_buffer);
+		printf("%s(): ACK payload: %s\n", __func__, ack);
 		nRF_clear_bits(nRF0);
 	}
 
@@ -189,30 +182,14 @@ nRF_write_status_t nRF_write(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 
 	do
 	{
-		//printf("%s() jos salje\n", __func__);
 		status = NRF_SEND_IN_PROGRESS;
-		//printf("%s(): (get_uptime_us(%u) - sent_at(%u)) > timeout_us(%u)\n", __func__, get_uptime_us(), sent_at, timeout_us);
 	}
 	// treba radit sve dok *nije* poslao		ili		sve dok nije ispucao sanse		ili 	timeouto
 	while ( !((nRF_is_TX_data_sent(nRF0) == 1) || (nRF_is_TX_data_failed(nRF0) == 1) || ((get_uptime_us() - sent_at) > timeout_us)));
 
-	/*
-	if (nRF_is_RX_data_ready(nRF0))		// ACK from PRX to PTX (us)
-	{
-		char *ack = nRF_read_ack(nRF0);
-		//printf("%s(): izgleda da smo dobili ACK nazad, ack payload: %s\n", __func__, ack);
-		printf("%s(): izgleda da smo dobili ACK nazad, ack payload: \t\t\t %s\n", __func__, ack);
-		nRF_clear_bits(nRF0);
-	}
-	*/
 	if (nRF_is_TX_data_sent(nRF0) == 1)
 	{
 		status = NRF_SEND_SUCCESS;
-		//nRF_clear_bits(nRF0);	// INFO rijesi magiju da se morao startat prvo RX pa TX
-								// INFO moguce da je magija sama od sebe rijesena kad se TX uspije ispravno startat
-		// pokusaj
-		//nRF_flush_TX(nRF0);
-		//nRF_clear_bits(nRF0);
 	}
 	else if (nRF_is_RX_data_ready(nRF0) == 1)
 	{

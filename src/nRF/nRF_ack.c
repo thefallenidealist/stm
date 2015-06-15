@@ -11,7 +11,6 @@ void nRF_write_ack(nRF_hw_t *nRF0)
 	uint8_t length = SIZE;
 	static uint8_t counter;
 
-	//char cbuffer[] = "PRX ACK abcdefghjkl";
 	char cbuffer[33] = {};
 	char *buffer = cbuffer;
 	snprintf(buffer, SIZE, "PRX ACK %02d", counter++);
@@ -36,7 +35,6 @@ void nRF_write_ack(nRF_hw_t *nRF0)
 /*************************************************************************************************
 				nRF_read_ack()
 *************************************************************************************************/
-//uint8_t *nRF_read_ack(nRF_hw_t *nRF0)	// vrati pointer na svoj buffer;
 char *nRF_read_ack(nRF_hw_t *nRF0)	
 {
 	if (nRF_is_RX_full(nRF0) == 1)
@@ -46,15 +44,10 @@ char *nRF_read_ack(nRF_hw_t *nRF0)
 		//return;		TODO
 	}
 
-	//static uint8_t ack_buffer[32] = {};
-	//static char ack_buffer[32] = {};
-	//char *ack_buffer = nRF0->RX_buffer;
 	char *ack_buffer = nRF0->RX_buffer;
 	uint8_t spi_port = nRF0->spi_port;
 
 	uint8_t length = nRF_get_dynamic_payload_length(nRF0);
-
-	//printf("%s(): length: %d\n", __func__, length);
 
 	nRF_clear_buffer(ack_buffer);
 	ack_buffer = nRF0->RX_buffer;	// vrati pointer na pocetak
@@ -63,30 +56,21 @@ char *nRF_read_ack(nRF_hw_t *nRF0)
 	spi_rw(spi_port, CMD_R_RX_PAYLOAD);
 	for (uint8_t i=0 ; i<length; i++)
 	{
-		//ack_buffer[i] = spi_rw(spi_port, 0x00);
 		ack_buffer[i] = spi_rw(spi_port, CMD_NOP);
-		//printf("%s(): cita: %c %d\n", __func__, ack_buffer[i], ack_buffer[i]);
 	}
 	cs(nRF0, 1);
 	ack_buffer = nRF0->RX_buffer;	// vrati pointer na pocetak
-	//printf("%s(): Evo nas pred kraj, idemo isprintat ack buffer: %s\n", __func__, ack_buffer);	// dobro ispise
-	//printf("%s(): addr lokalni ack: 0x%X, globalni: 0x%X\n", __func__, ack_buffer, nRF0->RX_buffer);	// iste adrese, 0x20000DD1
-
 	nRF_clear_RX_data_ready(nRF0);
 
 	return ack_buffer;	// jebena konjino
 }
 
+// TODO testirat ovo sranje
 /*************************************************************************************************
 				nRF_write_payload_no_ack()
 *************************************************************************************************/
 void nRF_write_payload_no_ack(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 {
-	// INFO
-	// zapravo isti nRF_write_payload() osim sto salje drugi CMD
-	// TODO mora bit omogucen EN_DYN_ACK u REG_FEATURE da bi ovo radilo, page 63
-
-
 	if (length > 32)
 	{
 		printf("%s(): Zajeb, length (%d) larger than 32, exiting\n", __func__, length);
@@ -103,11 +87,4 @@ void nRF_write_payload_no_ack(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 		spi_rw(spi_port, *buffer++);
 	}
 	cs(nRF0, 1);
-
-	/*
-	// pulse CE for transmission
-	ce(nRF0, 1);
-	delay_us(11);	// 10+ us
-	ce(nRF0, 0);
-	*/
 }
