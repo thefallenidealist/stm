@@ -238,6 +238,9 @@ void	nRF_disable_dynamic_payload_noack	(nRF_hw_t *nRF0);
 bool	nRF_is_dynamic_payload_enabled(nRF_hw_t *nRF0);
 
 void nRF_prepare_ack(nRF_hw_t *nRF0);
+//uint8_t *nRF_read_ack(nRF_hw_t *nRF0);
+char *nRF_read_ack(nRF_hw_t *nRF0);
+
 
 #ifdef __cplusplus
 extern "C"

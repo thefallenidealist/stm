@@ -53,6 +53,38 @@ void nRF_write_ack(nRF_hw_t *nRF0)
 }
 
 /*************************************************************************************************
+				nRF_read_ack()
+*************************************************************************************************/
+//uint8_t *nRF_read_ack(nRF_hw_t *nRF0)	// vrati pointer na svoj buffer;
+char *nRF_read_ack(nRF_hw_t *nRF0)	// vrati pointer na svoj buffer;
+{
+	if (nRF_is_RX_full(nRF0) == 1)
+	{
+		printf("%s(): Zajeb, RX is full, flushing and ______exiting\n", __func__);
+		nRF_flush_RX(nRF0);
+		//return;		TODO
+	}
+
+	//static uint8_t ack_buffer[32] = {};
+	static char ack_buffer[32] = {};
+	uint8_t spi_port = nRF0->spi_port;
+
+	uint8_t length = nRF_get_dynamic_payload_length(nRF0);
+
+	printf("%s(): length: %d\n", __func__, length);
+
+	cs(nRF0, 0);
+	spi_rw(spi_port, CMD_R_RX_PAYLOAD);
+	for (uint8_t i=0 ; i<length; i++)
+	{
+		//ack_buffer[i] = spi_rw(spi_port, 0x00);
+		ack_buffer[i] = spi_rw(spi_port, CMD_NOP);
+	}
+	cs(nRF0, 1);
+
+}
+
+/*************************************************************************************************
 				nRF_write_payload_no_ack()
 *************************************************************************************************/
 void nRF_write_payload_no_ack(nRF_hw_t *nRF0, char *buffer, uint8_t length)

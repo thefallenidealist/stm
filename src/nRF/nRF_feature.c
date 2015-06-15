@@ -27,7 +27,20 @@ void nRF_disable_dynamic_payload(nRF_hw_t *nRF0)
 bool nRF_is_dynamic_payload_enabled(nRF_hw_t *nRF0)
 {
 	// faster than register read
-	return nRF0->dynamic_payload;
+	//return nRF0->dynamic_payload;
+	// zna se sjebat iako prodje init i REG_FEATURE = 0x00
+	uint8_t reg_value = read_reg(nRF0, REG_FEATURE);
+
+	printf("%s(): reg_value (FEATURE): %d\n", __func__, reg_value);
+
+	if (reg_value != 0x00)
+	{
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
 }
 
 /*************************************************************************************************
