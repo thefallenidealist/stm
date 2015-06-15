@@ -7,10 +7,15 @@ void nRF_write_ack(nRF_hw_t *nRF0)
 	uint8_t spi_port = nRF0->spi_port;
 
 	// DEBUG TODO
-#define SIZE 10
+#define SIZE 16
 	uint8_t length = SIZE;
-	char cbuffer[] = "PRX ACK abcdefghjkl";
+	static uint8_t counter;
+
+	//char cbuffer[] = "PRX ACK abcdefghjkl";
+	char cbuffer[33] = {};
 	char *buffer = cbuffer;
+	snprintf(buffer, SIZE, "PRX ACK %02d", counter++);
+
 	uint8_t pipe = 0;
 
 	if (nRF_is_TX_full(nRF0) == 1)

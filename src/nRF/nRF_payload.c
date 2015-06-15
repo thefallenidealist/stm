@@ -197,10 +197,11 @@ nRF_write_status_t nRF_write(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 	while ( !((nRF_is_TX_data_sent(nRF0) == 1) || (nRF_is_TX_data_failed(nRF0) == 1) || ((get_uptime_us() - sent_at) > timeout_us)));
 
 	/*
-	if (nRF_is_RX_data_ready(nRF0))
+	if (nRF_is_RX_data_ready(nRF0))		// ACK from PRX to PTX (us)
 	{
 		char *ack = nRF_read_ack(nRF0);
-		printf("%s(): izgleda da smo dobili ACK nazad, ack payload: %s\n", __func__, ack);
+		//printf("%s(): izgleda da smo dobili ACK nazad, ack payload: %s\n", __func__, ack);
+		printf("%s(): izgleda da smo dobili ACK nazad, ack payload: \t\t\t %s\n", __func__, ack);
 		nRF_clear_bits(nRF0);
 	}
 	*/
