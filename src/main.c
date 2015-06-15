@@ -12,9 +12,6 @@
 #include "cpu_id.h" 	// treba da prvi printf da zna jel masni ili mali ARM
 
 void main(void);
-#if defined STM32F4 || defined STM32F4XX
-#include "rtc2.h"
-#endif
 //#include "eeprom.h" 	// 3.3V
 #if defined STM32F4 || defined STM32F4XX
 #include "baro.h" 	// 5V
@@ -153,8 +150,6 @@ void main(void)
 		bool data_ready = nRF_read(grf);	// vrati 1 kad payload zapise u polje
 		char *buffer = grf->RX_buffer;
 
-		//nRF_prepare_ack(grf);
-
 		if (data_ready)
 		{
 			printf("nRF RX je dobio: %s\n", buffer);
@@ -169,7 +164,8 @@ void main(void)
 
 #if defined BARO_H && defined STM32F4
 		float temperature = bmp180_get_temperature();
-		snprintf(tx_buffer, NRF_FIFO_SIZE, "baro: %.1f °C, uptime_us: %u", temperature, get_uptime_us());
+		static uint8_t counter = 1;
+		snprintf(tx_buffer, NRF_FIFO_SIZE, "t: %.1f C, cnt: %d, us: %u", temperature, counter++, get_uptime_us());
 
 		nRF_write_status_t status = nRF_write(grf, tx_buffer, strlen(tx_buffer));
 		if (status == NRF_SEND_SUCCESS)
