@@ -194,6 +194,7 @@ nRF_write_status_t nRF_write(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 
 	if (nRF_is_TX_data_failed(nRF0) == 1)
 	{
+		// jebem ti git
 		status = NRF_SEND_FAILED;
 		nRF_flush_TX(nRF0);		// jer se nece sam ocistit
 		nRF_clear_bits(nRF0);
