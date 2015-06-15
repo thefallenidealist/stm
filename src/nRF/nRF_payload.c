@@ -176,8 +176,8 @@ nRF_write_status_t nRF_write(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 	if (nRF_is_RX_data_ready(nRF0))
 	{
 		char *ack = nRF_read_ack(nRF0);
-		//printf("%s(): izgleda da smo dobili ACK nazad, ack payload: %s\n", __func__, ack);
-		printf("%s(): izgleda da smo dobili ACK nazad, ack payload: %s\n", __func__, nRF0->RX_buffer);
+		printf("%s(): izgleda da smo dobili ACK nazad, ack payload: \t\t\t %s\n", __func__, ack);
+		//printf("%s(): izgleda da smo dobili ACK nazad, ack payload: %s\n", __func__, nRF0->RX_buffer);
 		nRF_clear_bits(nRF0);
 	}
 
