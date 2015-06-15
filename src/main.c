@@ -174,7 +174,7 @@ void main(void)
 		}
 		else if (status == NRF_SEND_IN_PROGRESS)
 		{
-			printf("%s(): nRF TX still sending\n", __func__);
+			printf("%s(): nRF TX still sending, retransmit count: %d\n", __func__, nRF_get_retransmit_count(grf));
 		}
 		else if (status == NRF_SEND_FAILED)
 		{

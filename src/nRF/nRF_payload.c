@@ -150,7 +150,7 @@ nRF_write_status_t nRF_write(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 
 	nRF_write_status_t status = NRF_SEND_INVALID;
 
-	nRF_stop_listening(nRF0);
+	//nRF_stop_listening(nRF0);
 
 
 	/*
@@ -182,32 +182,29 @@ nRF_write_status_t nRF_write(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 		//nRF_clear_bits(nRF0);	// INFO rijesi magiju da se morao startat prvo RX pa TX
 								// INFO moguce da je magija sama od sebe rijesena kad se TX uspije ispravno startat
 		// pokusaj
-		nRF_flush_TX(nRF0);
-		nRF_clear_bits(nRF0);
+		//nRF_flush_TX(nRF0);
+		//nRF_clear_bits(nRF0);
 	}
-	if (nRF_is_RX_data_ready(nRF0) == 1)
+	else if (nRF_is_RX_data_ready(nRF0) == 1)
 	{
 		uint8_t length = nRF_get_dynamic_payload_length(nRF0);
 		printf("%s(): RX_DR Izgleda da smo dobili ACK, duzina: %d\n", __func__, length);
 		status = NRF_ACK;
 	}
-
-	if (nRF_is_TX_data_failed(nRF0) == 1)
+	else if (nRF_is_TX_data_failed(nRF0) == 1)
 	{
-		// jebem ti git
 		status = NRF_SEND_FAILED;
 		nRF_flush_TX(nRF0);		// jer se nece sam ocistit
 		nRF_clear_bits(nRF0);
 	}
-	/*
 	else
 	{
 		// u slucaju zesceg zajeba, ne bi nikad trebao doc ovamo nego bi trebao javit MAX_RT=1 ako nije poslao
 		printf("%s(): Timeout od %d us se dogodio\n", __func__, get_uptime_us()-sent_at);
-		reg_value = NRF_SEND_TIMEOUT;
+		status = NRF_SEND_TIMEOUT;
+		nRF_flush_TX(nRF0);		// jer se nece sam ocistit
 		nRF_clear_bits(nRF0);
 	}
-	*/
 
 	return status;
 }
