@@ -8,6 +8,19 @@ void nRF_enable_dynamic_payload(nRF_hw_t *nRF0)
 	write_reg(nRF0, REG_FEATURE);
 
 	nRF0->dynamic_payload = 1;
+
+	// zna se sjebat kasnije iako prvi puta pokaze da je u REG_FEATURE 0x06
+	// kasnije zbog toga stalno softverski timeouta
+	delay_ms(500);
+
+	if (read_reg(nRF0, REG_FEATURE) == 0x00)
+	{
+		printf("%s(): Picka mu mater\'na\n", __func__);
+		reg_tmp[EN_DPL] = 1;
+		write_reg(nRF0, REG_FEATURE);
+		delay_ms(50);
+	}
+
 }
 
 /*************************************************************************************************
@@ -31,7 +44,7 @@ bool nRF_is_dynamic_payload_enabled(nRF_hw_t *nRF0)
 	// zna se sjebat iako prodje init i REG_FEATURE = 0x00
 	uint8_t reg_value = read_reg(nRF0, REG_FEATURE);
 
-	printf("%s(): reg_value (FEATURE): %d\n", __func__, reg_value);
+	//printf("%s(): reg_value (FEATURE): %d\n", __func__, reg_value);
 
 	if (reg_value != 0x00)
 	{

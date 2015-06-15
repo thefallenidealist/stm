@@ -82,6 +82,8 @@ char *nRF_read_ack(nRF_hw_t *nRF0)	// vrati pointer na svoj buffer;
 	}
 	cs(nRF0, 1);
 
+	nRF_clear_RX_data_ready(nRF0);
+
 }
 
 /*************************************************************************************************

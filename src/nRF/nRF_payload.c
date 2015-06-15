@@ -96,6 +96,9 @@ bool nRF_read(nRF_hw_t *nRF0)
 	uint8_t pipe = 0xFF;
 	char *buffer = nRF0->RX_buffer;
 
+	//printf("%s(): ", __func__);
+	//print_reg(nRF0, REG_FEATURE);
+
 	if (nRF_is_TX_empty(nRF0) == 1)
 	{
 		// nemoj zapunit FIFO ako ne dobiva pakete
@@ -153,15 +156,15 @@ nRF_write_status_t nRF_write(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 	*/
 
 	// kao pametniji write_payload gdje pokusava vise puta poslat i stalno provjerava jel poslano
-	uint8_t  ARC = nRF_get_retransmit_count(nRF0);
-	uint16_t ARD = nRF_get_retransmit_delay_in_us(nRF0);
+	//uint8_t  ARC = nRF_get_retransmit_count(nRF0);
+	//uint16_t ARD = nRF_get_retransmit_delay_in_us(nRF0);
 	//uint32_t timeout_us = ARC*ARD*2;	// 15ms
 	uint32_t timeout_us = 50000;	// fuck it, Venom, arg, 50 ms
 	uint32_t sent_at = 0;
 
 	nRF_write_status_t status = NRF_SEND_INVALID;
 
-	nRF_stop_listening(nRF0);
+	//nRF_stop_listening(nRF0);
 
 	printf("%s(): REG_FEATURE: ", __func__);
 	print_reg(nRF0, REG_FEATURE);
