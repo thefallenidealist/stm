@@ -78,6 +78,7 @@ char *nRF_read_ack(nRF_hw_t *nRF0)
 	*ack_buffer++ = '\0';
 	*/
 	ack_buffer = nRF0->RX_buffer;	// vrati pointer na pocetak
+	printf("%s(): Evo nas pred kraj, idemo isprintat ack buffer: %s\n", __func__, ack_buffer);
 
 	nRF_clear_RX_data_ready(nRF0);
 
