@@ -166,9 +166,14 @@ nRF_write_status_t nRF_write(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 	uint32_t sent_at = 0;
 
 	nRF_write_status_t status = NRF_SEND_INVALID;
+	nRF_flush_TX(nRF0);	// pokusaj
+	// jebemu
+	//write_reg_full(nRF0, REG_FEATURE, 0x06);
 
+	/*
 	printf("%s(): REG_FEATURE: ", __func__);
 	print_reg(nRF0, REG_FEATURE);
+	*/
 
 
 	// provjeri jel dobio ACK od PRX

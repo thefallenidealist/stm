@@ -88,6 +88,7 @@ int8_t nRF_main(void)
 
 	delay_ms(11);	// 10.3 ms		// power on delay
 	delay_ms(100);	// datasheet page 22		Power on reset
+	// ne pomazu dodatni delayi
 
 	if (nRF_is_present(&rf_modul) == 0)
 	{
