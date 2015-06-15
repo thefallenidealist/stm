@@ -52,6 +52,7 @@ static inline void nRF_write_TX_FIFO(nRF_hw_t *nRF0, char *buffer, uint8_t lengt
 *************************************************************************************************/
 static inline void nRF_write_payload(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 {
+
 	uint8_t payload_length = 0;
 	uint8_t empty_payload_length = 0;
 	bool	dynamic_payload_enabled = nRF_is_dynamic_payload_enabled(nRF0);	// da samo jednom pozove funkciju
@@ -145,6 +146,12 @@ bool nRF_read(nRF_hw_t *nRF0)
 *************************************************************************************************/
 nRF_write_status_t nRF_write(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 {
+	/*
+	The TX FIFO in 
+	a PRX is blocked if all pending payloads are addressed to pipes where the link to the PTX is lost. In this 
+	case, the MCU can flush the TX FIFO using the FLUSH_TX command.
+	*/
+
 	// kao pametniji write_payload gdje pokusava vise puta poslat i stalno provjerava jel poslano
 	uint8_t  ARC = nRF_get_retransmit_count(nRF0);
 	uint16_t ARD = nRF_get_retransmit_delay_in_us(nRF0);
@@ -154,16 +161,17 @@ nRF_write_status_t nRF_write(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 
 	nRF_write_status_t status = NRF_SEND_INVALID;
 
-	//nRF_stop_listening(nRF0);
+	nRF_stop_listening(nRF0);
+
+	printf("%s(): REG_FEATURE: ", __func__);
+	print_reg(nRF0, REG_FEATURE);
 
 
-	/*
 	// provjeri jel dobio ACK od PRX
 	if (nRF_is_RX_data_ready(nRF0))
 	{
 		printf("%s(): izgleda da smo dobili ACK nazad\n", __func__);
 	}
-	*/
 
 
 
@@ -176,6 +184,7 @@ nRF_write_status_t nRF_write(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 	{
 		//printf("%s() jos salje\n", __func__);
 		status = NRF_SEND_IN_PROGRESS;
+		//printf("%s(): (get_uptime_us(%u) - sent_at(%u)) > timeout_us(%u)\n", __func__, get_uptime_us(), sent_at, timeout_us);
 	}
 	// treba radit sve dok *nije* poslao		ili		sve dok nije ispucao sanse		ili 	timeouto
 	while ( !((nRF_is_TX_data_sent(nRF0) == 1) || (nRF_is_TX_data_failed(nRF0) == 1) || ((get_uptime_us() - sent_at) > timeout_us)));

@@ -102,7 +102,6 @@ int8_t nRF_main(void)
 	//nRF_set_payload_size(&rf_modul, P0, payload_size);
 	nRF_set_channel		(&rf_modul, 10);
 	nRF_enable_pipe		(&rf_modul, P0);
-	//nRF_enable_pipe		(&rf_modul, P1);	// DYN ACK
 	nRF_set_address_width(&rf_modul, NRF_ADDRESS_WIDTH);
 
 #ifdef NRF_TX
@@ -126,7 +125,7 @@ int8_t nRF_main(void)
 #endif
 
 	nRF_enable_CRC(&rf_modul);			// CRC is forced if AutoACK is enabled
-	nRF_set_CRC_length(&rf_modul, CRC_LENGTH_1BTYE);
+	nRF_set_CRC_length(&rf_modul, CRC_LENGTH_2BTYE);
 	nRF_enable_auto_ack(&rf_modul, P0);	// iako su po defaultu omogucene za sve pajpove
 
 	nRF_set_retransmit_delay(&rf_modul, DELAY_1500us);	// ARD=500µs is long enough for any ACK payload length in 1 or 2Mbps mode.
@@ -134,7 +133,6 @@ int8_t nRF_main(void)
 
 	nRF_enable_dynamic_payload(&rf_modul);
 	nRF_enable_dynamic_pipe(&rf_modul, P0);
-	nRF_enable_dynamic_pipe(&rf_modul, P1);	// DYN ACK
 	nRF_enable_dynamic_payload_ack(&rf_modul);
 
 #ifdef NRF_TX

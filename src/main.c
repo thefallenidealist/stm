@@ -172,15 +172,18 @@ void main(void)
 		{
 			printf("%s(): nRF TX uspjesno poslao: \"%s\"\n", __func__, tx_buffer);
 		}
-		else if (status == NRF_SEND_IN_PROGRESS)
+		//else if (status == NRF_SEND_IN_PROGRESS)
+		if (status == NRF_SEND_IN_PROGRESS)
 		{
 			printf("%s(): nRF TX still sending, retransmit count: %d\n", __func__, nRF_get_retransmit_count(grf));
 		}
-		else if (status == NRF_SEND_FAILED)
+		//else if (status == NRF_SEND_FAILED)
+		if (status == NRF_SEND_FAILED)
 		{
 			printf("%s(): nRF TX send failed\n", __func__);
 		}
-		else if (status == NRF_SEND_TIMEOUT)
+		//else if (status == NRF_SEND_TIMEOUT)
+		if (status == NRF_SEND_TIMEOUT)
 		{
 			printf("%s(): nRF TX software timeout\n", __func__);
 		}
