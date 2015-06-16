@@ -6,8 +6,6 @@
 extern "C" {
 #endif
 
-// TODO izvuc pinout vamo
-// PB10, PB11	F4
 
 #include <stdio.h>
 #include <stdint.h>
@@ -26,7 +24,7 @@ extern "C" {
 #define I2C_TIMEOUT_MAX 0xFFFF
 #define I2C_PIN_SDA	// TODO
 /*
-F4 I2C2:
+F1 i F4 I2C2:
 SCL	PB10
 SDA	PB11
 */

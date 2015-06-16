@@ -13,11 +13,12 @@
 
 void main(void);
 //#include "eeprom.h" 	// 3.3V
-#if defined STM32F4 || defined STM32F4XX
+//#if defined STM32F4 || defined STM32F4XX
 #include "baro.h" 	// 5V
 //#include "oled_novo.h"
 //#include "oled.h"
-#endif
+//#endif
+
 //#include "oled.h" 	// 5V
 //#include "src/visak/oled.h" 	// 5V
 //#include "clock_print.h" 		// isprobano F1
@@ -92,12 +93,13 @@ void main(void)
 	oled_example();
 #endif
 
+	// mora se promijenit i u nRF.c
 #ifdef NRF_H
 	#if defined STM32F4 || defined STM32F4XX
-		#define NRF_TX
+		#define NRF_RX
 	#endif
 	#if defined STM32F1 || defined STM32F10X_MD
-		#define NRF_RX
+		#define NRF_TX
 	#endif
 	nRF_main();
 #endif
@@ -163,7 +165,8 @@ void main(void)
 #ifdef NRF_TX
 		char tx_buffer[NRF_FIFO_SIZE] = {};
 
-#if defined BARO_H && defined STM32F4
+//#if defined BARO_H && defined STM32F4
+#if defined BARO_H 
 		float temperature = bmp180_get_temperature();
 		static uint8_t counter = 1;
 		snprintf(tx_buffer, NRF_FIFO_SIZE, "t: %.1f C, cnt: %d, us: %u", temperature, counter++, get_uptime_us());
@@ -188,6 +191,8 @@ void main(void)
 		{
 			printf("%s(): nRF TX software timeout\n", __func__);
 		}
+#else
+		// ovo je mali TX 
 #endif	// BARO_H STM32F4
 #endif	// NRF_TX
 	}
