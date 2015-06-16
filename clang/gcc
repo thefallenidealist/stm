@@ -1,0 +1,26 @@
+                 Cleaning
+                 Kuvam src src/main.c
+                 Kuvam src src/newlib_stubs.c
+                 Kuvam src src/clang_patch.c
+                 Kuvam src src/usart.c
+                 Kuvam src src/delay.c
+                 Kuvam lib src/lib/f4/stm32f4xx_usart.c
+                 Kuvam lib src/lib/f4/system_stm32f4xx.c
+                 Kuvam lib src/lib/f4/misc.c
+                 Kuvam src src/led.c
+                 Kuvam lib src/lib/f4/stm32f4xx_rcc.c
+                 Kuvam lib src/lib/f4/stm32f4xx_gpio.c
+                 Kuvam src src/blinky.c
+                 Kuvam src src/clock_print.c
+                 Kuvam src src/glcd_low.c
+                 Kuvam lib src/lib/f4/stm32f4xx_spi.c
+                 Kuvam src src/spi.c
+                 Kuvam src src/glcd_mid.c
+                 Kuvam src src/glcd_high.c
+                 Kuvam src src/mem.c
+                 Kuvam src src/compass.c
+                 Kuvam lib src/lib/f4/stm32f4xx_i2c.c
+                 Kuvam src src/i2c.c
+                 Kuvam ass src/lib/f4/startup_stm32f4xx.s
+                 kompajler: clang35
+

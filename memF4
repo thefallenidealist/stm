@@ -1,0 +1,14 @@
+#  0: 0x00000000 (0x4000 16kB) not erased
+#  1: 0x00004000 (0x4000 16kB) not erased
+#  2: 0x00008000 (0x4000 16kB) not erased
+#  3: 0x0000c000 (0x4000 16kB) not erased
+#  4: 0x00010000 (0x10000 64kB) not erased
+#  5: 0x00020000 (0x20000 128kB) erased
+#  6: 0x00040000 (0x20000 128kB) erased
+#  7: 0x00060000 (0x20000 128kB) erased
+#  8: 0x00080000 (0x20000 128kB) erased
+#  9: 0x000a0000 (0x20000 128kB) erased
+# 10: 0x000c0000 (0x20000 128kB) erased
+# 11: 0x000e0000 (0x20000 128kB) not erased
+
+stack i heap stavit u CCM, zbog DMA

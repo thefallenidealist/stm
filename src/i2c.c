@@ -312,24 +312,26 @@ int8_t i2c_init(uint8_t i2c_number, uint32_t i2c_speed)
 	GPIO_InitTypeDef GPIO_InitStruct;
 	I2C_InitTypeDef I2C_InitStruct;
 
-	//RCC_APB1PeriphClockCmd(RCC_APB1Periph_I2C1, ENABLE);	// F1
-	RCC_APB1PeriphClockCmd(RCC_APB1Periph_I2C2, ENABLE);	// F4
+#if defined STM32F4 || defined STM32F4XX
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_I2C2, ENABLE);
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);
 
-	//RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);	// F1
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);	// F4
-
-	// F4
 	GPIO_PinAFConfig(GPIOB, GPIO_PinSource10, GPIO_AF_I2C2);
 	GPIO_PinAFConfig(GPIOB, GPIO_PinSource11, GPIO_AF_I2C2);
 
-	//GPIO_InitStruct.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_7; // SCL, SDA
-	GPIO_InitStruct.GPIO_Pin = GPIO_Pin_10 | GPIO_Pin_11; // SCL, SDA		// F4
-	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-	//GPIO_InitStruct.GPIO_Mode = GPIO_Mode_AF_OD;	// F1
-	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_AF;	// F4
-	GPIO_InitStruct.GPIO_OType = GPIO_OType_OD;	// F4
-	//GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_NOPULL;	// TODO
+	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_AF;
+	GPIO_InitStruct.GPIO_OType = GPIO_OType_OD;
+#endif
 
+#if defined STM32F1 || defined STM32F10X_MD
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_I2C2, ENABLE);
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
+
+	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_AF_PP;	// moze ili AF_OD ili AF_PP za F1, za barometar treba bit PP
+#endif
+	// TODO ovo je samo I2C2
+	GPIO_InitStruct.GPIO_Pin = GPIO_Pin_10 | GPIO_Pin_11; // SCL, SDA
+	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_Init(GPIOB, &GPIO_InitStruct);
 
 	I2C_InitStruct.I2C_Mode = I2C_Mode_I2C;
@@ -338,10 +340,8 @@ int8_t i2c_init(uint8_t i2c_number, uint32_t i2c_speed)
 	I2C_InitStruct.I2C_Ack = I2C_Ack_Enable;
 	I2C_InitStruct.I2C_AcknowledgedAddress = I2C_AcknowledgedAddress_7bit;
 	I2C_InitStruct.I2C_ClockSpeed = i2c_speed;
-	//I2C_InitStruct.I2C_ClockSpeed = 100000;
-	//I2C_InitStruct.I2C_ClockSpeed = 400000;
-	//I2C_Cmd(I2C1, ENABLE);		// F1
-	//I2C_Init(I2C1,&I2C_InitStruct);	// F1
+
+	// TODO ovo je samo za I2C2, sredit i za 1
 	I2C_Cmd(I2C2, ENABLE);
 	I2C_Init(I2C2,&I2C_InitStruct);
 	//printf("\tDEBUG: i2c_init() end\n");

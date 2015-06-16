@@ -1,0 +1,15 @@
+###################################################################################################################################################
+Okay, 1000 integers (we'll assume 32 bit) will be 4000 bytes.  Set up the DMA channel memory to the start of the buffer, length to 4000 bytes, peripheral to USART DR port, memory and peripheral to byte width.  Set up the USART for baud rate, etc. and enable DMA.  Do not enable USART TX interrupts.  The enable the DMA channel and it will send 4000 bytes (in binary, not ASCII) to the external device.  Enabling the DMA TC interrupt will notify you when it is complete.
+
+Since your data transfer is a multiple of 4, if you have an STM32F2 or better you can use the FIFO mode to reduce bus contention.  Set the FIFO for 4 beats (4 bytes at a time) and the threshold to 1/4.  If your buffer is word aligned you can also use packing/unpacking with the FIFO to load 32 bytes (4 words x 4 bytes) in a 4 beat burst.  Set memory width to word (pack FIFO), peripheral stays at byte (unpack) FIFO and count to 1000 (1000 words x 4 bytes).
+
+Your external device should be synchronized to expect a burst of binary data.  You can use an idle period before sending as a start of frame mark.  The integers will arrive in little-endian order so be sure your device can reverse byte order if it uses big-endian 32-bit integers.
+###################################################################################################################################################
+No. The DMA used in STM32s is rather dumb and does not support endian swap of any kind.
+
+Fortunately, the ARM core implements barrel shift (maybe except the Cortex-M0(+), which is not the case here), i.e. halfword swap is only one instruction (in "true" ARMs (i.e. non-Thumb), it would be probably zero, as barrel shifts there are generally performed as part of other instructions, e.g. memory load).
+
+OTOH, you might find out that you need a full endian swap, i.e to swap the order of bytes in the word. Luckily, there's a single instruction in ARM for that, too (REV).
+###################################################################################################################################################
+Have a look at the I2S examples in the Standard Peripheral Library, start from there and modify it to your particular application.
+###################################################################################################################################################

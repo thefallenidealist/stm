@@ -1,0 +1,699 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+ABS	MEMS/main.h	/^#define ABS(/;"	d
+ADC3ConvertedValue	ADC3_DMA/main.c	/^__IO uint16_t ADC3ConvertedValue = 0;$/;"	v
+ADC3ConvertedVoltage	ADC3_DMA/main.c	/^__IO uint32_t ADC3ConvertedVoltage = 0;$/;"	v
+ADC3_CH12_DMA_Config	ADC3_DMA/main.c	/^void ADC3_CH12_DMA_Config(void)$/;"	f
+ADC3_DR_ADDRESS	ADC3_DMA/main.c	/^#define ADC3_DR_ADDRESS /;"	d	file:
+ADCTripleConvertedValue	ADC_Interleaved_DMAmode2/main.c	/^__IO uint32_t ADCTripleConvertedValue[3];$/;"	v
+ADC_CDR_ADDRESS	ADC_Interleaved_DMAmode2/main.c	/^#define ADC_CDR_ADDRESS /;"	d	file:
+ADC_CommonInitStructure	ADC_Interleaved_DMAmode2/main.c	/^ADC_CommonInitTypeDef ADC_CommonInitStructure;$/;"	v
+ADC_InitStructure	ADC_Interleaved_DMAmode2/main.c	/^ADC_InitTypeDef       ADC_InitStructure;$/;"	v
+ADDR_FLASH_SECTOR_0	FLASH_Program/main.c	/^#define ADDR_FLASH_SECTOR_0 /;"	d	file:
+ADDR_FLASH_SECTOR_1	FLASH_Program/main.c	/^#define ADDR_FLASH_SECTOR_1 /;"	d	file:
+ADDR_FLASH_SECTOR_10	FLASH_Program/main.c	/^#define ADDR_FLASH_SECTOR_10 /;"	d	file:
+ADDR_FLASH_SECTOR_11	FLASH_Program/main.c	/^#define ADDR_FLASH_SECTOR_11 /;"	d	file:
+ADDR_FLASH_SECTOR_2	FLASH_Program/main.c	/^#define ADDR_FLASH_SECTOR_2 /;"	d	file:
+ADDR_FLASH_SECTOR_3	FLASH_Program/main.c	/^#define ADDR_FLASH_SECTOR_3 /;"	d	file:
+ADDR_FLASH_SECTOR_4	FLASH_Program/main.c	/^#define ADDR_FLASH_SECTOR_4 /;"	d	file:
+ADDR_FLASH_SECTOR_5	FLASH_Program/main.c	/^#define ADDR_FLASH_SECTOR_5 /;"	d	file:
+ADDR_FLASH_SECTOR_6	FLASH_Program/main.c	/^#define ADDR_FLASH_SECTOR_6 /;"	d	file:
+ADDR_FLASH_SECTOR_7	FLASH_Program/main.c	/^#define ADDR_FLASH_SECTOR_7 /;"	d	file:
+ADDR_FLASH_SECTOR_8	FLASH_Program/main.c	/^#define ADDR_FLASH_SECTOR_8 /;"	d	file:
+ADDR_FLASH_SECTOR_9	FLASH_Program/main.c	/^#define ADDR_FLASH_SECTOR_9 /;"	d	file:
+AHBPrescTable	ADC3_DMA/system_stm32f4xx.c	/^  __I uint8_t AHBPrescTable[16] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 6, 7, 8, 9};$/;"	v
+AHBPrescTable	ADC_Interleaved_DMAmode2/system_stm32f4xx.c	/^  __I uint8_t AHBPrescTable[16] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 6, 7, 8, 9};$/;"	v
+AHBPrescTable	DAC_SignalsGeneration/system_stm32f4xx.c	/^  __I uint8_t AHBPrescTable[16] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 6, 7, 8, 9};$/;"	v
+AHBPrescTable	DMA_FLASH_RAM/system_stm32f4xx.c	/^  __I uint8_t AHBPrescTable[16] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 6, 7, 8, 9};$/;"	v
+AHBPrescTable	EXTI/system_stm32f4xx.c	/^  __I uint8_t AHBPrescTable[16] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 6, 7, 8, 9};$/;"	v
+AHBPrescTable	FLASH_Program/system_stm32f4xx.c	/^  __I uint8_t AHBPrescTable[16] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 6, 7, 8, 9};$/;"	v
+AHBPrescTable	FLASH_Write_Protection/system_stm32f4xx.c	/^  __I uint8_t AHBPrescTable[16] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 6, 7, 8, 9};$/;"	v
+AHBPrescTable	IO_Toggle/system_stm32f4xx.c	/^  __I uint8_t AHBPrescTable[16] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 6, 7, 8, 9};$/;"	v
+AHBPrescTable	IWDG/system_stm32f4xx.c	/^  __I uint8_t AHBPrescTable[16] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 6, 7, 8, 9};$/;"	v
+AHBPrescTable	MEMS/system_stm32f4xx.c	/^  __I uint8_t AHBPrescTable[16] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 6, 7, 8, 9};$/;"	v
+AHBPrescTable	PWR_CurrentConsumption/system_stm32f4xx.c	/^  __I uint8_t AHBPrescTable[16] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 6, 7, 8, 9};$/;"	v
+AHBPrescTable	PWR_STANDBY/system_stm32f4xx.c	/^  __I uint8_t AHBPrescTable[16] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 6, 7, 8, 9};$/;"	v
+AHBPrescTable	PWR_STOP/system_stm32f4xx.c	/^  __I uint8_t AHBPrescTable[16] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 6, 7, 8, 9};$/;"	v
+AHBPrescTable	RCC/system_stm32f4xx.c	/^  __I uint8_t AHBPrescTable[16] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 6, 7, 8, 9};$/;"	v
+AHBPrescTable	SysTick/system_stm32f4xx.c	/^  __I uint8_t AHBPrescTable[16] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 6, 7, 8, 9};$/;"	v
+AHBPrescTable	TIM_ComplementarySignals/system_stm32f4xx.c	/^  __I uint8_t AHBPrescTable[16] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 6, 7, 8, 9};$/;"	v
+AHBPrescTable	TIM_PWM_Input/system_stm32f4xx.c	/^  __I uint8_t AHBPrescTable[16] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 6, 7, 8, 9};$/;"	v
+AHBPrescTable	TIM_PWM_Output/system_stm32f4xx.c	/^  __I uint8_t AHBPrescTable[16] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 6, 7, 8, 9};$/;"	v
+AHBPrescTable	TIM_TimeBase/system_stm32f4xx.c	/^  __I uint8_t AHBPrescTable[16] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 6, 7, 8, 9};$/;"	v
+Address	FLASH_Program/main.c	/^uint32_t StartSector = 0, EndSector = 0, Address = 0, i = 0 ;$/;"	v
+AsynchPrediv	PWR_STANDBY/main.c	/^__IO uint32_t AsynchPrediv = 0, SynchPrediv = 0;$/;"	v
+BUFFER_SIZE	DMA_FLASH_RAM/main.h	/^#define BUFFER_SIZE /;"	d
+Buffer	MEMS/main.c	/^uint8_t Buffer[6];$/;"	v
+Buffercmp	DMA_FLASH_RAM/main.c	/^TestStatus Buffercmp(const uint32_t* pBuffer, uint32_t* pBuffer1, uint16_t BufferLength)$/;"	f
+BusFault_Handler	ADC3_DMA/stm32f4xx_it.c	/^void BusFault_Handler(void)$/;"	f
+BusFault_Handler	ADC_Interleaved_DMAmode2/stm32f4xx_it.c	/^void BusFault_Handler(void)$/;"	f
+BusFault_Handler	DAC_SignalsGeneration/stm32f4xx_it.c	/^void BusFault_Handler(void)$/;"	f
+BusFault_Handler	DMA_FLASH_RAM/stm32f4xx_it.c	/^void BusFault_Handler(void)$/;"	f
+BusFault_Handler	EXTI/stm32f4xx_it.c	/^void BusFault_Handler(void)$/;"	f
+BusFault_Handler	FLASH_Program/stm32f4xx_it.c	/^void BusFault_Handler(void)$/;"	f
+BusFault_Handler	FLASH_Write_Protection/stm32f4xx_it.c	/^void BusFault_Handler(void)$/;"	f
+BusFault_Handler	IO_Toggle/stm32f4xx_it.c	/^void BusFault_Handler(void)$/;"	f
+BusFault_Handler	IWDG/stm32f4xx_it.c	/^void BusFault_Handler(void)$/;"	f
+BusFault_Handler	MEMS/stm32f4xx_it.c	/^void BusFault_Handler(void)$/;"	f
+BusFault_Handler	PWR_CurrentConsumption/stm32f4xx_it.c	/^void BusFault_Handler(void)$/;"	f
+BusFault_Handler	PWR_STANDBY/stm32f4xx_it.c	/^void BusFault_Handler(void)$/;"	f
+BusFault_Handler	PWR_STOP/stm32f4xx_it.c	/^void BusFault_Handler(void)$/;"	f
+BusFault_Handler	RCC/stm32f4xx_it.c	/^void BusFault_Handler(void)$/;"	f
+BusFault_Handler	SysTick/stm32f4xx_it.c	/^void BusFault_Handler(void)$/;"	f
+BusFault_Handler	TIM_ComplementarySignals/stm32f4xx_it.c	/^void BusFault_Handler(void)$/;"	f
+BusFault_Handler	TIM_PWM_Input/stm32f4xx_it.c	/^void BusFault_Handler(void)$/;"	f
+BusFault_Handler	TIM_PWM_Output/stm32f4xx_it.c	/^void BusFault_Handler(void)$/;"	f
+BusFault_Handler	TIM_TimeBase/stm32f4xx_it.c	/^void BusFault_Handler(void)$/;"	f
+CCR1_Val	TIM_PWM_Output/main.c	/^uint16_t CCR1_Val = 333;$/;"	v
+CCR1_Val	TIM_TimeBase/main.c	/^__IO uint16_t CCR1_Val = 54618;$/;"	v
+CCR2_Val	TIM_PWM_Output/main.c	/^uint16_t CCR2_Val = 249;$/;"	v
+CCR2_Val	TIM_TimeBase/main.c	/^__IO uint16_t CCR2_Val = 27309;$/;"	v
+CCR3_Val	TIM_PWM_Output/main.c	/^uint16_t CCR3_Val = 166;$/;"	v
+CCR3_Val	TIM_TimeBase/main.c	/^__IO uint16_t CCR3_Val = 13654;$/;"	v
+CCR4_Val	TIM_PWM_Output/main.c	/^uint16_t CCR4_Val = 83;$/;"	v
+CCR4_Val	TIM_TimeBase/main.c	/^__IO uint16_t CCR4_Val = 6826;$/;"	v
+CaptureNumber	IWDG/main.c	/^__IO uint32_t CaptureNumber = 0, PeriodValue = 0;$/;"	v
+Channel1Pulse	TIM_ComplementarySignals/main.c	/^uint16_t Channel1Pulse = 0, Channel2Pulse = 0, Channel3Pulse = 0;$/;"	v
+Channel2Pulse	TIM_ComplementarySignals/main.c	/^uint16_t Channel1Pulse = 0, Channel2Pulse = 0, Channel3Pulse = 0;$/;"	v
+Channel3Pulse	TIM_ComplementarySignals/main.c	/^uint16_t Channel1Pulse = 0, Channel2Pulse = 0, Channel3Pulse = 0;$/;"	v
+ClickReg	MEMS/stm32f4xx_it.c	/^uint8_t ClickReg = 0;$/;"	v
+Counter	MEMS/stm32f4xx_it.c	/^uint8_t Counter  = 0;$/;"	v
+DAC_Ch1_EscalatorConfig	DAC_SignalsGeneration/main.c	/^void DAC_Ch1_EscalatorConfig(void)$/;"	f
+DAC_Ch1_NoiseConfig	DAC_SignalsGeneration/main.c	/^void DAC_Ch1_NoiseConfig(void)$/;"	f
+DAC_Ch2_SineWaveConfig	DAC_SignalsGeneration/main.c	/^void DAC_Ch2_SineWaveConfig(void)$/;"	f
+DAC_Ch2_TriangleConfig	DAC_SignalsGeneration/main.c	/^void DAC_Ch2_TriangleConfig(void)$/;"	f
+DAC_DHR12R2_ADDRESS	DAC_SignalsGeneration/main.c	/^#define DAC_DHR12R2_ADDRESS /;"	d	file:
+DAC_DHR8R1_ADDRESS	DAC_SignalsGeneration/main.c	/^#define DAC_DHR8R1_ADDRESS /;"	d	file:
+DAC_InitStructure	DAC_SignalsGeneration/main.c	/^DAC_InitTypeDef  DAC_InitStructure;$/;"	v
+DAM_STREAM_IRQHANDLER	DMA_FLASH_RAM/main.h	/^#define DAM_STREAM_IRQHANDLER /;"	d
+DAM_STREAM_IRQHANDLER	DMA_FLASH_RAM/stm32f4xx_it.c	/^void DAM_STREAM_IRQHANDLER(void)$/;"	f
+DATA_32	FLASH_Program/main.c	/^#define DATA_32 /;"	d	file:
+DMA_CHANNEL	DMA_FLASH_RAM/main.h	/^#define DMA_CHANNEL /;"	d
+DMA_Config	DMA_FLASH_RAM/main.c	/^void DMA_Config(void)$/;"	f
+DMA_IT_TCIF	DMA_FLASH_RAM/main.h	/^#define DMA_IT_TCIF /;"	d
+DMA_InitStructure	ADC_Interleaved_DMAmode2/main.c	/^DMA_InitTypeDef       DMA_InitStructure;$/;"	v
+DMA_STREAM	DMA_FLASH_RAM/main.h	/^#define DMA_STREAM /;"	d
+DMA_STREAM_CLOCK	DMA_FLASH_RAM/main.h	/^#define DMA_STREAM_CLOCK /;"	d
+DMA_STREAM_IRQ	DMA_FLASH_RAM/main.h	/^#define DMA_STREAM_IRQ /;"	d
+DOUBLECLICK_Z	MEMS/main.h	/^#define DOUBLECLICK_Z /;"	d
+DST_Buffer	DMA_FLASH_RAM/main.c	/^uint32_t DST_Buffer[BUFFER_SIZE];$/;"	v
+DebugMon_Handler	ADC3_DMA/stm32f4xx_it.c	/^void DebugMon_Handler(void)$/;"	f
+DebugMon_Handler	ADC_Interleaved_DMAmode2/stm32f4xx_it.c	/^void DebugMon_Handler(void)$/;"	f
+DebugMon_Handler	DAC_SignalsGeneration/stm32f4xx_it.c	/^void DebugMon_Handler(void)$/;"	f
+DebugMon_Handler	DMA_FLASH_RAM/stm32f4xx_it.c	/^void DebugMon_Handler(void)$/;"	f
+DebugMon_Handler	EXTI/stm32f4xx_it.c	/^void DebugMon_Handler(void)$/;"	f
+DebugMon_Handler	FLASH_Program/stm32f4xx_it.c	/^void DebugMon_Handler(void)$/;"	f
+DebugMon_Handler	FLASH_Write_Protection/stm32f4xx_it.c	/^void DebugMon_Handler(void)$/;"	f
+DebugMon_Handler	IO_Toggle/stm32f4xx_it.c	/^void DebugMon_Handler(void)$/;"	f
+DebugMon_Handler	IWDG/stm32f4xx_it.c	/^void DebugMon_Handler(void)$/;"	f
+DebugMon_Handler	MEMS/stm32f4xx_it.c	/^void DebugMon_Handler(void)$/;"	f
+DebugMon_Handler	PWR_CurrentConsumption/stm32f4xx_it.c	/^void DebugMon_Handler(void)$/;"	f
+DebugMon_Handler	PWR_STANDBY/stm32f4xx_it.c	/^void DebugMon_Handler(void)$/;"	f
+DebugMon_Handler	PWR_STOP/stm32f4xx_it.c	/^void DebugMon_Handler(void)$/;"	f
+DebugMon_Handler	RCC/stm32f4xx_it.c	/^void DebugMon_Handler(void)$/;"	f
+DebugMon_Handler	SysTick/stm32f4xx_it.c	/^void DebugMon_Handler(void)$/;"	f
+DebugMon_Handler	TIM_ComplementarySignals/stm32f4xx_it.c	/^void DebugMon_Handler(void)$/;"	f
+DebugMon_Handler	TIM_PWM_Input/stm32f4xx_it.c	/^void DebugMon_Handler(void)$/;"	f
+DebugMon_Handler	TIM_PWM_Output/stm32f4xx_it.c	/^void DebugMon_Handler(void)$/;"	f
+DebugMon_Handler	TIM_TimeBase/stm32f4xx_it.c	/^void DebugMon_Handler(void)$/;"	f
+Delay	IO_Toggle/main.c	/^void Delay(__IO uint32_t nCount)$/;"	f
+Delay	IWDG/main.c	/^void Delay(__IO uint32_t nTime)$/;"	f
+Delay	MEMS/main.c	/^void Delay(__IO uint32_t nTime)$/;"	f
+Delay	PWR_STOP/main.c	/^void Delay(__IO uint32_t nTime)$/;"	f
+Delay	RCC/main.c	/^void Delay(__IO uint32_t nCount)$/;"	f
+Delay	SysTick/main.c	/^void Delay(__IO uint32_t nTime)$/;"	f
+DutyCycle	TIM_PWM_Input/stm32f4xx_it.c	/^__IO uint16_t DutyCycle = 0;$/;"	v
+EXTI0_IRQHandler	DAC_SignalsGeneration/stm32f4xx_it.c	/^void EXTI0_IRQHandler(void)$/;"	f
+EXTI0_IRQHandler	EXTI/stm32f4xx_it.c	/^void EXTI0_IRQHandler(void)$/;"	f
+EXTI0_IRQHandler	IWDG/stm32f4xx_it.c	/^void EXTI0_IRQHandler(void)$/;"	f
+EXTI0_IRQHandler	PWR_CurrentConsumption/stm32f4xx_it.c	/^void EXTI0_IRQHandler(void)$/;"	f
+EXTI0_IRQHandler	PWR_STOP/stm32f4xx_it.c	/^void EXTI0_IRQHandler(void)$/;"	f
+EXTI1_IRQHandler	PWR_STANDBY/stm32f4xx_it.c	/^void EXTI1_IRQHandler(void)$/;"	f
+EXTILine0_Config	EXTI/main.c	/^void EXTILine0_Config(void)$/;"	f
+EXTI_InitStructure	EXTI/main.c	/^EXTI_InitTypeDef   EXTI_InitStructure;$/;"	v
+EXTI_InitStructure	PWR_STANDBY/main.c	/^EXTI_InitTypeDef EXTI_InitStructure;$/;"	v
+EndSector	FLASH_Program/main.c	/^uint32_t StartSector = 0, EndSector = 0, Address = 0, i = 0 ;$/;"	v
+Escalator8bit	DAC_SignalsGeneration/main.c	/^const uint8_t Escalator8bit[6] = {0x0, 0x33, 0x66, 0x99, 0xCC, 0xFF};$/;"	v
+FAILED	DMA_FLASH_RAM/main.c	/^typedef enum {FAILED = 0, PASSED = !FAILED} TestStatus;$/;"	e	enum:__anon2	file:
+FAILED	FLASH_Program/main.c	/^typedef enum {FAILED = 0, PASSED = !FAILED} TestStatus;$/;"	e	enum:__anon1	file:
+FLASH_USER_END_ADDR	FLASH_Program/main.c	/^#define FLASH_USER_END_ADDR /;"	d	file:
+FLASH_USER_START_ADDR	FLASH_Program/main.c	/^#define FLASH_USER_START_ADDR /;"	d	file:
+FLASH_WRP_SECTORS	FLASH_Write_Protection/main.c	/^#define FLASH_WRP_SECTORS /;"	d	file:
+Frequency	TIM_PWM_Input/stm32f4xx_it.c	/^__IO uint32_t Frequency = 0;$/;"	v
+GPIO_InitStructure	ADC_Interleaved_DMAmode2/main.c	/^GPIO_InitTypeDef      GPIO_InitStructure;$/;"	v
+GPIO_InitStructure	IO_Toggle/main.c	/^GPIO_InitTypeDef  GPIO_InitStructure;$/;"	v
+GPIO_InitStructure	SysTick/main.c	/^GPIO_InitTypeDef GPIO_InitStructure;$/;"	v
+GetLSIFrequency	IWDG/main.c	/^uint32_t GetLSIFrequency(void)$/;"	f
+GetSector	FLASH_Program/main.c	/^uint32_t GetSector(uint32_t Address)$/;"	f
+HSE_VALUE	ADC3_DMA/stm32f4xx_conf.h	/^ #define HSE_VALUE /;"	d
+HSE_VALUE	ADC3_DMA/stm32f4xx_conf.h	/^ #undef HSE_VALUE$/;"	d
+HSE_VALUE	ADC_Interleaved_DMAmode2/stm32f4xx_conf.h	/^ #define HSE_VALUE /;"	d
+HSE_VALUE	ADC_Interleaved_DMAmode2/stm32f4xx_conf.h	/^ #undef HSE_VALUE$/;"	d
+HSE_VALUE	DAC_SignalsGeneration/stm32f4xx_conf.h	/^ #define HSE_VALUE /;"	d
+HSE_VALUE	DAC_SignalsGeneration/stm32f4xx_conf.h	/^ #undef HSE_VALUE$/;"	d
+HSE_VALUE	DMA_FLASH_RAM/stm32f4xx_conf.h	/^ #define HSE_VALUE /;"	d
+HSE_VALUE	DMA_FLASH_RAM/stm32f4xx_conf.h	/^ #undef HSE_VALUE$/;"	d
+HSE_VALUE	EXTI/stm32f4xx_conf.h	/^ #define HSE_VALUE /;"	d
+HSE_VALUE	EXTI/stm32f4xx_conf.h	/^ #undef HSE_VALUE$/;"	d
+HSE_VALUE	FLASH_Program/stm32f4xx_conf.h	/^ #define HSE_VALUE /;"	d
+HSE_VALUE	FLASH_Program/stm32f4xx_conf.h	/^ #undef HSE_VALUE$/;"	d
+HSE_VALUE	FLASH_Write_Protection/stm32f4xx_conf.h	/^ #define HSE_VALUE /;"	d
+HSE_VALUE	FLASH_Write_Protection/stm32f4xx_conf.h	/^ #undef HSE_VALUE$/;"	d
+HSE_VALUE	IO_Toggle/stm32f4xx_conf.h	/^ #define HSE_VALUE /;"	d
+HSE_VALUE	IO_Toggle/stm32f4xx_conf.h	/^ #undef HSE_VALUE$/;"	d
+HSE_VALUE	IWDG/stm32f4xx_conf.h	/^ #define HSE_VALUE /;"	d
+HSE_VALUE	IWDG/stm32f4xx_conf.h	/^ #undef HSE_VALUE$/;"	d
+HSE_VALUE	MEMS/stm32f4xx_conf.h	/^ #define HSE_VALUE /;"	d
+HSE_VALUE	MEMS/stm32f4xx_conf.h	/^ #undef HSE_VALUE$/;"	d
+HSE_VALUE	PWR_CurrentConsumption/stm32f4xx_conf.h	/^ #define HSE_VALUE /;"	d
+HSE_VALUE	PWR_CurrentConsumption/stm32f4xx_conf.h	/^ #undef HSE_VALUE$/;"	d
+HSE_VALUE	PWR_STANDBY/stm32f4xx_conf.h	/^ #define HSE_VALUE /;"	d
+HSE_VALUE	PWR_STANDBY/stm32f4xx_conf.h	/^ #undef HSE_VALUE$/;"	d
+HSE_VALUE	PWR_STOP/stm32f4xx_conf.h	/^ #define HSE_VALUE /;"	d
+HSE_VALUE	PWR_STOP/stm32f4xx_conf.h	/^ #undef HSE_VALUE$/;"	d
+HSE_VALUE	RCC/stm32f4xx_conf.h	/^ #define HSE_VALUE /;"	d
+HSE_VALUE	RCC/stm32f4xx_conf.h	/^ #undef HSE_VALUE$/;"	d
+HSE_VALUE	SysTick/stm32f4xx_conf.h	/^ #define HSE_VALUE /;"	d
+HSE_VALUE	SysTick/stm32f4xx_conf.h	/^ #undef HSE_VALUE$/;"	d
+HSE_VALUE	TIM_ComplementarySignals/stm32f4xx_conf.h	/^ #define HSE_VALUE /;"	d
+HSE_VALUE	TIM_ComplementarySignals/stm32f4xx_conf.h	/^ #undef HSE_VALUE$/;"	d
+HSE_VALUE	TIM_PWM_Input/stm32f4xx_conf.h	/^ #define HSE_VALUE /;"	d
+HSE_VALUE	TIM_PWM_Input/stm32f4xx_conf.h	/^ #undef HSE_VALUE$/;"	d
+HSE_VALUE	TIM_PWM_Output/stm32f4xx_conf.h	/^ #define HSE_VALUE /;"	d
+HSE_VALUE	TIM_PWM_Output/stm32f4xx_conf.h	/^ #undef HSE_VALUE$/;"	d
+HSE_VALUE	TIM_TimeBase/stm32f4xx_conf.h	/^ #define HSE_VALUE /;"	d
+HSE_VALUE	TIM_TimeBase/stm32f4xx_conf.h	/^ #undef HSE_VALUE$/;"	d
+HardFault_Handler	ADC3_DMA/stm32f4xx_it.c	/^void HardFault_Handler(void)$/;"	f
+HardFault_Handler	ADC_Interleaved_DMAmode2/stm32f4xx_it.c	/^void HardFault_Handler(void)$/;"	f
+HardFault_Handler	DAC_SignalsGeneration/stm32f4xx_it.c	/^void HardFault_Handler(void)$/;"	f
+HardFault_Handler	DMA_FLASH_RAM/stm32f4xx_it.c	/^void HardFault_Handler(void)$/;"	f
+HardFault_Handler	EXTI/stm32f4xx_it.c	/^void HardFault_Handler(void)$/;"	f
+HardFault_Handler	FLASH_Program/stm32f4xx_it.c	/^void HardFault_Handler(void)$/;"	f
+HardFault_Handler	FLASH_Write_Protection/stm32f4xx_it.c	/^void HardFault_Handler(void)$/;"	f
+HardFault_Handler	IO_Toggle/stm32f4xx_it.c	/^void HardFault_Handler(void)$/;"	f
+HardFault_Handler	IWDG/stm32f4xx_it.c	/^void HardFault_Handler(void)$/;"	f
+HardFault_Handler	MEMS/stm32f4xx_it.c	/^void HardFault_Handler(void)$/;"	f
+HardFault_Handler	PWR_CurrentConsumption/stm32f4xx_it.c	/^void HardFault_Handler(void)$/;"	f
+HardFault_Handler	PWR_STANDBY/stm32f4xx_it.c	/^void HardFault_Handler(void)$/;"	f
+HardFault_Handler	PWR_STOP/stm32f4xx_it.c	/^void HardFault_Handler(void)$/;"	f
+HardFault_Handler	RCC/stm32f4xx_it.c	/^void HardFault_Handler(void)$/;"	f
+HardFault_Handler	SysTick/stm32f4xx_it.c	/^void HardFault_Handler(void)$/;"	f
+HardFault_Handler	TIM_ComplementarySignals/stm32f4xx_it.c	/^void HardFault_Handler(void)$/;"	f
+HardFault_Handler	TIM_PWM_Input/stm32f4xx_it.c	/^void HardFault_Handler(void)$/;"	f
+HardFault_Handler	TIM_PWM_Output/stm32f4xx_it.c	/^void HardFault_Handler(void)$/;"	f
+HardFault_Handler	TIM_TimeBase/stm32f4xx_it.c	/^void HardFault_Handler(void)$/;"	f
+History	Release_Notes.html	/^            <h2 style="background: rgb(51, 102, 255) none repeat scroll 0% 50%; -moz-background-clip: initial; -moz-background-origin: initial; -moz-background-inline-policy: initial;"><a name="History"><\/a><span style="font-size: 12pt; color: white;">STM32F4-Discovery Board Peripheral firmware examples&nbsp;update History<\/span><\/h2><div style="margin-left: 40px;"><span style="font-size: 10pt; font-family: Verdana;">For more information on the STM32F4-Discovery board&nbsp;visit <a href="http:\/\/www.st.com\/stm32f4-discovery" target="_blank">www.st.com\/stm32f4-discovery<\/a>.<\/span><\/div><h3 style="background: rgb(51, 102, 255) none repeat scroll 0% 50%; -moz-background-clip: initial; -moz-background-origin: initial; -moz-background-inline-policy: initial; margin-right: 500pt; width: 186px;"><span style="font-size: 10pt; font-family: Arial; color: white;">V1.0.0 \/ 19-September-2011<\/span><\/h3>$/;"	a
+IC2Value	TIM_PWM_Input/stm32f4xx_it.c	/^__IO uint16_t IC2Value = 0;$/;"	v
+KeyPressed	DAC_SignalsGeneration/main.c	/^__IO uint8_t KeyPressed = SET; $/;"	v
+LIS302DL_TIMEOUT_UserCallback	MEMS/main.c	/^uint32_t LIS302DL_TIMEOUT_UserCallback(void)$/;"	f
+License	Release_Notes.html	/^            <ul style="margin-top: 0cm;" type="square"><li class="MsoNormal"><span style="font-size: 10pt; font-family: Verdana;">First official version of the<span style="font-weight: bold; font-style: italic;"> STM32F4-Discovery Board Peripheral firmware examples<\/span><\/span><\/li><\/ul><span style="font-size: 10pt; font-family: Verdana;"><span style="font-weight: bold; font-style: italic;"><\/span><\/span><br><span style="font-size: 10pt; font-family: Verdana;"><span style="font-style: italic; font-weight: bold;"><\/span><\/span><span style="font-size: 10pt; font-family: Verdana;"><span style="font-style: italic; font-weight: bold;"><\/span><\/span><span style="font-size: 10pt; font-family: Verdana;"><span style="font-style: italic; font-weight: bold;"><\/span><\/span><span style="font-size: 10pt; font-family: Verdana;"><span style="font-style: italic; font-weight: bold;"><\/span><\/span><span style="font-size: 10pt; font-family: Verdana;"><span style="font-style: italic; font-weight: bold;"><\/span><\/span><span style="font-size: 10pt; font-family: Verdana;"><\/span><h2 style="background: rgb(51, 102, 255) none repeat scroll 0% 50%; -moz-background-clip: initial; -moz-background-origin: initial; -moz-background-inline-policy: initial;"><a name="License"><\/a><span style="font-size: 12pt; color: white;">License<o:p><\/o:p><\/span><\/h2><p class="MsoNormal"><span style="font-size: 10pt; font-family: Verdana; color: black;">The use of this STM32 software is governed by the terms and conditions of the License Agreement <\/span><span style="font-size: 10pt; font-family: Verdana; color: black;"><span style="font-weight: bold; font-style: italic;">"MCD-ST Liberty SW License Agreement 20Jul2011 v0.1.pdf"<\/span> <\/span><span style="font-size: 10pt; font-family: Verdana; color: black;">available in the root of this package.<\/span><span style="color: black;"><o:p><\/o:p><\/span><\/p><b><span style="font-size: 10pt; font-family: Verdana; color: black;"><\/span><\/b>$/;"	a
+LsiFreq	IWDG/main.c	/^__IO uint32_t LsiFreq = 0;$/;"	v
+MAX	MEMS/main.h	/^#define MAX(/;"	d
+MemManage_Handler	ADC3_DMA/stm32f4xx_it.c	/^void MemManage_Handler(void)$/;"	f
+MemManage_Handler	ADC_Interleaved_DMAmode2/stm32f4xx_it.c	/^void MemManage_Handler(void)$/;"	f
+MemManage_Handler	DAC_SignalsGeneration/stm32f4xx_it.c	/^void MemManage_Handler(void)$/;"	f
+MemManage_Handler	DMA_FLASH_RAM/stm32f4xx_it.c	/^void MemManage_Handler(void)$/;"	f
+MemManage_Handler	EXTI/stm32f4xx_it.c	/^void MemManage_Handler(void)$/;"	f
+MemManage_Handler	FLASH_Program/stm32f4xx_it.c	/^void MemManage_Handler(void)$/;"	f
+MemManage_Handler	FLASH_Write_Protection/stm32f4xx_it.c	/^void MemManage_Handler(void)$/;"	f
+MemManage_Handler	IO_Toggle/stm32f4xx_it.c	/^void MemManage_Handler(void)$/;"	f
+MemManage_Handler	IWDG/stm32f4xx_it.c	/^void MemManage_Handler(void)$/;"	f
+MemManage_Handler	MEMS/stm32f4xx_it.c	/^void MemManage_Handler(void)$/;"	f
+MemManage_Handler	PWR_CurrentConsumption/stm32f4xx_it.c	/^void MemManage_Handler(void)$/;"	f
+MemManage_Handler	PWR_STANDBY/stm32f4xx_it.c	/^void MemManage_Handler(void)$/;"	f
+MemManage_Handler	PWR_STOP/stm32f4xx_it.c	/^void MemManage_Handler(void)$/;"	f
+MemManage_Handler	RCC/stm32f4xx_it.c	/^void MemManage_Handler(void)$/;"	f
+MemManage_Handler	SysTick/stm32f4xx_it.c	/^void MemManage_Handler(void)$/;"	f
+MemManage_Handler	TIM_ComplementarySignals/stm32f4xx_it.c	/^void MemManage_Handler(void)$/;"	f
+MemManage_Handler	TIM_PWM_Input/stm32f4xx_it.c	/^void MemManage_Handler(void)$/;"	f
+MemManage_Handler	TIM_PWM_Output/stm32f4xx_it.c	/^void MemManage_Handler(void)$/;"	f
+MemManage_Handler	TIM_TimeBase/stm32f4xx_it.c	/^void MemManage_Handler(void)$/;"	f
+MemoryProgramStatus	FLASH_Program/main.c	/^__IO uint32_t data32 = 0 , MemoryProgramStatus = 0 ;$/;"	v
+NMI_Handler	ADC3_DMA/stm32f4xx_it.c	/^void NMI_Handler(void)$/;"	f
+NMI_Handler	ADC_Interleaved_DMAmode2/stm32f4xx_it.c	/^void NMI_Handler(void)$/;"	f
+NMI_Handler	DAC_SignalsGeneration/stm32f4xx_it.c	/^void NMI_Handler(void)$/;"	f
+NMI_Handler	DMA_FLASH_RAM/stm32f4xx_it.c	/^void NMI_Handler(void)$/;"	f
+NMI_Handler	EXTI/stm32f4xx_it.c	/^void NMI_Handler(void)$/;"	f
+NMI_Handler	FLASH_Program/stm32f4xx_it.c	/^void NMI_Handler(void)$/;"	f
+NMI_Handler	FLASH_Write_Protection/stm32f4xx_it.c	/^void NMI_Handler(void)$/;"	f
+NMI_Handler	IO_Toggle/stm32f4xx_it.c	/^void NMI_Handler(void)$/;"	f
+NMI_Handler	IWDG/stm32f4xx_it.c	/^void NMI_Handler(void)$/;"	f
+NMI_Handler	MEMS/stm32f4xx_it.c	/^void NMI_Handler(void)$/;"	f
+NMI_Handler	PWR_CurrentConsumption/stm32f4xx_it.c	/^void NMI_Handler(void)$/;"	f
+NMI_Handler	PWR_STANDBY/stm32f4xx_it.c	/^void NMI_Handler(void)$/;"	f
+NMI_Handler	PWR_STOP/stm32f4xx_it.c	/^void NMI_Handler(void)$/;"	f
+NMI_Handler	RCC/stm32f4xx_it.c	/^void NMI_Handler(void)$/;"	f
+NMI_Handler	SysTick/stm32f4xx_it.c	/^void NMI_Handler(void)$/;"	f
+NMI_Handler	TIM_ComplementarySignals/stm32f4xx_it.c	/^void NMI_Handler(void)$/;"	f
+NMI_Handler	TIM_PWM_Input/stm32f4xx_it.c	/^void NMI_Handler(void)$/;"	f
+NMI_Handler	TIM_PWM_Output/stm32f4xx_it.c	/^void NMI_Handler(void)$/;"	f
+NMI_Handler	TIM_TimeBase/stm32f4xx_it.c	/^void NMI_Handler(void)$/;"	f
+PASSED	DMA_FLASH_RAM/main.c	/^typedef enum {FAILED = 0, PASSED = !FAILED} TestStatus;$/;"	e	enum:__anon2	file:
+PASSED	FLASH_Program/main.c	/^typedef enum {FAILED = 0, PASSED = !FAILED} TestStatus;$/;"	e	enum:__anon1	file:
+PLL_M	ADC3_DMA/system_stm32f4xx.c	/^#define PLL_M /;"	d	file:
+PLL_M	ADC_Interleaved_DMAmode2/system_stm32f4xx.c	/^#define PLL_M /;"	d	file:
+PLL_M	DAC_SignalsGeneration/system_stm32f4xx.c	/^#define PLL_M /;"	d	file:
+PLL_M	DMA_FLASH_RAM/system_stm32f4xx.c	/^#define PLL_M /;"	d	file:
+PLL_M	EXTI/system_stm32f4xx.c	/^#define PLL_M /;"	d	file:
+PLL_M	FLASH_Program/system_stm32f4xx.c	/^#define PLL_M /;"	d	file:
+PLL_M	FLASH_Write_Protection/system_stm32f4xx.c	/^#define PLL_M /;"	d	file:
+PLL_M	IO_Toggle/system_stm32f4xx.c	/^#define PLL_M /;"	d	file:
+PLL_M	IWDG/system_stm32f4xx.c	/^#define PLL_M /;"	d	file:
+PLL_M	MEMS/system_stm32f4xx.c	/^#define PLL_M /;"	d	file:
+PLL_M	PWR_CurrentConsumption/system_stm32f4xx.c	/^#define PLL_M /;"	d	file:
+PLL_M	PWR_STANDBY/system_stm32f4xx.c	/^#define PLL_M /;"	d	file:
+PLL_M	PWR_STOP/system_stm32f4xx.c	/^#define PLL_M /;"	d	file:
+PLL_M	RCC/system_stm32f4xx.c	/^#define PLL_M /;"	d	file:
+PLL_M	SysTick/system_stm32f4xx.c	/^#define PLL_M /;"	d	file:
+PLL_M	TIM_ComplementarySignals/system_stm32f4xx.c	/^#define PLL_M /;"	d	file:
+PLL_M	TIM_PWM_Input/system_stm32f4xx.c	/^#define PLL_M /;"	d	file:
+PLL_M	TIM_PWM_Output/system_stm32f4xx.c	/^#define PLL_M /;"	d	file:
+PLL_M	TIM_TimeBase/system_stm32f4xx.c	/^#define PLL_M /;"	d	file:
+PLL_N	ADC3_DMA/system_stm32f4xx.c	/^#define PLL_N /;"	d	file:
+PLL_N	ADC_Interleaved_DMAmode2/system_stm32f4xx.c	/^#define PLL_N /;"	d	file:
+PLL_N	DAC_SignalsGeneration/system_stm32f4xx.c	/^#define PLL_N /;"	d	file:
+PLL_N	DMA_FLASH_RAM/system_stm32f4xx.c	/^#define PLL_N /;"	d	file:
+PLL_N	EXTI/system_stm32f4xx.c	/^#define PLL_N /;"	d	file:
+PLL_N	FLASH_Program/system_stm32f4xx.c	/^#define PLL_N /;"	d	file:
+PLL_N	FLASH_Write_Protection/system_stm32f4xx.c	/^#define PLL_N /;"	d	file:
+PLL_N	IO_Toggle/system_stm32f4xx.c	/^#define PLL_N /;"	d	file:
+PLL_N	IWDG/system_stm32f4xx.c	/^#define PLL_N /;"	d	file:
+PLL_N	MEMS/system_stm32f4xx.c	/^#define PLL_N /;"	d	file:
+PLL_N	PWR_CurrentConsumption/system_stm32f4xx.c	/^#define PLL_N /;"	d	file:
+PLL_N	PWR_STANDBY/system_stm32f4xx.c	/^#define PLL_N /;"	d	file:
+PLL_N	PWR_STOP/system_stm32f4xx.c	/^#define PLL_N /;"	d	file:
+PLL_N	RCC/system_stm32f4xx.c	/^#define PLL_N /;"	d	file:
+PLL_N	SysTick/system_stm32f4xx.c	/^#define PLL_N /;"	d	file:
+PLL_N	TIM_ComplementarySignals/system_stm32f4xx.c	/^#define PLL_N /;"	d	file:
+PLL_N	TIM_PWM_Input/system_stm32f4xx.c	/^#define PLL_N /;"	d	file:
+PLL_N	TIM_PWM_Output/system_stm32f4xx.c	/^#define PLL_N /;"	d	file:
+PLL_N	TIM_TimeBase/system_stm32f4xx.c	/^#define PLL_N /;"	d	file:
+PLL_P	ADC3_DMA/system_stm32f4xx.c	/^#define PLL_P /;"	d	file:
+PLL_P	ADC_Interleaved_DMAmode2/system_stm32f4xx.c	/^#define PLL_P /;"	d	file:
+PLL_P	DAC_SignalsGeneration/system_stm32f4xx.c	/^#define PLL_P /;"	d	file:
+PLL_P	DMA_FLASH_RAM/system_stm32f4xx.c	/^#define PLL_P /;"	d	file:
+PLL_P	EXTI/system_stm32f4xx.c	/^#define PLL_P /;"	d	file:
+PLL_P	FLASH_Program/system_stm32f4xx.c	/^#define PLL_P /;"	d	file:
+PLL_P	FLASH_Write_Protection/system_stm32f4xx.c	/^#define PLL_P /;"	d	file:
+PLL_P	IO_Toggle/system_stm32f4xx.c	/^#define PLL_P /;"	d	file:
+PLL_P	IWDG/system_stm32f4xx.c	/^#define PLL_P /;"	d	file:
+PLL_P	MEMS/system_stm32f4xx.c	/^#define PLL_P /;"	d	file:
+PLL_P	PWR_CurrentConsumption/system_stm32f4xx.c	/^#define PLL_P /;"	d	file:
+PLL_P	PWR_STANDBY/system_stm32f4xx.c	/^#define PLL_P /;"	d	file:
+PLL_P	PWR_STOP/system_stm32f4xx.c	/^#define PLL_P /;"	d	file:
+PLL_P	RCC/system_stm32f4xx.c	/^#define PLL_P /;"	d	file:
+PLL_P	SysTick/system_stm32f4xx.c	/^#define PLL_P /;"	d	file:
+PLL_P	TIM_ComplementarySignals/system_stm32f4xx.c	/^#define PLL_P /;"	d	file:
+PLL_P	TIM_PWM_Input/system_stm32f4xx.c	/^#define PLL_P /;"	d	file:
+PLL_P	TIM_PWM_Output/system_stm32f4xx.c	/^#define PLL_P /;"	d	file:
+PLL_P	TIM_TimeBase/system_stm32f4xx.c	/^#define PLL_P /;"	d	file:
+PLL_Q	ADC3_DMA/system_stm32f4xx.c	/^#define PLL_Q /;"	d	file:
+PLL_Q	ADC_Interleaved_DMAmode2/system_stm32f4xx.c	/^#define PLL_Q /;"	d	file:
+PLL_Q	DAC_SignalsGeneration/system_stm32f4xx.c	/^#define PLL_Q /;"	d	file:
+PLL_Q	DMA_FLASH_RAM/system_stm32f4xx.c	/^#define PLL_Q /;"	d	file:
+PLL_Q	EXTI/system_stm32f4xx.c	/^#define PLL_Q /;"	d	file:
+PLL_Q	FLASH_Program/system_stm32f4xx.c	/^#define PLL_Q /;"	d	file:
+PLL_Q	FLASH_Write_Protection/system_stm32f4xx.c	/^#define PLL_Q /;"	d	file:
+PLL_Q	IO_Toggle/system_stm32f4xx.c	/^#define PLL_Q /;"	d	file:
+PLL_Q	IWDG/system_stm32f4xx.c	/^#define PLL_Q /;"	d	file:
+PLL_Q	MEMS/system_stm32f4xx.c	/^#define PLL_Q /;"	d	file:
+PLL_Q	PWR_CurrentConsumption/system_stm32f4xx.c	/^#define PLL_Q /;"	d	file:
+PLL_Q	PWR_STANDBY/system_stm32f4xx.c	/^#define PLL_Q /;"	d	file:
+PLL_Q	PWR_STOP/system_stm32f4xx.c	/^#define PLL_Q /;"	d	file:
+PLL_Q	RCC/system_stm32f4xx.c	/^#define PLL_Q /;"	d	file:
+PLL_Q	SysTick/system_stm32f4xx.c	/^#define PLL_Q /;"	d	file:
+PLL_Q	TIM_ComplementarySignals/system_stm32f4xx.c	/^#define PLL_Q /;"	d	file:
+PLL_Q	TIM_PWM_Input/system_stm32f4xx.c	/^#define PLL_Q /;"	d	file:
+PLL_Q	TIM_PWM_Output/system_stm32f4xx.c	/^#define PLL_Q /;"	d	file:
+PLL_Q	TIM_TimeBase/system_stm32f4xx.c	/^#define PLL_Q /;"	d	file:
+PendSV_Handler	ADC3_DMA/stm32f4xx_it.c	/^void PendSV_Handler(void)$/;"	f
+PendSV_Handler	ADC_Interleaved_DMAmode2/stm32f4xx_it.c	/^void PendSV_Handler(void)$/;"	f
+PendSV_Handler	DAC_SignalsGeneration/stm32f4xx_it.c	/^void PendSV_Handler(void)$/;"	f
+PendSV_Handler	DMA_FLASH_RAM/stm32f4xx_it.c	/^void PendSV_Handler(void)$/;"	f
+PendSV_Handler	EXTI/stm32f4xx_it.c	/^void PendSV_Handler(void)$/;"	f
+PendSV_Handler	FLASH_Program/stm32f4xx_it.c	/^void PendSV_Handler(void)$/;"	f
+PendSV_Handler	FLASH_Write_Protection/stm32f4xx_it.c	/^void PendSV_Handler(void)$/;"	f
+PendSV_Handler	IO_Toggle/stm32f4xx_it.c	/^void PendSV_Handler(void)$/;"	f
+PendSV_Handler	IWDG/stm32f4xx_it.c	/^void PendSV_Handler(void)$/;"	f
+PendSV_Handler	MEMS/stm32f4xx_it.c	/^void PendSV_Handler(void)$/;"	f
+PendSV_Handler	PWR_CurrentConsumption/stm32f4xx_it.c	/^void PendSV_Handler(void)$/;"	f
+PendSV_Handler	PWR_STANDBY/stm32f4xx_it.c	/^void PendSV_Handler(void)$/;"	f
+PendSV_Handler	PWR_STOP/stm32f4xx_it.c	/^void PendSV_Handler(void)$/;"	f
+PendSV_Handler	RCC/stm32f4xx_it.c	/^void PendSV_Handler(void)$/;"	f
+PendSV_Handler	SysTick/stm32f4xx_it.c	/^void PendSV_Handler(void)$/;"	f
+PendSV_Handler	TIM_ComplementarySignals/stm32f4xx_it.c	/^void PendSV_Handler(void)$/;"	f
+PendSV_Handler	TIM_PWM_Input/stm32f4xx_it.c	/^void PendSV_Handler(void)$/;"	f
+PendSV_Handler	TIM_PWM_Output/stm32f4xx_it.c	/^void PendSV_Handler(void)$/;"	f
+PendSV_Handler	TIM_TimeBase/stm32f4xx_it.c	/^void PendSV_Handler(void)$/;"	f
+PeriodValue	IWDG/main.c	/^__IO uint32_t CaptureNumber = 0, PeriodValue = 0;$/;"	v
+PrescalerValue	MEMS/main.c	/^uint16_t PrescalerValue = 0;$/;"	v
+PrescalerValue	TIM_PWM_Output/main.c	/^uint16_t PrescalerValue = 0;$/;"	v
+PrescalerValue	TIM_TimeBase/main.c	/^uint16_t PrescalerValue = 0;$/;"	v
+RCC_IRQHandler	RCC/stm32f4xx_it.c	/^void RCC_IRQHandler(void)$/;"	f
+RTC_AlarmStructure	PWR_STANDBY/stm32f4xx_it.c	/^RTC_AlarmTypeDef  RTC_AlarmStructure;$/;"	v
+RTC_Config	PWR_STANDBY/main.c	/^void RTC_Config(void)$/;"	f
+RTC_Config	PWR_STOP/main.c	/^void RTC_Config(void)$/;"	f
+RTC_InitStructure	PWR_STANDBY/main.c	/^RTC_InitTypeDef RTC_InitStructure;$/;"	v
+RTC_TimeStructure	PWR_STANDBY/main.c	/^RTC_TimeTypeDef RTC_TimeStructure;$/;"	v
+RTC_WKUP_IRQHandler	PWR_CurrentConsumption/stm32f4xx_it.c	/^void RTC_WKUP_IRQHandler(void)$/;"	f
+RTC_WKUP_IRQHandler	PWR_STOP/stm32f4xx_it.c	/^void RTC_WKUP_IRQHandler(void)$/;"	f
+SINGLECLICK_Z	MEMS/main.h	/^#define SINGLECLICK_Z /;"	d
+SLEEP_MODE	PWR_CurrentConsumption/stm32f4xx_lp_modes.h	/^#define SLEEP_MODE$/;"	d
+SRC_Const_Buffer	DMA_FLASH_RAM/main.c	/^const uint32_t SRC_Const_Buffer[BUFFER_SIZE]= {$/;"	v
+SVC_Handler	ADC3_DMA/stm32f4xx_it.c	/^void SVC_Handler(void)$/;"	f
+SVC_Handler	ADC_Interleaved_DMAmode2/stm32f4xx_it.c	/^void SVC_Handler(void)$/;"	f
+SVC_Handler	DAC_SignalsGeneration/stm32f4xx_it.c	/^void SVC_Handler(void)$/;"	f
+SVC_Handler	DMA_FLASH_RAM/stm32f4xx_it.c	/^void SVC_Handler(void)$/;"	f
+SVC_Handler	EXTI/stm32f4xx_it.c	/^void SVC_Handler(void)$/;"	f
+SVC_Handler	FLASH_Program/stm32f4xx_it.c	/^void SVC_Handler(void)$/;"	f
+SVC_Handler	FLASH_Write_Protection/stm32f4xx_it.c	/^void SVC_Handler(void)$/;"	f
+SVC_Handler	IO_Toggle/stm32f4xx_it.c	/^void SVC_Handler(void)$/;"	f
+SVC_Handler	IWDG/stm32f4xx_it.c	/^void SVC_Handler(void)$/;"	f
+SVC_Handler	MEMS/stm32f4xx_it.c	/^void SVC_Handler(void)$/;"	f
+SVC_Handler	PWR_CurrentConsumption/stm32f4xx_it.c	/^void SVC_Handler(void)$/;"	f
+SVC_Handler	PWR_STANDBY/stm32f4xx_it.c	/^void SVC_Handler(void)$/;"	f
+SVC_Handler	PWR_STOP/stm32f4xx_it.c	/^void SVC_Handler(void)$/;"	f
+SVC_Handler	RCC/stm32f4xx_it.c	/^void SVC_Handler(void)$/;"	f
+SVC_Handler	SysTick/stm32f4xx_it.c	/^void SVC_Handler(void)$/;"	f
+SVC_Handler	TIM_ComplementarySignals/stm32f4xx_it.c	/^void SVC_Handler(void)$/;"	f
+SVC_Handler	TIM_PWM_Input/stm32f4xx_it.c	/^void SVC_Handler(void)$/;"	f
+SVC_Handler	TIM_PWM_Output/stm32f4xx_it.c	/^void SVC_Handler(void)$/;"	f
+SVC_Handler	TIM_TimeBase/stm32f4xx_it.c	/^void SVC_Handler(void)$/;"	f
+SYSCLKConfig_STOP	PWR_STOP/main.c	/^void SYSCLKConfig_STOP(void)$/;"	f
+SectorsWRPStatus	FLASH_Write_Protection/main.c	/^__IO uint32_t SectorsWRPStatus = 0xFFF;$/;"	v
+SelectedWavesForm	DAC_SignalsGeneration/main.c	/^__IO uint8_t SelectedWavesForm = 0;$/;"	v
+SetSysClock	ADC3_DMA/system_stm32f4xx.c	/^static void SetSysClock(void)$/;"	f	file:
+SetSysClock	ADC_Interleaved_DMAmode2/system_stm32f4xx.c	/^static void SetSysClock(void)$/;"	f	file:
+SetSysClock	DAC_SignalsGeneration/system_stm32f4xx.c	/^static void SetSysClock(void)$/;"	f	file:
+SetSysClock	DMA_FLASH_RAM/system_stm32f4xx.c	/^static void SetSysClock(void)$/;"	f	file:
+SetSysClock	EXTI/system_stm32f4xx.c	/^static void SetSysClock(void)$/;"	f	file:
+SetSysClock	FLASH_Program/system_stm32f4xx.c	/^static void SetSysClock(void)$/;"	f	file:
+SetSysClock	FLASH_Write_Protection/system_stm32f4xx.c	/^static void SetSysClock(void)$/;"	f	file:
+SetSysClock	IO_Toggle/system_stm32f4xx.c	/^static void SetSysClock(void)$/;"	f	file:
+SetSysClock	IWDG/system_stm32f4xx.c	/^static void SetSysClock(void)$/;"	f	file:
+SetSysClock	MEMS/system_stm32f4xx.c	/^static void SetSysClock(void)$/;"	f	file:
+SetSysClock	PWR_CurrentConsumption/system_stm32f4xx.c	/^static void SetSysClock(void)$/;"	f	file:
+SetSysClock	PWR_STANDBY/system_stm32f4xx.c	/^static void SetSysClock(void)$/;"	f	file:
+SetSysClock	PWR_STOP/system_stm32f4xx.c	/^static void SetSysClock(void)$/;"	f	file:
+SetSysClock	RCC/system_stm32f4xx.c	/^static void SetSysClock(void)$/;"	f	file:
+SetSysClock	SysTick/system_stm32f4xx.c	/^static void SetSysClock(void)$/;"	f	file:
+SetSysClock	TIM_ComplementarySignals/system_stm32f4xx.c	/^static void SetSysClock(void)$/;"	f	file:
+SetSysClock	TIM_PWM_Input/system_stm32f4xx.c	/^static void SetSysClock(void)$/;"	f	file:
+SetSysClock	TIM_PWM_Output/system_stm32f4xx.c	/^static void SetSysClock(void)$/;"	f	file:
+SetSysClock	TIM_TimeBase/system_stm32f4xx.c	/^static void SetSysClock(void)$/;"	f	file:
+Sine12bit	DAC_SignalsGeneration/main.c	/^const uint16_t Sine12bit[32] = {$/;"	v
+SingleClickDetect	MEMS/main.c	/^__IO uint8_t SingleClickDetect = 0x00;$/;"	v
+SleepMode_Measure	PWR_CurrentConsumption/stm32f4xx_lp_modes.c	/^void SleepMode_Measure(void)$/;"	f
+StandbyMode_Measure	PWR_CurrentConsumption/stm32f4xx_lp_modes.c	/^void StandbyMode_Measure(void)$/;"	f
+StandbyRTCBKPSRAMMode_Measure	PWR_CurrentConsumption/stm32f4xx_lp_modes.c	/^void StandbyRTCBKPSRAMMode_Measure(void)$/;"	f
+StandbyRTCMode_Measure	PWR_CurrentConsumption/stm32f4xx_lp_modes.c	/^void StandbyRTCMode_Measure(void)$/;"	f
+StartSector	FLASH_Program/main.c	/^uint32_t StartSector = 0, EndSector = 0, Address = 0, i = 0 ;$/;"	v
+StopMode_Measure	PWR_CurrentConsumption/stm32f4xx_lp_modes.c	/^void StopMode_Measure(void)$/;"	f
+SynchPrediv	PWR_STANDBY/main.c	/^__IO uint32_t AsynchPrediv = 0, SynchPrediv = 0;$/;"	v
+SysTick_Configuration	PWR_STANDBY/main.c	/^void SysTick_Configuration(void)$/;"	f
+SysTick_Configuration	PWR_STOP/main.c	/^void SysTick_Configuration(void)$/;"	f
+SysTick_Handler	ADC3_DMA/stm32f4xx_it.c	/^void SysTick_Handler(void)$/;"	f
+SysTick_Handler	ADC_Interleaved_DMAmode2/stm32f4xx_it.c	/^void SysTick_Handler(void)$/;"	f
+SysTick_Handler	DAC_SignalsGeneration/stm32f4xx_it.c	/^void SysTick_Handler(void)$/;"	f
+SysTick_Handler	DMA_FLASH_RAM/stm32f4xx_it.c	/^void SysTick_Handler(void)$/;"	f
+SysTick_Handler	EXTI/stm32f4xx_it.c	/^void SysTick_Handler(void)$/;"	f
+SysTick_Handler	FLASH_Program/stm32f4xx_it.c	/^void SysTick_Handler(void)$/;"	f
+SysTick_Handler	FLASH_Write_Protection/stm32f4xx_it.c	/^void SysTick_Handler(void)$/;"	f
+SysTick_Handler	IO_Toggle/stm32f4xx_it.c	/^void SysTick_Handler(void)$/;"	f
+SysTick_Handler	IWDG/stm32f4xx_it.c	/^void SysTick_Handler(void)$/;"	f
+SysTick_Handler	MEMS/stm32f4xx_it.c	/^void SysTick_Handler(void)$/;"	f
+SysTick_Handler	PWR_CurrentConsumption/stm32f4xx_it.c	/^void SysTick_Handler(void)$/;"	f
+SysTick_Handler	PWR_STANDBY/stm32f4xx_it.c	/^void SysTick_Handler(void)$/;"	f
+SysTick_Handler	PWR_STOP/stm32f4xx_it.c	/^void SysTick_Handler(void)$/;"	f
+SysTick_Handler	RCC/stm32f4xx_it.c	/^void SysTick_Handler(void)$/;"	f
+SysTick_Handler	SysTick/stm32f4xx_it.c	/^void SysTick_Handler(void)$/;"	f
+SysTick_Handler	TIM_ComplementarySignals/stm32f4xx_it.c	/^void SysTick_Handler(void)$/;"	f
+SysTick_Handler	TIM_PWM_Input/stm32f4xx_it.c	/^void SysTick_Handler(void)$/;"	f
+SysTick_Handler	TIM_PWM_Output/stm32f4xx_it.c	/^void SysTick_Handler(void)$/;"	f
+SysTick_Handler	TIM_TimeBase/stm32f4xx_it.c	/^void SysTick_Handler(void)$/;"	f
+SystemCoreClock	ADC3_DMA/system_stm32f4xx.c	/^  uint32_t SystemCoreClock = 144000000;$/;"	v
+SystemCoreClock	ADC_Interleaved_DMAmode2/system_stm32f4xx.c	/^  uint32_t SystemCoreClock = 144000000;$/;"	v
+SystemCoreClock	DAC_SignalsGeneration/system_stm32f4xx.c	/^  uint32_t SystemCoreClock = 168000000;$/;"	v
+SystemCoreClock	DMA_FLASH_RAM/system_stm32f4xx.c	/^  uint32_t SystemCoreClock = 168000000;$/;"	v
+SystemCoreClock	EXTI/system_stm32f4xx.c	/^  uint32_t SystemCoreClock = 168000000;$/;"	v
+SystemCoreClock	FLASH_Program/system_stm32f4xx.c	/^  uint32_t SystemCoreClock = 168000000;$/;"	v
+SystemCoreClock	FLASH_Write_Protection/system_stm32f4xx.c	/^  uint32_t SystemCoreClock = 168000000;$/;"	v
+SystemCoreClock	IO_Toggle/system_stm32f4xx.c	/^  uint32_t SystemCoreClock = 168000000;$/;"	v
+SystemCoreClock	IWDG/system_stm32f4xx.c	/^  uint32_t SystemCoreClock = 168000000;$/;"	v
+SystemCoreClock	MEMS/system_stm32f4xx.c	/^  uint32_t SystemCoreClock = 168000000;$/;"	v
+SystemCoreClock	PWR_CurrentConsumption/system_stm32f4xx.c	/^  uint32_t SystemCoreClock = 168000000;$/;"	v
+SystemCoreClock	PWR_STANDBY/system_stm32f4xx.c	/^  uint32_t SystemCoreClock = 168000000;$/;"	v
+SystemCoreClock	PWR_STOP/system_stm32f4xx.c	/^  uint32_t SystemCoreClock = 168000000;$/;"	v
+SystemCoreClock	RCC/system_stm32f4xx.c	/^  uint32_t SystemCoreClock = 168000000;$/;"	v
+SystemCoreClock	SysTick/system_stm32f4xx.c	/^  uint32_t SystemCoreClock = 168000000;$/;"	v
+SystemCoreClock	TIM_ComplementarySignals/system_stm32f4xx.c	/^  uint32_t SystemCoreClock = 168000000;$/;"	v
+SystemCoreClock	TIM_PWM_Input/system_stm32f4xx.c	/^  uint32_t SystemCoreClock = 168000000;$/;"	v
+SystemCoreClock	TIM_PWM_Output/system_stm32f4xx.c	/^  uint32_t SystemCoreClock = 168000000;$/;"	v
+SystemCoreClock	TIM_TimeBase/system_stm32f4xx.c	/^  uint32_t SystemCoreClock = 168000000;$/;"	v
+SystemCoreClockUpdate	ADC3_DMA/system_stm32f4xx.c	/^void SystemCoreClockUpdate(void)$/;"	f
+SystemCoreClockUpdate	ADC_Interleaved_DMAmode2/system_stm32f4xx.c	/^void SystemCoreClockUpdate(void)$/;"	f
+SystemCoreClockUpdate	DAC_SignalsGeneration/system_stm32f4xx.c	/^void SystemCoreClockUpdate(void)$/;"	f
+SystemCoreClockUpdate	DMA_FLASH_RAM/system_stm32f4xx.c	/^void SystemCoreClockUpdate(void)$/;"	f
+SystemCoreClockUpdate	EXTI/system_stm32f4xx.c	/^void SystemCoreClockUpdate(void)$/;"	f
+SystemCoreClockUpdate	FLASH_Program/system_stm32f4xx.c	/^void SystemCoreClockUpdate(void)$/;"	f
+SystemCoreClockUpdate	FLASH_Write_Protection/system_stm32f4xx.c	/^void SystemCoreClockUpdate(void)$/;"	f
+SystemCoreClockUpdate	IO_Toggle/system_stm32f4xx.c	/^void SystemCoreClockUpdate(void)$/;"	f
+SystemCoreClockUpdate	IWDG/system_stm32f4xx.c	/^void SystemCoreClockUpdate(void)$/;"	f
+SystemCoreClockUpdate	MEMS/system_stm32f4xx.c	/^void SystemCoreClockUpdate(void)$/;"	f
+SystemCoreClockUpdate	PWR_CurrentConsumption/system_stm32f4xx.c	/^void SystemCoreClockUpdate(void)$/;"	f
+SystemCoreClockUpdate	PWR_STANDBY/system_stm32f4xx.c	/^void SystemCoreClockUpdate(void)$/;"	f
+SystemCoreClockUpdate	PWR_STOP/system_stm32f4xx.c	/^void SystemCoreClockUpdate(void)$/;"	f
+SystemCoreClockUpdate	RCC/system_stm32f4xx.c	/^void SystemCoreClockUpdate(void)$/;"	f
+SystemCoreClockUpdate	SysTick/system_stm32f4xx.c	/^void SystemCoreClockUpdate(void)$/;"	f
+SystemCoreClockUpdate	TIM_ComplementarySignals/system_stm32f4xx.c	/^void SystemCoreClockUpdate(void)$/;"	f
+SystemCoreClockUpdate	TIM_PWM_Input/system_stm32f4xx.c	/^void SystemCoreClockUpdate(void)$/;"	f
+SystemCoreClockUpdate	TIM_PWM_Output/system_stm32f4xx.c	/^void SystemCoreClockUpdate(void)$/;"	f
+SystemCoreClockUpdate	TIM_TimeBase/system_stm32f4xx.c	/^void SystemCoreClockUpdate(void)$/;"	f
+SystemInit	ADC3_DMA/system_stm32f4xx.c	/^void SystemInit(void)$/;"	f
+SystemInit	ADC_Interleaved_DMAmode2/system_stm32f4xx.c	/^void SystemInit(void)$/;"	f
+SystemInit	DAC_SignalsGeneration/system_stm32f4xx.c	/^void SystemInit(void)$/;"	f
+SystemInit	DMA_FLASH_RAM/system_stm32f4xx.c	/^void SystemInit(void)$/;"	f
+SystemInit	EXTI/system_stm32f4xx.c	/^void SystemInit(void)$/;"	f
+SystemInit	FLASH_Program/system_stm32f4xx.c	/^void SystemInit(void)$/;"	f
+SystemInit	FLASH_Write_Protection/system_stm32f4xx.c	/^void SystemInit(void)$/;"	f
+SystemInit	IO_Toggle/system_stm32f4xx.c	/^void SystemInit(void)$/;"	f
+SystemInit	IWDG/system_stm32f4xx.c	/^void SystemInit(void)$/;"	f
+SystemInit	MEMS/system_stm32f4xx.c	/^void SystemInit(void)$/;"	f
+SystemInit	PWR_CurrentConsumption/system_stm32f4xx.c	/^void SystemInit(void)$/;"	f
+SystemInit	PWR_STANDBY/system_stm32f4xx.c	/^void SystemInit(void)$/;"	f
+SystemInit	PWR_STOP/system_stm32f4xx.c	/^void SystemInit(void)$/;"	f
+SystemInit	RCC/system_stm32f4xx.c	/^void SystemInit(void)$/;"	f
+SystemInit	SysTick/system_stm32f4xx.c	/^void SystemInit(void)$/;"	f
+SystemInit	TIM_ComplementarySignals/system_stm32f4xx.c	/^void SystemInit(void)$/;"	f
+SystemInit	TIM_PWM_Input/system_stm32f4xx.c	/^void SystemInit(void)$/;"	f
+SystemInit	TIM_PWM_Output/system_stm32f4xx.c	/^void SystemInit(void)$/;"	f
+SystemInit	TIM_TimeBase/system_stm32f4xx.c	/^void SystemInit(void)$/;"	f
+SystemInit_ExtMemCtl	ADC3_DMA/system_stm32f4xx.c	/^void SystemInit_ExtMemCtl(void)$/;"	f
+SystemInit_ExtMemCtl	ADC_Interleaved_DMAmode2/system_stm32f4xx.c	/^void SystemInit_ExtMemCtl(void)$/;"	f
+SystemInit_ExtMemCtl	DAC_SignalsGeneration/system_stm32f4xx.c	/^void SystemInit_ExtMemCtl(void)$/;"	f
+SystemInit_ExtMemCtl	DMA_FLASH_RAM/system_stm32f4xx.c	/^void SystemInit_ExtMemCtl(void)$/;"	f
+SystemInit_ExtMemCtl	EXTI/system_stm32f4xx.c	/^void SystemInit_ExtMemCtl(void)$/;"	f
+SystemInit_ExtMemCtl	FLASH_Program/system_stm32f4xx.c	/^void SystemInit_ExtMemCtl(void)$/;"	f
+SystemInit_ExtMemCtl	FLASH_Write_Protection/system_stm32f4xx.c	/^void SystemInit_ExtMemCtl(void)$/;"	f
+SystemInit_ExtMemCtl	IO_Toggle/system_stm32f4xx.c	/^void SystemInit_ExtMemCtl(void)$/;"	f
+SystemInit_ExtMemCtl	IWDG/system_stm32f4xx.c	/^void SystemInit_ExtMemCtl(void)$/;"	f
+SystemInit_ExtMemCtl	MEMS/system_stm32f4xx.c	/^void SystemInit_ExtMemCtl(void)$/;"	f
+SystemInit_ExtMemCtl	PWR_CurrentConsumption/system_stm32f4xx.c	/^void SystemInit_ExtMemCtl(void)$/;"	f
+SystemInit_ExtMemCtl	PWR_STANDBY/system_stm32f4xx.c	/^void SystemInit_ExtMemCtl(void)$/;"	f
+SystemInit_ExtMemCtl	PWR_STOP/system_stm32f4xx.c	/^void SystemInit_ExtMemCtl(void)$/;"	f
+SystemInit_ExtMemCtl	RCC/system_stm32f4xx.c	/^void SystemInit_ExtMemCtl(void)$/;"	f
+SystemInit_ExtMemCtl	SysTick/system_stm32f4xx.c	/^void SystemInit_ExtMemCtl(void)$/;"	f
+SystemInit_ExtMemCtl	TIM_ComplementarySignals/system_stm32f4xx.c	/^void SystemInit_ExtMemCtl(void)$/;"	f
+SystemInit_ExtMemCtl	TIM_PWM_Input/system_stm32f4xx.c	/^void SystemInit_ExtMemCtl(void)$/;"	f
+SystemInit_ExtMemCtl	TIM_PWM_Output/system_stm32f4xx.c	/^void SystemInit_ExtMemCtl(void)$/;"	f
+SystemInit_ExtMemCtl	TIM_TimeBase/system_stm32f4xx.c	/^void SystemInit_ExtMemCtl(void)$/;"	f
+TIM3_IRQHandler	TIM_TimeBase/stm32f4xx_it.c	/^void TIM3_IRQHandler(void)$/;"	f
+TIM4_IRQHandler	TIM_PWM_Input/stm32f4xx_it.c	/^void TIM4_IRQHandler(void)$/;"	f
+TIM5_IRQHandler	IWDG/stm32f4xx_it.c	/^void TIM5_IRQHandler(void)$/;"	f
+TIM6_Config	DAC_SignalsGeneration/main.c	/^void TIM6_Config(void)$/;"	f
+TIMEOUT_MAX	DMA_FLASH_RAM/main.h	/^#define TIMEOUT_MAX /;"	d
+TIM_ARR	MEMS/main.h	/^#define TIM_ARR /;"	d
+TIM_BDTRInitStructure	TIM_ComplementarySignals/main.c	/^TIM_BDTRInitTypeDef TIM_BDTRInitStructure;$/;"	v
+TIM_CCR	MEMS/main.h	/^#define TIM_CCR /;"	d
+TIM_Config	MEMS/main.c	/^static void TIM_Config(void)$/;"	f	file:
+TIM_Config	TIM_ComplementarySignals/main.c	/^void TIM_Config(void)$/;"	f
+TIM_Config	TIM_PWM_Input/main.c	/^void TIM_Config(void)$/;"	f
+TIM_Config	TIM_PWM_Output/main.c	/^void TIM_Config(void)$/;"	f
+TIM_Config	TIM_TimeBase/main.c	/^void TIM_Config(void)$/;"	f
+TIM_ICInitStructure	TIM_PWM_Input/main.c	/^TIM_ICInitTypeDef  TIM_ICInitStructure;$/;"	v
+TIM_OCInitStructure	TIM_ComplementarySignals/main.c	/^TIM_OCInitTypeDef  TIM_OCInitStructure;$/;"	v
+TIM_OCInitStructure	TIM_PWM_Output/main.c	/^TIM_OCInitTypeDef  TIM_OCInitStructure;$/;"	v
+TIM_OCInitStructure	TIM_TimeBase/main.c	/^TIM_OCInitTypeDef  TIM_OCInitStructure;$/;"	v
+TIM_TimeBaseStructure	MEMS/main.c	/^TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;$/;"	v
+TIM_TimeBaseStructure	TIM_ComplementarySignals/main.c	/^TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;$/;"	v
+TIM_TimeBaseStructure	TIM_PWM_Output/main.c	/^TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;$/;"	v
+TIM_TimeBaseStructure	TIM_TimeBase/main.c	/^TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;$/;"	v
+TempAcceleration	MEMS/stm32f4xx_it.c	/^__IO uint8_t TempAcceleration = 0;$/;"	v
+TestStatus	DMA_FLASH_RAM/main.c	/^typedef enum {FAILED = 0, PASSED = !FAILED} TestStatus;$/;"	t	typeref:enum:__anon2	file:
+TestStatus	FLASH_Program/main.c	/^typedef enum {FAILED = 0, PASSED = !FAILED} TestStatus;$/;"	t	typeref:enum:__anon1	file:
+TimerPeriod	TIM_ComplementarySignals/main.c	/^uint16_t TimerPeriod = 0;$/;"	v
+TimingDelay	IWDG/main.c	/^__IO uint32_t TimingDelay = 0;$/;"	v
+TimingDelay	MEMS/main.c	/^__IO uint32_t TimingDelay = 0;$/;"	v
+TimingDelay	PWR_STOP/stm32f4xx_it.c	/^__IO uint32_t TimingDelay = 0;$/;"	v
+TimingDelay	SysTick/main.c	/^static __IO uint32_t TimingDelay;$/;"	v	file:
+TimingDelay_Decrement	MEMS/main.c	/^void TimingDelay_Decrement(void)$/;"	f
+TimingDelay_Decrement	SysTick/main.c	/^void TimingDelay_Decrement(void)$/;"	f
+TransferStatus	DMA_FLASH_RAM/main.c	/^__IO TestStatus  TransferStatus = FAILED;$/;"	v
+USE_FULL_ASSERT	EXTI/stm32f4xx_conf.h	/^#define USE_FULL_ASSERT /;"	d
+UsageFault_Handler	ADC3_DMA/stm32f4xx_it.c	/^void UsageFault_Handler(void)$/;"	f
+UsageFault_Handler	ADC_Interleaved_DMAmode2/stm32f4xx_it.c	/^void UsageFault_Handler(void)$/;"	f
+UsageFault_Handler	DAC_SignalsGeneration/stm32f4xx_it.c	/^void UsageFault_Handler(void)$/;"	f
+UsageFault_Handler	DMA_FLASH_RAM/stm32f4xx_it.c	/^void UsageFault_Handler(void)$/;"	f
+UsageFault_Handler	EXTI/stm32f4xx_it.c	/^void UsageFault_Handler(void)$/;"	f
+UsageFault_Handler	FLASH_Program/stm32f4xx_it.c	/^void UsageFault_Handler(void)$/;"	f
+UsageFault_Handler	FLASH_Write_Protection/stm32f4xx_it.c	/^void UsageFault_Handler(void)$/;"	f
+UsageFault_Handler	IO_Toggle/stm32f4xx_it.c	/^void UsageFault_Handler(void)$/;"	f
+UsageFault_Handler	IWDG/stm32f4xx_it.c	/^void UsageFault_Handler(void)$/;"	f
+UsageFault_Handler	MEMS/stm32f4xx_it.c	/^void UsageFault_Handler(void)$/;"	f
+UsageFault_Handler	PWR_CurrentConsumption/stm32f4xx_it.c	/^void UsageFault_Handler(void)$/;"	f
+UsageFault_Handler	PWR_STANDBY/stm32f4xx_it.c	/^void UsageFault_Handler(void)$/;"	f
+UsageFault_Handler	PWR_STOP/stm32f4xx_it.c	/^void UsageFault_Handler(void)$/;"	f
+UsageFault_Handler	RCC/stm32f4xx_it.c	/^void UsageFault_Handler(void)$/;"	f
+UsageFault_Handler	SysTick/stm32f4xx_it.c	/^void UsageFault_Handler(void)$/;"	f
+UsageFault_Handler	TIM_ComplementarySignals/stm32f4xx_it.c	/^void UsageFault_Handler(void)$/;"	f
+UsageFault_Handler	TIM_PWM_Input/stm32f4xx_it.c	/^void UsageFault_Handler(void)$/;"	f
+UsageFault_Handler	TIM_PWM_Output/stm32f4xx_it.c	/^void UsageFault_Handler(void)$/;"	f
+UsageFault_Handler	TIM_TimeBase/stm32f4xx_it.c	/^void UsageFault_Handler(void)$/;"	f
+UserButtonStatus	PWR_CurrentConsumption/main.c	/^__IO uint8_t UserButtonStatus = 0;$/;"	v
+VECT_TAB_OFFSET	ADC3_DMA/system_stm32f4xx.c	/^#define VECT_TAB_OFFSET /;"	d	file:
+VECT_TAB_OFFSET	ADC_Interleaved_DMAmode2/system_stm32f4xx.c	/^#define VECT_TAB_OFFSET /;"	d	file:
+VECT_TAB_OFFSET	DAC_SignalsGeneration/system_stm32f4xx.c	/^#define VECT_TAB_OFFSET /;"	d	file:
+VECT_TAB_OFFSET	DMA_FLASH_RAM/system_stm32f4xx.c	/^#define VECT_TAB_OFFSET /;"	d	file:
+VECT_TAB_OFFSET	EXTI/system_stm32f4xx.c	/^#define VECT_TAB_OFFSET /;"	d	file:
+VECT_TAB_OFFSET	FLASH_Program/system_stm32f4xx.c	/^#define VECT_TAB_OFFSET /;"	d	file:
+VECT_TAB_OFFSET	FLASH_Write_Protection/system_stm32f4xx.c	/^#define VECT_TAB_OFFSET /;"	d	file:
+VECT_TAB_OFFSET	IO_Toggle/system_stm32f4xx.c	/^#define VECT_TAB_OFFSET /;"	d	file:
+VECT_TAB_OFFSET	IWDG/system_stm32f4xx.c	/^#define VECT_TAB_OFFSET /;"	d	file:
+VECT_TAB_OFFSET	MEMS/system_stm32f4xx.c	/^#define VECT_TAB_OFFSET /;"	d	file:
+VECT_TAB_OFFSET	PWR_CurrentConsumption/system_stm32f4xx.c	/^#define VECT_TAB_OFFSET /;"	d	file:
+VECT_TAB_OFFSET	PWR_STANDBY/system_stm32f4xx.c	/^#define VECT_TAB_OFFSET /;"	d	file:
+VECT_TAB_OFFSET	PWR_STOP/system_stm32f4xx.c	/^#define VECT_TAB_OFFSET /;"	d	file:
+VECT_TAB_OFFSET	RCC/system_stm32f4xx.c	/^#define VECT_TAB_OFFSET /;"	d	file:
+VECT_TAB_OFFSET	SysTick/system_stm32f4xx.c	/^#define VECT_TAB_OFFSET /;"	d	file:
+VECT_TAB_OFFSET	TIM_ComplementarySignals/system_stm32f4xx.c	/^#define VECT_TAB_OFFSET /;"	d	file:
+VECT_TAB_OFFSET	TIM_PWM_Input/system_stm32f4xx.c	/^#define VECT_TAB_OFFSET /;"	d	file:
+VECT_TAB_OFFSET	TIM_PWM_Output/system_stm32f4xx.c	/^#define VECT_TAB_OFFSET /;"	d	file:
+VECT_TAB_OFFSET	TIM_TimeBase/system_stm32f4xx.c	/^#define VECT_TAB_OFFSET /;"	d	file:
+XOffset	MEMS/main.c	/^__IO int8_t XOffset;$/;"	v
+YOffset	MEMS/main.c	/^__IO int8_t YOffset;$/;"	v
+_Next	RCC/TASKING/RCC/TASKING/cstart_thumb2.asm	/^_Next:$/;"	l
+_START	RCC/TASKING/RCC/TASKING/cstart_thumb2.asm	/^_START: $/;"	l
+__MAIN_H	DMA_FLASH_RAM/main.h	/^#define __MAIN_H$/;"	d
+__MAIN_H	MEMS/main.h	/^#define __MAIN_H$/;"	d
+__MAIN_H	SysTick/main.h	/^#define __MAIN_H$/;"	d
+__STM32F4xx_CONF_H	ADC3_DMA/stm32f4xx_conf.h	/^#define __STM32F4xx_CONF_H$/;"	d
+__STM32F4xx_CONF_H	ADC_Interleaved_DMAmode2/stm32f4xx_conf.h	/^#define __STM32F4xx_CONF_H$/;"	d
+__STM32F4xx_CONF_H	DAC_SignalsGeneration/stm32f4xx_conf.h	/^#define __STM32F4xx_CONF_H$/;"	d
+__STM32F4xx_CONF_H	DMA_FLASH_RAM/stm32f4xx_conf.h	/^#define __STM32F4xx_CONF_H$/;"	d
+__STM32F4xx_CONF_H	EXTI/stm32f4xx_conf.h	/^#define __STM32F4xx_CONF_H$/;"	d
+__STM32F4xx_CONF_H	FLASH_Program/stm32f4xx_conf.h	/^#define __STM32F4xx_CONF_H$/;"	d
+__STM32F4xx_CONF_H	FLASH_Write_Protection/stm32f4xx_conf.h	/^#define __STM32F4xx_CONF_H$/;"	d
+__STM32F4xx_CONF_H	IO_Toggle/stm32f4xx_conf.h	/^#define __STM32F4xx_CONF_H$/;"	d
+__STM32F4xx_CONF_H	IWDG/stm32f4xx_conf.h	/^#define __STM32F4xx_CONF_H$/;"	d
+__STM32F4xx_CONF_H	MEMS/stm32f4xx_conf.h	/^#define __STM32F4xx_CONF_H$/;"	d
+__STM32F4xx_CONF_H	PWR_CurrentConsumption/stm32f4xx_conf.h	/^#define __STM32F4xx_CONF_H$/;"	d
+__STM32F4xx_CONF_H	PWR_STANDBY/stm32f4xx_conf.h	/^#define __STM32F4xx_CONF_H$/;"	d
+__STM32F4xx_CONF_H	PWR_STOP/stm32f4xx_conf.h	/^#define __STM32F4xx_CONF_H$/;"	d
+__STM32F4xx_CONF_H	RCC/stm32f4xx_conf.h	/^#define __STM32F4xx_CONF_H$/;"	d
+__STM32F4xx_CONF_H	SysTick/stm32f4xx_conf.h	/^#define __STM32F4xx_CONF_H$/;"	d
+__STM32F4xx_CONF_H	TIM_ComplementarySignals/stm32f4xx_conf.h	/^#define __STM32F4xx_CONF_H$/;"	d
+__STM32F4xx_CONF_H	TIM_PWM_Input/stm32f4xx_conf.h	/^#define __STM32F4xx_CONF_H$/;"	d
+__STM32F4xx_CONF_H	TIM_PWM_Output/stm32f4xx_conf.h	/^#define __STM32F4xx_CONF_H$/;"	d
+__STM32F4xx_CONF_H	TIM_TimeBase/stm32f4xx_conf.h	/^#define __STM32F4xx_CONF_H$/;"	d
+__STM32F4xx_IT_H	ADC3_DMA/stm32f4xx_it.h	/^#define __STM32F4xx_IT_H$/;"	d
+__STM32F4xx_IT_H	ADC_Interleaved_DMAmode2/stm32f4xx_it.h	/^#define __STM32F4xx_IT_H$/;"	d
+__STM32F4xx_IT_H	DAC_SignalsGeneration/stm32f4xx_it.h	/^#define __STM32F4xx_IT_H$/;"	d
+__STM32F4xx_IT_H	DMA_FLASH_RAM/stm32f4xx_it.h	/^#define __STM32F4xx_IT_H$/;"	d
+__STM32F4xx_IT_H	EXTI/stm32f4xx_it.h	/^#define __STM32F4xx_IT_H$/;"	d
+__STM32F4xx_IT_H	FLASH_Program/stm32f4xx_it.h	/^#define __STM32F4xx_IT_H$/;"	d
+__STM32F4xx_IT_H	FLASH_Write_Protection/stm32f4xx_it.h	/^#define __STM32F4xx_IT_H$/;"	d
+__STM32F4xx_IT_H	IO_Toggle/stm32f4xx_it.h	/^#define __STM32F4xx_IT_H$/;"	d
+__STM32F4xx_IT_H	IWDG/stm32f4xx_it.h	/^#define __STM32F4xx_IT_H$/;"	d
+__STM32F4xx_IT_H	MEMS/stm32f4xx_it.h	/^#define __STM32F4xx_IT_H$/;"	d
+__STM32F4xx_IT_H	PWR_CurrentConsumption/stm32f4xx_it.h	/^#define __STM32F4xx_IT_H$/;"	d
+__STM32F4xx_IT_H	PWR_STANDBY/stm32f4xx_it.h	/^#define __STM32F4xx_IT_H$/;"	d
+__STM32F4xx_IT_H	PWR_STOP/stm32f4xx_it.h	/^#define __STM32F4xx_IT_H$/;"	d
+__STM32F4xx_IT_H	RCC/stm32f4xx_it.h	/^#define __STM32F4xx_IT_H$/;"	d
+__STM32F4xx_IT_H	SysTick/stm32f4xx_it.h	/^#define __STM32F4xx_IT_H$/;"	d
+__STM32F4xx_IT_H	TIM_ComplementarySignals/stm32f4xx_it.h	/^#define __STM32F4xx_IT_H$/;"	d
+__STM32F4xx_IT_H	TIM_PWM_Input/stm32f4xx_it.h	/^#define __STM32F4xx_IT_H$/;"	d
+__STM32F4xx_IT_H	TIM_PWM_Output/stm32f4xx_it.h	/^#define __STM32F4xx_IT_H$/;"	d
+__STM32F4xx_IT_H	TIM_TimeBase/stm32f4xx_it.h	/^#define __STM32F4xx_IT_H$/;"	d
+__STM32F4xx_LP_MODES_H	PWR_CurrentConsumption/stm32f4xx_lp_modes.h	/^#define __STM32F4xx_LP_MODES_H$/;"	d
+__get_argcv	RCC/TASKING/RCC/TASKING/cstart_thumb2.asm	/^__get_argcv:                    ; weak definition$/;"	l
+assert_failed	ADC3_DMA/main.c	/^void assert_failed(uint8_t* file, uint32_t line)$/;"	f
+assert_failed	ADC_Interleaved_DMAmode2/main.c	/^void assert_failed(uint8_t* file, uint32_t line)$/;"	f
+assert_failed	DAC_SignalsGeneration/main.c	/^void assert_failed(uint8_t* file, uint32_t line)$/;"	f
+assert_failed	DMA_FLASH_RAM/main.c	/^void assert_failed(uint8_t* file, uint32_t line)$/;"	f
+assert_failed	EXTI/main.c	/^void assert_failed(uint8_t* file, uint32_t line)$/;"	f
+assert_failed	FLASH_Program/main.c	/^void assert_failed(uint8_t* file, uint32_t line)$/;"	f
+assert_failed	FLASH_Write_Protection/main.c	/^void assert_failed(uint8_t* file, uint32_t line)$/;"	f
+assert_failed	IO_Toggle/main.c	/^void assert_failed(uint8_t* file, uint32_t line)$/;"	f
+assert_failed	IWDG/main.c	/^void assert_failed(uint8_t* file, uint32_t line)$/;"	f
+assert_failed	MEMS/main.c	/^void assert_failed(uint8_t* file, uint32_t line)$/;"	f
+assert_failed	PWR_CurrentConsumption/main.c	/^void assert_failed(uint8_t* file, uint32_t line)$/;"	f
+assert_failed	PWR_STANDBY/main.c	/^void assert_failed(uint8_t* file, uint32_t line)$/;"	f
+assert_failed	PWR_STOP/main.c	/^void assert_failed(uint8_t* file, uint32_t line)$/;"	f
+assert_failed	RCC/main.c	/^void assert_failed(uint8_t* file, uint32_t line)$/;"	f
+assert_failed	SysTick/main.c	/^void assert_failed(uint8_t* file, uint32_t line)$/;"	f
+assert_failed	TIM_ComplementarySignals/main.c	/^void assert_failed(uint8_t* file, uint32_t line)$/;"	f
+assert_failed	TIM_PWM_Input/main.c	/^void assert_failed(uint8_t* file, uint32_t line)$/;"	f
+assert_failed	TIM_PWM_Output/main.c	/^void assert_failed(uint8_t* file, uint32_t line)$/;"	f
+assert_failed	TIM_TimeBase/main.c	/^void assert_failed(uint8_t* file, uint32_t line)$/;"	f
+assert_param	ADC3_DMA/stm32f4xx_conf.h	/^  #define assert_param(/;"	d
+assert_param	ADC_Interleaved_DMAmode2/stm32f4xx_conf.h	/^  #define assert_param(/;"	d
+assert_param	DAC_SignalsGeneration/stm32f4xx_conf.h	/^  #define assert_param(/;"	d
+assert_param	DMA_FLASH_RAM/stm32f4xx_conf.h	/^  #define assert_param(/;"	d
+assert_param	EXTI/stm32f4xx_conf.h	/^  #define assert_param(/;"	d
+assert_param	FLASH_Program/stm32f4xx_conf.h	/^  #define assert_param(/;"	d
+assert_param	FLASH_Write_Protection/stm32f4xx_conf.h	/^  #define assert_param(/;"	d
+assert_param	IO_Toggle/stm32f4xx_conf.h	/^  #define assert_param(/;"	d
+assert_param	IWDG/stm32f4xx_conf.h	/^  #define assert_param(/;"	d
+assert_param	MEMS/stm32f4xx_conf.h	/^  #define assert_param(/;"	d
+assert_param	PWR_CurrentConsumption/stm32f4xx_conf.h	/^  #define assert_param(/;"	d
+assert_param	PWR_STANDBY/stm32f4xx_conf.h	/^  #define assert_param(/;"	d
+assert_param	PWR_STOP/stm32f4xx_conf.h	/^  #define assert_param(/;"	d
+assert_param	RCC/stm32f4xx_conf.h	/^  #define assert_param(/;"	d
+assert_param	SysTick/stm32f4xx_conf.h	/^  #define assert_param(/;"	d
+assert_param	TIM_ComplementarySignals/stm32f4xx_conf.h	/^  #define assert_param(/;"	d
+assert_param	TIM_PWM_Input/stm32f4xx_conf.h	/^  #define assert_param(/;"	d
+assert_param	TIM_PWM_Output/stm32f4xx_conf.h	/^  #define assert_param(/;"	d
+assert_param	TIM_TimeBase/stm32f4xx_conf.h	/^  #define assert_param(/;"	d
+capture	TIM_TimeBase/stm32f4xx_it.c	/^uint16_t capture = 0;$/;"	v
+clear	RCC/TASKING/RCC/TASKING/cstart_thumb2.asm	/^clear:$/;"	l
+copy	RCC/TASKING/RCC/TASKING/cstart_thumb2.asm	/^copy:$/;"	l
+cploop	RCC/TASKING/RCC/TASKING/cstart_thumb2.asm	/^cploop:$/;"	l
+data32	FLASH_Program/main.c	/^__IO uint32_t data32 = 0 , MemoryProgramStatus = 0 ;$/;"	v
+done	RCC/TASKING/RCC/TASKING/cstart_thumb2.asm	/^done:   $/;"	l
+i	FLASH_Program/main.c	/^uint32_t StartSector = 0, EndSector = 0, Address = 0, i = 0 ;$/;"	v
+i	PWR_CurrentConsumption/main.c	/^__IO uint32_t i = 0;$/;"	v
+main	ADC3_DMA/main.c	/^int main(void)$/;"	f
+main	ADC_Interleaved_DMAmode2/main.c	/^int main(void)$/;"	f
+main	DAC_SignalsGeneration/main.c	/^int main(void)$/;"	f
+main	DMA_FLASH_RAM/main.c	/^int main(void)$/;"	f
+main	EXTI/main.c	/^int main(void)$/;"	f
+main	FLASH_Program/main.c	/^int main(void)$/;"	f
+main	FLASH_Write_Protection/main.c	/^int main(void)$/;"	f
+main	IO_Toggle/main.c	/^int main(void)$/;"	f
+main	IWDG/main.c	/^int main(void)$/;"	f
+main	MEMS/main.c	/^int main(void)$/;"	f
+main	PWR_CurrentConsumption/main.c	/^int main(void)$/;"	f
+main	PWR_STANDBY/main.c	/^int main(void)$/;"	f
+main	PWR_STOP/main.c	/^int main(void)$/;"	f
+main	RCC/main.c	/^int main(void)$/;"	f
+main	SysTick/main.c	/^int main(void)$/;"	f
+main	TIM_ComplementarySignals/main.c	/^int main(void)$/;"	f
+main	TIM_PWM_Input/main.c	/^int main(void)$/;"	f
+main	TIM_PWM_Output/main.c	/^int main(void)$/;"	f
+main	TIM_TimeBase/main.c	/^int main(void)$/;"	f
+tmpCC4	IWDG/stm32f4xx_it.c	/^uint16_t tmpCC4[2] = {0, 0},var1 = 0;$/;"	v
+var1	IWDG/stm32f4xx_it.c	/^uint16_t tmpCC4[2] = {0, 0},var1 = 0;$/;"	v

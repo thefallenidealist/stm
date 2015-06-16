@@ -25,6 +25,8 @@ extern "C" {
 	#include "stm32f4xx_rcc.h"
 #endif
 
+#include "irq.h"
+
 #ifdef AVR
 	#include <util/delay.h>
 #endif
@@ -36,8 +38,8 @@ extern "C" {
 typedef enum
 {
 	// djelitelji za SysTick_Config()
-	TICK_EVERY_NS 		= 1000000000,
-	TICK_EVERY_100NS 	= 10000000,
+	//TICK_EVERY_NS 		= 1000000000,
+	//TICK_EVERY_100NS 	= 10000000,
 	TICK_EVERY_US 		= 1000000,
 	TICK_EVERY_MS 		= 1000
 } systick_divider_t;
@@ -45,8 +47,8 @@ typedef enum
 //void delay_init(void);
 uint32_t delay_get_divider(void);
 void delay_init(systick_divider_t divider);
-void delay_ns(uint32_t ns);
-void delay_us(uint32_t us);
+//void delay_ns(uint32_t ns);
+void delay_us(volatile uint32_t us);
 void delay_ms(uint32_t ms);
 void delay_s(uint32_t s);
 

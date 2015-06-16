@@ -1,0 +1,26 @@
+# 
+http://wiki.osdev.org/Calling_Global_Constructors
+
+A kernel is linked with -nostdlib (which is the same as passing -nodefaultlibs and -nostartfiles) which disables the "start files" crt*.o that are normally automatically added to the link command line
+
+
+arm-none-eabi-gcc $CFLAGS -print-file-name=crtbegin.o
+/usr/local/lib/gcc/arm-none-eabi/5.2.0/crtbegin.o
+
+# Makefile:
+
+OBJS:=foo.o bar.o
+ 
+CRTI_OBJ=crti.o
+CRTBEGIN_OBJ:=$(shell $(CC) $(CFLAGS) -print-file-name=crtbegin.o)
+CRTEND_OBJ:=$(shell $(CC) $(CFLAGS) -print-file-name=crtend.o)
+CRTN_OBJ=crtn.o
+ 
+OBJ_LINK_LIST:=$(CRTI_OBJ) $(CRTBEGIN_OBJ) $(OBJS) $(CRTEND_OBJ) $(CRTN_OBJ)
+INTERNAL_OBJS:=$(CRTI_OBJ) $(OBJS) $(CRTN_OBJ)
+ 
+myos.kernel: $(OBJ_LINK_LIST)
+	$(CC) -o myos.kernel $(OBJ_LINK_LIST) -nostdlib -lgcc
+ 
+clean:
+	rm -f myos.kernel $(INTERNAL_OBJS)

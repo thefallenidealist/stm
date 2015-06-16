@@ -32,3 +32,10 @@ int led_main(void);
 }
 #endif	// __cplusplus
 #endif	// LED_ARRAY_H
+
+/*
+ *
+ * The WS2811/12 parts have DIN (Data In) and DOUT (Data Out) signals so they can be simply connected in serial ("daisy-chained"). Each part keeps the first 24 bits that it sees on its DIN pin and retransmits any additional data out on its DOUT pin, as illustrated in Figure 8.
+ * Once the data stream starts, each part expects to see a continuous stream of data. If the data signal does not have a rising edge for more than 50 µs, the part latches the data, and starts to look for the next 24 bits of data as its own, and retransmits the rest.
+ *
+ */

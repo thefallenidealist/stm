@@ -13,16 +13,17 @@
 
 void main(void);
 //#include "eeprom.h" 	// 3.3V
-#if defined STM32F4 || defined STM32F4XX
-#include "baro.h" 	// 5V
+//#if defined STM32F4 || defined STM32F4XX
+//#include "baro.h" 	// 5V
 //#include "oled_novo.h"
 //#include "oled.h"
-#endif
+//#endif
+
 //#include "oled.h" 	// 5V
 //#include "src/visak/oled.h" 	// 5V
 //#include "clock_print.h" 		// isprobano F1
 //#include "glcd.h"
-//#include "mem.h" 				// ne radi na F1 #error
+#include "mem.h" 				// ne radi na F1 #error
 //#include "cmd.h"
 //#include "joystick.h"
 //#include "colors_ansi.h"
@@ -32,14 +33,28 @@ void main(void);
 //#include "wlan.h"
 //#include "rtc_ext.h"
 //#include "rom.h"
-#include "nRF.h"
+//#include "nRF.h"
 //#include "flash.h"
 //#include "pwm.h"
 //#include "src/exti.h"
 //#include "src/compass.h"
 //#include "uid.h"
 
+#if defined STM32F10X_MD || STM32F1
+	// samo mali ARM zasad glumi sobu
+	#include "soba.h"
+	#define NRF_RX	// promijenit i u nRF.h
+#endif
+
+#if defined STM32F4 || STM32F4XX
+	// veliki ARM
+	#include "sakupljac.h"
+	#define NRF_TX	// promijenit i u nRF.h
+#endif	// F4
+
 #define BLINKY_F1	"PA0"
+
+
 
 void main(void)
 {
@@ -63,35 +78,18 @@ void main(void)
 	printf("Na početku bješe štos.\n");
 	printf("________________________________________________________________________________\n");
 
-
-#ifdef UID_H
-	uid_example();
-#endif
-#ifdef RTC_H
-	rtc_main();
+#ifdef MEM_H
+	mem_info();
 #endif
 
-#ifdef EXTI_H
-	exti1_init();
+	/*
+#if (defined STM32F4 || defined STM32F4XX) && defined NRF_H
+		nRF_main();	// RX mora rucno pozvat
 #endif
+		*/
 
-#ifdef BLINKY_H
-#if defined STM32F4 || defined STM32F4XX
-	blinky_blinky_init(BLINKY_LED_ALL, 0);
-#endif
-#if defined STM32F1 || defined STM32F10X_MD
-	gpio_init(BLINKY_F1, OUT);
-#endif
-#endif
-
-#ifdef GLCD_H
-	glcd_init();
-	glcd_set_orientation(L1);
-#endif
-#ifdef OLED_H
-	oled_example();
-#endif
-
+		/*
+	// mora se promijenit i u nRF.h
 #ifdef NRF_H
 	#if defined STM32F4 || defined STM32F4XX
 		#define NRF_TX
@@ -99,52 +97,53 @@ void main(void)
 	#if defined STM32F1 || defined STM32F10X_MD
 		#define NRF_RX
 	#endif
-	nRF_main();
+	//nRF_main();	// soba pozove
 #endif
-#ifdef COMPASS_H
-	printf("Idemo pozvat compass_main()\n");
-	compass_main();
-	//compass_main_burgi();
-#endif
+		*/
 
-#if defined BARO_H && defined STM32F4
+#if defined BARO_H 
 	bmp180_init();
 	//bmp180_example();
+#endif
+
+#if defined STM32F4 || STM32F4XX
+// veliki ARM
+#define TIPKA "PA0"
+	bool tipka;
+	gpio_init(TIPKA, IN_PD);
+#endif
+
+
+	// diplomski
+#ifdef SAKUPLJAC_H
+	sakupljac_init();
+#endif
+#ifdef SOBA_H
+	soba_init();
 #endif
 
 	printf("sad ide while\n");
 	while (1)
 	{
 		/*
-#ifdef BLINKY_H
-	#if defined STM32F4 || defined STM32F4XX
-		blinky_blinky(50);
-	#endif
-	#if defined STM32F1 || defined STM32F10X_MD
-		blinky(BLINKY_F1);
-	#endif
-#endif
-		*/
-
-#ifdef EXTI_H
-		//printf("EXTI flag: %d\n", exti1_flag);
-		if (exti1_flag == 1)
+#if defined STM32F4 || STM32F4XX
+		tipka = gpio_read(TIPKA);
+		if (tipka == 1)
 		{
-			//printf("EXTI1 flag je aktivan, resetiram.\n");
-			exti1_flag = 0;
-			// TODO ovdje stavit nRF read
+			delay_ms(200);
+			printf("Tipka je stisnita\n");
+			// TODO promijenit mod, pali/gasi svjetlo/grijac
 		}
 #endif
-
-#if defined BARO_H && defined STM32F4
-		//bmp180_print();
+*/
+#if defined SAKUPLJAC_H
+		sakupljac_main();
+#endif
+#ifdef SOBA_H
+		soba_main();
 #endif
 
-#ifdef RTC_H
-		//RTC_data_t *time = rtc_get_time();
-		//printf("RTC: %d:%d:%d\n", time->hours, time->minutes, time->seconds);
-#endif
-
+		/*
 #ifdef NRF_RX
 		//bool data_ready = nRF_read_payload(grf);	// vrati 1 kad payload zapise u polje
 		bool data_ready = nRF_read(grf);	// vrati 1 kad payload zapise u polje
@@ -157,38 +156,6 @@ void main(void)
 		}
 
 #endif	// NRF_RX
-
-
-
-#ifdef NRF_TX
-		char tx_buffer[NRF_FIFO_SIZE] = {};
-
-#if defined BARO_H && defined STM32F4
-		float temperature = bmp180_get_temperature();
-		static uint8_t counter = 1;
-		snprintf(tx_buffer, NRF_FIFO_SIZE, "t: %.1f C, cnt: %d, us: %u", temperature, counter++, get_uptime_us());
-
-		nRF_write_status_t status = nRF_write(grf, tx_buffer, strlen(tx_buffer));
-		if (status == NRF_SEND_SUCCESS)
-		{
-			printf("%s(): nRF TX uspjesno poslao: \"%s\"\n", __func__, tx_buffer);
-		}
-		//else if (status == NRF_SEND_IN_PROGRESS)
-		if (status == NRF_SEND_IN_PROGRESS)
-		{
-			printf("%s(): nRF TX still sending, retransmit count: %d\n", __func__, nRF_get_retransmit_count(grf));
-		}
-		//else if (status == NRF_SEND_FAILED)
-		if (status == NRF_SEND_FAILED)
-		{
-			printf("%s(): nRF TX send failed\n", __func__);
-		}
-		//else if (status == NRF_SEND_TIMEOUT)
-		if (status == NRF_SEND_TIMEOUT)
-		{
-			printf("%s(): nRF TX software timeout\n", __func__);
-		}
-#endif	// BARO_H STM32F4
-#endif	// NRF_TX
+	*/
 	}
 }

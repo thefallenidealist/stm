@@ -24,6 +24,7 @@ extern "C" {
 	#include "misc.h" 		// NVIC_Init()
 #endif
 
+#include "irq.h"
 #include "debug.h"
 #include "delay.h"
 #include "cmd.h"

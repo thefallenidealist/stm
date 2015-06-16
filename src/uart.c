@@ -59,14 +59,14 @@ void uart1_init(uint32_t speed)
 #if defined STM32F4XX || defined STM32F4
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);
 
-	GPIO_PinAFConfig(UART1_GPIO, UART1_TX_AF, GPIO_AF_USART1);
-	GPIO_PinAFConfig(UART1_GPIO, UART1_RX_AF, GPIO_AF_USART1);
+	GPIO_PinAFConfig(UART1_GPIO, UART1_TX_AF, GPIO_AF_USART1); // AF7 za pin6
+	GPIO_PinAFConfig(UART1_GPIO, UART1_RX_AF, GPIO_AF_USART1); // 7
 
 	GPIO_InitStructure.GPIO_Pin 	= UART1_RX_Pin | UART1_TX_Pin; 
-	GPIO_InitStructure.GPIO_Speed	= GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_AF;
-	GPIO_InitStructure.GPIO_OType	= GPIO_OType_PP;
-	GPIO_InitStructure.GPIO_PuPd 	= GPIO_PuPd_UP;
+	GPIO_InitStructure.GPIO_Speed	= GPIO_Speed_50MHz;	// 0x2
+	GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_AF;		// 0x3
+	GPIO_InitStructure.GPIO_OType	= GPIO_OType_PP;	// 0
+	GPIO_InitStructure.GPIO_PuPd 	= GPIO_PuPd_UP;		// 1
 
 	GPIO_Init(UART1_GPIO, &GPIO_InitStructure);
 
@@ -86,9 +86,12 @@ void uart1_init(uint32_t speed)
 	//USART_ITConfig(USART1, USART_IT_TXE, ENABLE);	// mora bit ispod USART1 ENABLE
 
 	// Enable the USART1 Interrupt
+	// TODO priority veci od SysTickTimera
 	NVIC_InitStructure.NVIC_IRQChannel 						= USART1_IRQn;
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority	= 0;
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority 			= 0;
+	//NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority	= 0;	// izmedju interruptova		0x00..0x0F	
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority	= USART1_IRQ_PRIORITY;
+	//NVIC_InitStructure.NVIC_IRQChannelSubPriority 			= 0;	// za razne USART IRQs		0x00..0x0F
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority 			= USART1_IRQ_SUBPRIORITY;
 	NVIC_InitStructure.NVIC_IRQChannelCmd 					= ENABLE;
 	NVIC_Init(&NVIC_InitStructure);
 }

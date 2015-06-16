@@ -22,6 +22,7 @@ extern "C" {
 
 void mem_info(void);
 void malloc_test(void);
+void print_remaining_stack(void);
 
 #ifdef __cplusplus
 }

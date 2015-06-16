@@ -1,0 +1,19 @@
+ DON'T expose any variable in a header file, as is too often done by way of the extern keyword. Proper encapsulation of a module requires data hiding: any and all internal state data should only be in private variables inside the .c source code files. Whenever possible these variables should also be declared with keyword static, which will enlist the linker's help in hiding them.
+
+  DON'T expose the internal format of any module-specific data structure passed to or returned from one or more of the module's interface functions. That is to say there should be no "struct { … } foo;" code in any header file. If you do have a type you need to pass in and out of your module, so client modules can create instances of it, you can simply "typedef struct foo moduleb_type" in the header file. Client modules should never know, and this way cannot know, the internal format of the struct.
+
+   IF the inline function is a "helper" function that's only used inside one module, THEN put it in that .c file only and don't mention it in the header file. This is consistent with Rule 4.2.c of my Embedded C Coding Standard, which says that "The header file shall identify only the [functions] … about which it is strictly necessary for other modules to know."
+
+    1.2.a     The length of all lines in a program shall be limited to a maximum of 80 characters.
+
+
+
+
+Only put includes in a header if the header itself needs them.
+
+Examples:
+
+    Your function returns type size_t. Then #include <stddef.h> in the header file.
+    Your function uses strlen. Then #include <string.h> in the source file.
+
+

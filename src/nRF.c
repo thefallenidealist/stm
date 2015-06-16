@@ -39,20 +39,6 @@
 
 // TODO payload_size i payload_width preimenova u payload_length da bude manje zbunjujuce
 
-#ifdef STM32F1
-	#define NRF_RX
-	#define NRF_SPI_PRESCALER 32
-	#define NRF_CS	"PB0"
-	#define NRF_CE	"PB2"
-	#define NRF_IRQ	"PB1"	// EXTI1
-#endif
-#ifdef STM32F4
-	#define NRF_TX
-	#define NRF_SPI_PRESCALER 64
-	#define NRF_CS	"PA4"
-	#define NRF_CE	"PA3"
-	#define NRF_IRQ	"PA5"	// XXX, NC, treba lemit
-#endif
 
 nRF_hw_t *grf = NULL;
 const uint8_t addr[6] = "qwert";
@@ -116,6 +102,7 @@ int8_t nRF_main(void)
 #endif
 #ifdef NRF_RX
 	printf("Ovo je RX modul.\n");
+	//ce(&rf_modul, 1);	// start listening
 
 	//char rx_addr[] = "aRX123";
 	//nRF_set_RX_address	(&rf_modul, P0, rx_addr);
@@ -143,7 +130,13 @@ int8_t nRF_main(void)
 #ifdef NRF_RX
 	nRF_set_mode(&rf_modul, RX);
 #endif
+	/*
+	nRF_clear_bits(&rf_modul);
+	nRF_flush_TX(&rf_modul);
+	nRF_flush_RX(&rf_modul);
+	delay_ms(100);
 	nRF_power_on(&rf_modul);
+	*/
 
 	nRF_debug(&rf_modul);
 	delay_ms(1500);

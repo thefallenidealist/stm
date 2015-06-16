@@ -1,0 +1,7 @@
+# pocupano iz GCC 4.8.4
+# pkg: gcc-arm-embedded
+
+# libc, libm
+cp /usr/local/gcc-arm-embedded-4_8-2014q3-20140805/arm-none-eabi/lib/armv7*m .
+# libgcc
+/usr/local/gcc-arm-embedded-4_8-2014q3-20140805/lib/gcc/arm-none-eabi/4.8.4/armv7*m libgcc

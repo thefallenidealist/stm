@@ -1,3 +1,17 @@
+ENTRY( Reset_Handler )
+
+/* Highest address of the user mode stack .*/
+_estack = 0x20020000; /* end of 128K RAM .*/
+
+
+/*. Generate a link error if heap and s tack don’t fit int o RAM .*/
+_Min_Heap_Size = 0;			/* required amount of heap */
+/*_Min_Stack_Size = 0x200;	*/ /* required amount of stack */
+_Min_Stack_Size = 0x20;	/* required amount of stack */
+
+/* SRAM:	0x2000 0000 - 0x2001 FFFF */
+/* CC SRAM: 0x1000 0000 - 0x1000 FFFF */
+/* flash	0x0800 0000 - 0x080F FFFF */
 MEMORY
 {
     sram (W!RX) : ORIGIN = 0x20000000, LENGTH = 128K
@@ -68,6 +82,7 @@ SECTIONS
     
     end = .;
     /* PROVIDE( _estack = 0x20020000 ); */
-    PROVIDE( _estack = 0x20020000 );
+    /*PROVIDE( _estack = 0x20020000 );	*//* end of 128 kB RAM */
+	/* stack raste od kraja RAMa prema gore */
 }
 

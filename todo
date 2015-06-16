@@ -1,0 +1,15 @@
+#
+typedef union
+{
+	RX_DONE;
+	..
+} event_type
+
+typedef struct
+{
+	event_type event;
+	event name;
+}
+
+# I2C lib prebacit na 16b
+# EEPROM lib prebacit na OO da moze i mali EEPROM fino radit

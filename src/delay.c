@@ -9,17 +9,17 @@
 #include <string.h>
 #include <math.h>
 
-// XXX na F4 ne radi get_uptime_us kako treba
 // TODO get days, hours, minutes
 
 // *************************************** variables **********************************************
 // private
-_Atomic volatile static uint32_t delay_var;	// timer is 24b countdown
+//_Atomic volatile static uint32_t delay_var;	// timer is 24b countdown
+volatile static uint32_t delay_var;	// timer is 24b countdown
 
 //volatile static uint32_t uptime_us=0;	
-volatile uint32_t uptime_us=0;	
-static char uptime_str[35] = {};	// 34 je maksimalno za 170 godina
-// nije volatile da se ne budi kompajler (kasnije treba bit const)
+volatile uint32_t		uptime_us=0;	
+static volatile char	uptime_str_arr[35] = {};	// 34 je maksimalno za 170 godina
+static volatile char	*uptime_str = uptime_str_arr;
 static volatile uint32_t gsystick_divider = 0;
 
 /**************************************************************************************************
@@ -52,35 +52,29 @@ void delay_init(systick_divider_t divider)
 		while(1);	// error
 	}
 #endif
+
+	// postavi IRQ prioritet, da ga USART IRQ ne ubije
+	NVIC_SetPriority(SysTick_IRQn, SYSTICK_IRQ_PRIORITY);
+	// TODO ako ovo gore ne bude radilo:
+	// PriorityGroupConfig()
 }
-/**************************************************************************************************
-*  					delay_ns()						  *
-**************************************************************************************************/
-/*
-void delay_ns(uint32_t ns)
-{
-	delay_var = ns;
-	while (delay_var != 0);
-}
-*/
 
 /**************************************************************************************************
 *  					delay_us()						  *
 **************************************************************************************************/
-void delay_us(uint32_t us)
+void delay_us(volatile uint32_t us)
 {
+	//printf("%s(): divider: %d\n", __func__, gsystick_divider);
+	//printf("%s(): arg: %d\n", __func__, us);
 	if (gsystick_divider == TICK_EVERY_US)
 	{
 		delay_var = us;
+		do
+		{
+			//printf("%s(): delay_var: %d, uptime_us: %d\n", __func__, delay_var, uptime_us);
+		}
 		while (delay_var != 0);	// delay_var se smanjuje svake 1us
 	}
-	/*
-	else if (gsystick_divider == TICK_EVERY_100NS)
-	{
-		delay_var = 10*us;
-		while (delay_var != 0);	// delay_var se smanjuje svake 100 ns
-	}
-	*/
 }
 
 /**************************************************************************************************
@@ -92,13 +86,6 @@ void delay_ms(uint32_t ms)
 	{
 		delay_us(1000*ms);
 	}
-	/*
-	if (gsystick_divider == TICK_EVERY_MS)
-	{
-		delay_var = ms;
-		while (delay_var != 0);	// delay_var se smanjuje svake 1ms
-	}
-	*/
 }
 
 /**************************************************************************************************
@@ -108,7 +95,7 @@ void delay_s(uint32_t s)
 {
 	if (gsystick_divider == TICK_EVERY_US)
 	{
-		delay_us(1000*1000*s);
+		delay_us(1000*1000*s);	// max 4294 s
 	}
 }
 
@@ -117,18 +104,7 @@ void delay_s(uint32_t s)
 **************************************************************************************************/
 uint32_t get_uptime_us(void)
 {
-	/*
-	static uint32_t uptime_tmp=0;
-	static uint32_t uptime_proslo;
-	uptime_proslo = uptime_tmp;
-
-	uptime_tmp = uptime_us;
-	if (uptime_proslo/1000/1000 != uptime_tmp/1000/1000)
-		printf("e, nije jednako\n");
-	*/
-
 	return uptime_us;
-	//return uptime_tmp/1000/1000;
 }
 
 /**************************************************************************************************
@@ -157,53 +133,16 @@ const char *get_uptime(void)
 	volatile static uint8_t  uptime_m  = 0;
 	volatile static uint8_t  uptime_h  = 0;
 	volatile static uint16_t uptime_d  = 0;	// 170 godina
-	volatile static uint8_t msb_ms = 0;
+	volatile static uint8_t  msb_ms	= 0;
 
-	//uptime_ms = (floor((uptime_us/1000))) % 60000;
-	//uptime_ms = (round((uptime_us/1000))) % 60000;
 	uptime_ms = (uint16_t)(round(uptime_us/1000.0)) % 60000;
-	//uptime_ms = (uptime_us/20) % 60000;
-	//uptime_s  = uptime_ms/1000;
-
-	//printf("DEBUG: h:%d m:%d s:%d ms:%d us:%d\n", uptime_h, uptime_m, uptime_s, uptime_ms, uptime_us);
-
-	// XXX sekunde idu do 64 pa onda ide 3-4x 0 sekundi pa krene isponova od 00
-	// XXX ms je 16b (64k) i tek nakon sto se prelije dodje u nulu
 
 	if (uptime_ms >= 1000)
 	{
-		//uptime_ms = 0;
-		//uptime_s++;
-		//if (uptime_ms 
-		//uptime_ms %= 60000;
-		//if (msb_ms != (uptime_ms/1000) % 60)
 		if (msb_ms != ((uint16_t)round(((uptime_ms/1000.0))) % 60))
 		{
-			//msb_ms = ((uptime_ms/1000) % 60);
 			msb_ms = ((uint16_t)round(((uptime_ms/1000.0))) % 60);
-			//uptime_s++;
 			uptime_s++;
-			/*
-			if (uptime_s >= 60)
-			{
-				uptime_s = 0;
-				uptime_m++;
-			}
-			if (uptime_m >= 60)
-			{
-				uptime_m = 0;
-				uptime_h++;
-			}
-			if (uptime_h >= 24)
-			{
-				uptime_h = 0;
-				uptime_d++;
-			}
-			*/
-			//uptime_s += 60;
-			//printf("uptime: %d days, %.2d:%.2d:%.2d\0\r\n\n\n\n", uptime_d, uptime_h, uptime_m, uptime_s);
-			//sprintf(uptime_str, "uptime: %d days, %.2d:%.2d:%.2d", uptime_d, uptime_h, uptime_m, uptime_s);
-			//printf("%s\n", uptime_str);
 		}
 	}
 	if (uptime_s >= 60)
@@ -223,9 +162,9 @@ const char *get_uptime(void)
 	}
 
     // TODO day/days
-	sprintf(uptime_str, "%d days, %.2d:%.2d:%.2d.%.3d", uptime_d, uptime_h, uptime_m, uptime_s, uptime_ms%1000);
+	sprintf((char*)uptime_str, "%d days, %.2d:%.2d:%.2d.%.3d", uptime_d, uptime_h, uptime_m, uptime_s, uptime_ms%1000);
 
-	return uptime_str;
+	return (char *)uptime_str;
 }
 
 /**************************************************************************************************
@@ -234,26 +173,11 @@ const char *get_uptime(void)
 void SysTick_Handler(void)
 {
 	// IRQ every 1 us
-	// IRQ every 1 us or 1 ms or 1 ns
 
-	uptime_us++;	// za uptime, korisnik je ne mijenja	XXX TODO popravit da radi i za druge (zasad samo radi sa 1 us tick)
+	uptime_us++;	// za uptime, korisnik je ne mijenja	TODO popravit da radi i za druge (zasad samo radi sa 1 us tick)
 
 	if (delay_var != 0)
 	{
 		delay_var--;	// za delay, korisnik je moze mijenjat
 	}
-
-
-	/*
-	//uptime_us += 1234;
-	//uptime_us %= 4294967000;
-	//if (uptime_us / 4294967000 == 1)
-	if (uptime_us / 4294960000 == 1)	// 7ms da skuzi da se treba ponistit
-	{
-		//uptime_us = 7000;
-		//tmp_up = uptime_us;
-		//set_tmp_up(uptime_us);
-		uptime_us %= 10000;
-	}
-	*/
 }

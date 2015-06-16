@@ -1,0 +1,9 @@
+* The stack position. Because there was no RTOS, this was ALWAYS THE SAME NUMBER. If it was different, log & RESET!
+
+* The stack contents. We filled the top N locations of stack with a magic number. If that magic number got changed,
+then the stack might be blown. Log & RESET!
+
+
+1. fill your stacks with a magic number when you fork them off. The idle task just runs thru them looking for the percentage of task usage. Alert for 90% stack usage
+
+With many of these things, it’s often “too late” once you’ve gone over the cliff (blown stack, no free filesystem space, etc.) so it’s nice to detect & log when things are starting to go a little wonky. I know you’re a big proponent of logging; often times seeing the warning signs and correlating them with other logged activities and symptoms gives insight into the root cause of a problem.

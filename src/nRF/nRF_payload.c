@@ -21,6 +21,7 @@ static inline void nRF_read_RX_FIFO(nRF_hw_t *nRF0, uint8_t payload_size)
 				nRF_write_TX_FIFO()
 *************************************************************************************************/
 static inline void nRF_write_TX_FIFO(nRF_hw_t *nRF0, char *buffer, uint8_t length, bool dynamic_payload, uint8_t empty_payload)
+//static void nRF_write_TX_FIFO(nRF_hw_t *nRF0, char *buffer, uint8_t length, bool dynamic_payload, uint8_t empty_payload)
 {
 	uint8_t spi_port = nRF0->spi_port;
 
@@ -41,10 +42,16 @@ static inline void nRF_write_TX_FIFO(nRF_hw_t *nRF0, char *buffer, uint8_t lengt
 	}
 	cs(nRF0, 1);
 
+
 	// pulse CE for transmission
+	//printf("\t\t\t\t\t\t\t\tDEBUG %s()\n", __func__);
+	printf("%s() ide togglat CE\n", __func__);
 	ce(nRF0, 1);
+	printf("%s() ide pozvat delay_us\n", __func__);
 	delay_us(11);	// 10+ us
 	ce(nRF0, 0);
+
+	printf("%s() kraj\n", __func__);
 }
 
 /*************************************************************************************************
@@ -63,6 +70,7 @@ static inline void nRF_write_payload(nRF_hw_t *nRF0, char *buffer, uint8_t lengt
 		printf("%s(): Zajeb, length (%d) larger than 32, exiting\n", __func__, length);
 		return;
 	}
+
 
 	if (dynamic_payload_enabled == 1)
 	{
@@ -84,6 +92,9 @@ static inline void nRF_write_payload(nRF_hw_t *nRF0, char *buffer, uint8_t lengt
 		}
 	}
 	nRF_write_TX_FIFO(nRF0, buffer, length, dynamic_payload_enabled, empty_payload_length);
+		//printf("\t\t\t\tDEBUG %s()\n", __func__);
+	nRF_clear_bits(nRF0);	// pokusaj 150618
+	printf("\t\t%s() kraj\n", __func__);
 }
 
 /*************************************************************************************************
@@ -109,12 +120,13 @@ bool nRF_read(nRF_hw_t *nRF0)
 
 	bool data_ready = nRF_is_RX_data_ready(nRF0);	// provjeri RX_DR
 
-	static int counter = 0;
+	//static int counter = 0;
 
 	if (data_ready == 1)	// dobili smo nesta
 	{
 		// ovdje bi trebao automatski poslat ACK payload
-		if (nRF_is_RX_empty(nRF0) != 1)	// citaj teret sve dok ga ima u FIFOu
+		
+		//if (nRF_is_RX_empty(nRF0) != 1)	// citaj teret sve dok ga ima u FIFOu
 		{
 			// buffer je vec spreman, ovo ce ga samo poslat kao ACK_PAYLOAD
 
@@ -133,12 +145,16 @@ bool nRF_read(nRF_hw_t *nRF0)
 			nRF_clear_buffer(buffer);	// zapisi nule u polje
 			nRF_read_RX_FIFO(nRF0, payload_size);
 
+			/*
 			// TODO ova stvar oko 3 FIFO levela
 			nRF_clear_RX_data_ready(nRF0); 
 			//printf("%s(): Procitali smo %d. FIFO\n", __func__, counter);
 			counter++;
+			*/
 		}
-		counter = 0;
+		//counter = 0;
+		nRF_clear_bits(nRF0);	// pokusaj 150618
+		nRF_flush_RX(nRF0);		// pokusaj 150618
 		return 1;
 	}
 	else
@@ -166,7 +182,7 @@ nRF_write_status_t nRF_write(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 	uint32_t sent_at = 0;
 
 	nRF_write_status_t status = NRF_SEND_INVALID;
-	nRF_flush_TX(nRF0);	// pokusaj
+	//nRF_flush_TX(nRF0);	// pokusaj
 	// jebemu
 	//write_reg_full(nRF0, REG_FEATURE, 0x06);
 
@@ -188,7 +204,9 @@ nRF_write_status_t nRF_write(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 
 	// pretpostavka da je power_on() i set_mode(TX)
 
+	printf("\t\tDEBUG: %s() ide pozvat write_payload()\n", __func__);
 	nRF_write_payload(nRF0, buffer, length);
+	printf("\t\tDEBUG: %s() nakon write_payload()\n", __func__);
 	sent_at = get_uptime_us();
 
 	do

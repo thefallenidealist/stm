@@ -1,0 +1,9 @@
+U
+~/faks/rma/projekt/hw
+
+ima bolji baro.c i baro.h koji moze radit na oba i2c porta
+
+i Makefile je bolji
+
+
+bolji je i uart.c/h, irq.h, cmd.c

@@ -25,9 +25,9 @@ void mem_info()
 	uint32_t stackp = __get_MSP();
 
 	uint32_t estack = (uint32_t)&_estack;
+	uint32_t stack_size = estack - stackp;
 	uint32_t bss_end   = (uint32_t)&_ebss;
 	uint32_t bss_start = (uint32_t)&_sbss;
-	uint32_t stack_size = estack - stackp;
 	uint32_t text_start = (uint32_t)&_text;
 	uint32_t text_end = (uint32_t)&_etext;
 	uint32_t data_start = (uint32_t)&_sdata;
@@ -138,3 +138,16 @@ void malloc_test()
     printf("hard:  %p\n", &HardFault_Handler);
     printf("def:   %p\n", &Default_Handler);
     */
+
+void print_remaining_stack(void)
+{
+	uint32_t stackp = __get_MSP();
+	uint32_t estack = (uint32_t)&_estack;
+	uint32_t stack_size = estack - stackp;
+
+	printf("stack pointer:   0x%x\n", stackp);
+	printf("stack end:       0x%x\n", estack);
+	//printf("remaining stack: 0x%x %dB\n", stack_size, stack_size);
+	printf(ANSI_COLOR_CYAN "remaining stack: 0x%x %dB\n" ANSI_COLOR_RESET, stack_size, stack_size);
+}
+

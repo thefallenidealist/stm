@@ -7,7 +7,7 @@
 NAME	= main
 
 # promijenit i dolje COMMON_FLAGS
-CC  	= clang36
+CC  	= clang39
 #CC	= arm-none-eabi-gcc
 
 DIR_TOOLS	= /usr/local/bin

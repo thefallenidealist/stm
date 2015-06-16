@@ -1,0 +1,22 @@
+#
+http://embeddedgurus.com/stack-overflow/2011/02/efficient-c-tip-13-use-the-modulus-operator-with-caution/
+
+########################
+ uint32_t    days, hours, minutes, seconds;
+ ARM Cortex: 384 cycles
+########################
+
+########################
+ uint16_t    days;
+ uint8_t     hours, minutes, seconds;
+ uint16_t    stime;
+ ARM Cortex: 434 cycles
+########################
+#it resulted in a significant worsening for the ARM. Clearly the ARM doesn’t like working with non 32 bit variables.
+
+########################
+ uint_fast16_t    days;
+ uint_fast8_t    hours, minutes, seconds;
+ uint_fast16_t    stime;
+ ARM Cortex: 384 cycles
+########################

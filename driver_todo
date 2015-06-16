@@ -1,0 +1,31 @@
+# Embedded Systems Architecture, Device Drivers - Part 1: Interrupt Handling
+
+
+    Hardware Startup: initialization of the hardware upon PowerON or reset.
+    Hardware Shutdown: configuring hardware into its PowerOFF state.
+    Hardware Disable: allowing other software to disable hardware on-the-fly.
+    Hardware Enable: allowing other software to enable hardware on-the-fly.
+    Hardware Acquire: allowing other software to gain singular (locking) access to hardware.
+    Hardware Release: allowing other software to free (unlock) hardware.
+    Hardware Read: allowing other software to read data from hardware.
+    Hardware Write: allowing other software to write data to hardware.
+    Hardware Install: allowing other software to install new hardware on-the-fly.
+    Hardware Uninstall: allowing other software to remove installed hardware on-the-fly.
+    Hardware Mapping: allowing for address mapping to and from hardware storage devices when reading, writing, and/or deleting data.
+    Hardware Unmapping: allowing for unmapping (removing) blocks of data from hardware storage devices.
+
+Hardware in the inactive state is interpreted as being either disconnected (thus the need for an install function), without power (hence the need for an initialization routine), or disabled (thus the need for an enable routine). The busy and finished states are active hardware states, as opposed to inactive; thus the need for uninstall, shutdown, and/or disable functionality. Hardware that is in a busy state is actively processing some type of data and is not idle, and thus may require some type of release mechanism. Hardware that is in the finished state is in an idle state, which then allows for acquisition, read, or write requests, for example.
+
+# nazivi za funkcije
+init()
+shutdown()
+disable
+enable
+lock
+release
+read
+write
+#install
+#uinstall
+#map
+#unmap

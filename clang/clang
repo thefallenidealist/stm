@@ -1,0 +1,34 @@
+# 
+#clang35 -emit-llvm -mcpu=cortex-m3  -O1 -g  -nostdlib -mfloat-abi=soft -Wall -target thumb-unknown-eabi   -DSTM32F4XX -DUSE_STDPERIPH_DRIVER  -Isrc -Ilib -I../src/lib -I. -fno-short-enums -ffreestanding -c *.c
+#clang35 -emit-llvm -mcpu=cortex-m3  -O1 -g  -nostdlib -mfloat-abi=soft -Wall -target thumb-unknown-eabi   -DSTM32F4XX -DUSE_STDPERIPH_DRIVER  -Isrc -Ilib -I../src/lib -I. -fno-short-enums -ffreestanding -c lib/*.c
+clang35 -emit-llvm -mcpu=cortex-m3  -O3  -nostdlib -mfloat-abi=soft -Wall -target thumb-unknown-eabi   -DSTM32F4XX -DUSE_STDPERIPH_DRIVER  -Isrc -Ilib -I../src/lib -I. -fno-short-enums -ffreestanding -c *.c lib/*.c
+
+
+#
+llvm-link *bc -o main.bc1
+
+opt main.bc1 -o main.bc2
+
+# TODO pokusat sa flagovima za ovog
+llc -filetype=obj main.bc2 -o main.o2
+llc35 -march=thumb -mcpu=cortex-m3 -filetype=obj main.bc2 -o main.o2
+
+# mora bit bas taj redoslijed -l flagova, inace kuršlus
+clang35 -ccc-gcc-name arm-none-eabi-gcc  -L/usr/local/gcc-arm-embedded-4_8-2014q3-20140805/lib/gcc/arm-none-eabi/4.8.4/armv7-m -L/usr/local/gcc-arm-embedded-4_8-2014q3-20140805/arm-none-eabi/lib/armv7-m -mcpu=cortex-m3  -O1 -g  -nostdlib -mfloat-abi=soft -Wall -target thumb-unknown-eabi main.o2 -o main.elf -T ../../src/lib/f4/*ld -lc -lgcc -lm
+
+# objcopy
+
+
+
+
+sa obicnim llc-om se uploada i ne pokrene (vjeorjatno kriva arhitektura)
+Bez obzira kad svim sranjima dam -O3 i dalje u elfu bude inkludane sve funkcije koje se ne koriste (npr TIM, WWDG i slicno sto nije ni jednom pozvano)
+
+
+
+
+
+
+#############################################
+llc fajl.bc
+# pretvori ga u fajl.s koji sadrzava assembler od potrebne arhitekture

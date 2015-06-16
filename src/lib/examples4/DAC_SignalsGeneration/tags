@@ -1,0 +1,46 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+AHBPrescTable	system_stm32f4xx.c	/^  __I uint8_t AHBPrescTable[16] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 6, 7, 8, 9};$/;"	v
+BusFault_Handler	stm32f4xx_it.c	/^void BusFault_Handler(void)$/;"	f
+DAC_Ch1_EscalatorConfig	main.c	/^void DAC_Ch1_EscalatorConfig(void)$/;"	f
+DAC_Ch1_NoiseConfig	main.c	/^void DAC_Ch1_NoiseConfig(void)$/;"	f
+DAC_Ch2_SineWaveConfig	main.c	/^void DAC_Ch2_SineWaveConfig(void)$/;"	f
+DAC_Ch2_TriangleConfig	main.c	/^void DAC_Ch2_TriangleConfig(void)$/;"	f
+DAC_DHR12R2_ADDRESS	main.c	/^#define DAC_DHR12R2_ADDRESS /;"	d	file:
+DAC_DHR8R1_ADDRESS	main.c	/^#define DAC_DHR8R1_ADDRESS /;"	d	file:
+DAC_InitStructure	main.c	/^DAC_InitTypeDef  DAC_InitStructure;$/;"	v
+DebugMon_Handler	stm32f4xx_it.c	/^void DebugMon_Handler(void)$/;"	f
+EXTI0_IRQHandler	stm32f4xx_it.c	/^void EXTI0_IRQHandler(void)$/;"	f
+Escalator8bit	main.c	/^const uint8_t Escalator8bit[6] = {0x0, 0x33, 0x66, 0x99, 0xCC, 0xFF};$/;"	v
+HSE_VALUE	stm32f4xx_conf.h	/^ #define HSE_VALUE /;"	d
+HSE_VALUE	stm32f4xx_conf.h	/^ #undef HSE_VALUE$/;"	d
+HardFault_Handler	stm32f4xx_it.c	/^void HardFault_Handler(void)$/;"	f
+KeyPressed	main.c	/^__IO uint8_t KeyPressed = SET; $/;"	v
+MemManage_Handler	stm32f4xx_it.c	/^void MemManage_Handler(void)$/;"	f
+NMI_Handler	stm32f4xx_it.c	/^void NMI_Handler(void)$/;"	f
+PLL_M	system_stm32f4xx.c	/^#define PLL_M /;"	d	file:
+PLL_N	system_stm32f4xx.c	/^#define PLL_N /;"	d	file:
+PLL_P	system_stm32f4xx.c	/^#define PLL_P /;"	d	file:
+PLL_Q	system_stm32f4xx.c	/^#define PLL_Q /;"	d	file:
+PendSV_Handler	stm32f4xx_it.c	/^void PendSV_Handler(void)$/;"	f
+SVC_Handler	stm32f4xx_it.c	/^void SVC_Handler(void)$/;"	f
+SelectedWavesForm	main.c	/^__IO uint8_t SelectedWavesForm = 0;$/;"	v
+SetSysClock	system_stm32f4xx.c	/^static void SetSysClock(void)$/;"	f	file:
+Sine12bit	main.c	/^const uint16_t Sine12bit[32] = {$/;"	v
+SysTick_Handler	stm32f4xx_it.c	/^void SysTick_Handler(void)$/;"	f
+SystemCoreClock	system_stm32f4xx.c	/^  uint32_t SystemCoreClock = 168000000;$/;"	v
+SystemCoreClockUpdate	system_stm32f4xx.c	/^void SystemCoreClockUpdate(void)$/;"	f
+SystemInit	system_stm32f4xx.c	/^void SystemInit(void)$/;"	f
+SystemInit_ExtMemCtl	system_stm32f4xx.c	/^void SystemInit_ExtMemCtl(void)$/;"	f
+TIM6_Config	main.c	/^void TIM6_Config(void)$/;"	f
+UsageFault_Handler	stm32f4xx_it.c	/^void UsageFault_Handler(void)$/;"	f
+VECT_TAB_OFFSET	system_stm32f4xx.c	/^#define VECT_TAB_OFFSET /;"	d	file:
+__STM32F4xx_CONF_H	stm32f4xx_conf.h	/^#define __STM32F4xx_CONF_H$/;"	d
+__STM32F4xx_IT_H	stm32f4xx_it.h	/^#define __STM32F4xx_IT_H$/;"	d
+assert_failed	main.c	/^void assert_failed(uint8_t* file, uint32_t line)$/;"	f
+assert_param	stm32f4xx_conf.h	/^  #define assert_param(/;"	d
+main	main.c	/^int main(void)$/;"	f
