@@ -84,6 +84,7 @@ static inline void nRF_write_payload(nRF_hw_t *nRF0, char *buffer, uint8_t lengt
 		}
 	}
 	nRF_write_TX_FIFO(nRF0, buffer, length, dynamic_payload_enabled, empty_payload_length);
+	nRF_clear_bits(nRF0);	// pokusaj 150618
 }
 
 /*************************************************************************************************
@@ -114,6 +115,7 @@ bool nRF_read(nRF_hw_t *nRF0)
 	if (data_ready == 1)	// dobili smo nesta
 	{
 		// ovdje bi trebao automatski poslat ACK payload
+		
 		if (nRF_is_RX_empty(nRF0) != 1)	// citaj teret sve dok ga ima u FIFOu
 		{
 			// buffer je vec spreman, ovo ce ga samo poslat kao ACK_PAYLOAD
@@ -139,6 +141,7 @@ bool nRF_read(nRF_hw_t *nRF0)
 			counter++;
 		}
 		counter = 0;
+		nRF_clear_bits(nRF0);	// pokusaj 150818
 		return 1;
 	}
 	else
@@ -166,7 +169,7 @@ nRF_write_status_t nRF_write(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 	uint32_t sent_at = 0;
 
 	nRF_write_status_t status = NRF_SEND_INVALID;
-	nRF_flush_TX(nRF0);	// pokusaj
+	//nRF_flush_TX(nRF0);	// pokusaj
 	// jebemu
 	//write_reg_full(nRF0, REG_FEATURE, 0x06);
 

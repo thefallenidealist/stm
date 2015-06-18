@@ -102,7 +102,7 @@ int8_t nRF_main(void)
 #endif
 #ifdef NRF_RX
 	printf("Ovo je RX modul.\n");
-	ce(&rf_modul, 1);	// start listening
+	//ce(&rf_modul, 1);	// start listening
 
 	//char rx_addr[] = "aRX123";
 	//nRF_set_RX_address	(&rf_modul, P0, rx_addr);
@@ -130,11 +130,13 @@ int8_t nRF_main(void)
 #ifdef NRF_RX
 	nRF_set_mode(&rf_modul, RX);
 #endif
+	/*
 	nRF_clear_bits(&rf_modul);
 	nRF_flush_TX(&rf_modul);
 	nRF_flush_RX(&rf_modul);
 	delay_ms(100);
 	nRF_power_on(&rf_modul);
+	*/
 
 	nRF_debug(&rf_modul);
 	delay_ms(1500);

@@ -29,6 +29,8 @@ void nRF_set_mode(nRF_hw_t *nRF0, nRF_mode_t mode)
 
 			//ce(nRF0, 1);	// start listening
 			//delay_us(130);	// TX/RX settling, datasheet page 22
+			nRF_clear_bits(nRF0);
+			nRF_power_on(nRF0);
 			nRF_start_listening(nRF0);
 		}
 		else if (mode == TX)
@@ -42,6 +44,8 @@ void nRF_set_mode(nRF_hw_t *nRF0, nRF_mode_t mode)
 			ce(nRF0, 0);
 			delay_us(130);	// TX/RX settling, datasheet page 22
 			*/
+			nRF_clear_bits(nRF0);
+			nRF_power_on(nRF0);
 			nRF_stop_listening(nRF0);
 		}
 		else
