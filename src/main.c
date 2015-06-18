@@ -33,14 +33,22 @@ void main(void);
 //#include "wlan.h"
 //#include "rtc_ext.h"
 //#include "rom.h"
-#include "nRF.h"
+//#include "nRF.h"
 //#include "flash.h"
 //#include "pwm.h"
 //#include "src/exti.h"
 //#include "src/compass.h"
 //#include "uid.h"
+#include "soba.h"
 
 #define BLINKY_F1	"PA0"
+
+uint8_t status_soba1_svjetlo = 0xFF;
+uint8_t status_soba1_grijac = 0xFF;
+uint8_t status_soba1_temperatura = 0xFF;
+
+
+
 
 void main(void)
 {
@@ -109,14 +117,22 @@ void main(void)
 	//compass_main_burgi();
 #endif
 
-#if defined BARO_H && defined STM32F4
+#if defined BARO_H 
 	bmp180_init();
 	//bmp180_example();
+#endif
+#if defined LAZY_ROOM_H
+	soba_init();
 #endif
 
 	printf("sad ide while\n");
 	while (1)
 	{
+#if defined LAZY_ROOM_H
+	soba_get_status();
+	soba_send_status();
+	delay_ms(500);
+#endif
 		/*
 #ifdef BLINKY_H
 	#if defined STM32F4 || defined STM32F4XX

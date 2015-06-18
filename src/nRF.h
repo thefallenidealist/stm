@@ -16,10 +16,27 @@ extern "C"
 #include "delay.h"
 #include "convert.h"
 
-#define NRF_SPI	1				// F1, F4
+#define NRF_SPI	1			// F1, F4		PA{5,6,7}
 #define NRF_ADDRESS_WIDTH	5
 #define NRF_FIFO_SIZE		32
 #define NRF_PAYLOAD_SIZE	32
+
+#ifdef STM32F1
+	//#define NRF_RX
+	#define NRF_TX
+	#define NRF_SPI_PRESCALER 32
+	#define NRF_CS	"PB0"
+	#define NRF_CE	"PB2"
+	#define NRF_IRQ	"PB1"	// EXTI1
+#endif
+#ifdef STM32F4
+	//#define NRF_TX
+	#define NRF_RX
+	#define NRF_SPI_PRESCALER 64
+	#define NRF_CS	"PA4"
+	#define NRF_CE	"PA3"
+	#define NRF_IRQ	"PA5"	// XXX, NC, treba lemit
+#endif
 
 typedef enum
 {
