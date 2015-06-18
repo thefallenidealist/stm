@@ -54,3 +54,35 @@ void sakupljac_main(void)
 	}
 	*/
 }
+
+/*************************************************************************************************
+				sakupljac_parse()
+*************************************************************************************************/
+#define CMD_SVJETLO	"set_svjetlo"
+#define CMD_GRIJAC	"set_grijac"
+
+void sakupljac_parse(char *cmd, char *arg)
+{
+	// UART IRQ dobije string "cmd:abcd", pozove uart_parse(), ako ima delimiter ':', ovaj razbije i pozove uart_cmd() koja to samo 
+	// proslijedi ovoj funkciji
+	
+	//printf("%s(): cmd: %s, arg: %s\n", __func__, cmd, arg);
+	
+	int ret;
+	ret = strcmp(cmd, CMD_SVJETLO);
+	if (ret == 0)
+	{
+		uint8_t svjetlo = atoi(arg);
+		//printf("%s(): Idemo postaviti svjelo na: %s %d\n", __func__, arg, svjetlo);
+		printf("%s(): Idemo postaviti svjelo na: %d\n", __func__, svjetlo);
+		// TODO provjere jel svjetlo 0 ili 1		kasnije 0..100 za PWM
+	}
+
+	ret = strcmp(cmd, CMD_GRIJAC);
+	if (ret == 0)
+	{
+		uint8_t grijac = atoi(arg);
+		printf("%s(): Idemo postaviti grijac na: %d\n", __func__, grijac);
+		// TODO provjere jel grijac 0 ili 1		kasnije 0..100 za PWM
+	}
+}

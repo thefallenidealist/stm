@@ -5,6 +5,8 @@
 
 void uart_cmd(char *cmd, char *arg)
 {
+	// ako UART IRQ dobije "cmd:abc" pozove cmd_parse() koji pozove ovo i kao parametre preda cmd, abc
+	//
     DEBUG_START;
 	//printf("uart_cmd() cmd: %s\n", cmd);
 	//printf("uart_cmd() arg: %s\n", arg);
@@ -16,9 +18,12 @@ void uart_cmd(char *cmd, char *arg)
 	if (r == 0)
 	{
 		printf("UART test: uspjesno primio komandu, argument joj je: %s\n", arg);
-		//printf("UART test: uspjesno primio komandu, argument joj je: ");
-		//printf("0:%d 1:%d 2:%d 3:%d 4:%d 5:%d\n", arg[0], arg[1], arg[2], arg[3], arg[4]);
 	}
+
+
+	// diplomski
+	// samo proslijedi 
+	sakupljac_parse(cmd, arg);
 
 	/*
 	if (r == 0)
@@ -135,6 +140,7 @@ void uart_parse(void)
     DEBUG_END;
 }
 
+/*
 void uart_parse_rtc(const char* arg)
 {
 	// dobije string formata hh:mm:ss
@@ -151,3 +157,4 @@ void uart_parse_rtc(const char* arg)
 	// postavi vrijeme koje je zadano
 	//rtc_set_time(hours, minutes, seconds);
 }
+*/
