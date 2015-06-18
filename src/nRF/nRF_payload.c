@@ -43,7 +43,7 @@ static inline void nRF_write_TX_FIFO(nRF_hw_t *nRF0, char *buffer, uint8_t lengt
 
 	// pulse CE for transmission
 	ce(nRF0, 1);
-	delay_us(11);	// 10+ us
+	delay_us(20);	// 10+ us
 	ce(nRF0, 0);
 }
 
@@ -110,13 +110,13 @@ bool nRF_read(nRF_hw_t *nRF0)
 
 	bool data_ready = nRF_is_RX_data_ready(nRF0);	// provjeri RX_DR
 
-	static int counter = 0;
+	//static int counter = 0;
 
 	if (data_ready == 1)	// dobili smo nesta
 	{
 		// ovdje bi trebao automatski poslat ACK payload
 		
-		if (nRF_is_RX_empty(nRF0) != 1)	// citaj teret sve dok ga ima u FIFOu
+		//if (nRF_is_RX_empty(nRF0) != 1)	// citaj teret sve dok ga ima u FIFOu
 		{
 			// buffer je vec spreman, ovo ce ga samo poslat kao ACK_PAYLOAD
 
@@ -135,13 +135,16 @@ bool nRF_read(nRF_hw_t *nRF0)
 			nRF_clear_buffer(buffer);	// zapisi nule u polje
 			nRF_read_RX_FIFO(nRF0, payload_size);
 
+			/*
 			// TODO ova stvar oko 3 FIFO levela
 			nRF_clear_RX_data_ready(nRF0); 
 			//printf("%s(): Procitali smo %d. FIFO\n", __func__, counter);
 			counter++;
+			*/
 		}
-		counter = 0;
-		nRF_clear_bits(nRF0);	// pokusaj 150818
+		//counter = 0;
+		nRF_clear_bits(nRF0);	// pokusaj 150618
+		nRF_flush_RX(nRF0);		// pokusaj 150618
 		return 1;
 	}
 	else

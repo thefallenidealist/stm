@@ -12,6 +12,15 @@ if [ "$MCU" = "F4" ]; then
 elif [ "$MCU" = "F1" ]; then
 	DEFINES="-DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER"
 	DIRS="-Isrc -Isrc/lib -Isrc/lib/f1 -I."
+elif [ "$MCU" = "M8" ]; then
+	DEFINES="-DAVR"
+	DIRS="-Isrc -Isrc/lib -Isrc/avr -I. -I/usr/local/avr/include"
+elif [ "$MCU" = "M16" ]; then	# isto kao i gore
+	DEFINES="-DAVR"
+	DIRS="-Isrc -Isrc/lib -Isrc/avr -I. -I/usr/local/avr/include"
+elif [ "$MCU" = "M328" ]; then	# isto kao i gore
+	DEFINES="-DAVR"
+	DIRS="-Isrc -Isrc/lib -Isrc/avr -I. -I/usr/local/avr/include"
 else
 	echo "ERROR, nije zadana arhitektura ili je zadano krivo, izlazim"
 	exit

@@ -6,23 +6,45 @@
 
 NAME	= main
 
+
+ifeq ($(MCU), F1)
+	ARM = 1
+endif
+ifeq ($(MCU), F4)
+	ARM = 1
+endif
+ifeq ($(MCU), AVR)
+	ARM = 0
+	AVR = 1
+endif
+
 # promijenit i dolje COMMON_FLAGS
-CC  	= clang36
 #CC	= arm-none-eabi-gcc
 
 DIR_TOOLS	= /usr/local/bin
-LD  		= $(DIR_TOOLS)/arm-none-eabi-ld
-OBJCOPY 	= $(DIR_TOOLS)/arm-none-eabi-objcopy
-SIZE		= $(DIR_TOOLS)/arm-none-eabi-size
+ifeq ($(ARM), 1)
+TOOLS_PREFIX = arm-none-eabi
+CC  	= clang36
+endif
+ifeq ($(AVR), 1)
+TOOLS_PREFIX = avr
+CC = avr-gcc
+endif
+LD  		= $(DIR_TOOLS)/$(TOOLS_PREFIX)-ld
+OBJCOPY 	= $(DIR_TOOLS)/$(TOOLS_PREFIX)-objcopy
+SIZE		= $(DIR_TOOLS)/$(TOOLS_PREFIX)-size
 
 DIR_OBJ 	= ./obj
 DIR_BIN 	= ./bin
 
+ifeq ($(ARM), 1)
 TARGET	= -target thumb-unknown-eabi	# needed for clang
 CPU		= -mcpu=cortex-m3 
 #CPU	= -mcpu=cortex-m4 	# TODO
 DEFINES	= -DUSE_STDPERIPH_DRIVER 
-#OPTS	= -O0 -g	# XXX ne radi
+endif
+
+#OPTS	= -O0 -g
 #OPTS	= -O1 -g 
 #OPTS	= -O2 -g 
 OPTS	= -O2 -g
