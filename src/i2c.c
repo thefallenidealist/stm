@@ -324,7 +324,6 @@ int8_t i2c_init(uint8_t i2c_number, uint32_t i2c_speed)
 #endif
 
 #if defined STM32F1 || defined STM32F10X_MD
-	printf("%s() stimamo za F1\n", __func__);
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_I2C2, ENABLE);
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
 

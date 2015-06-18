@@ -22,16 +22,16 @@ extern "C"
 #define NRF_PAYLOAD_SIZE	32
 
 #ifdef STM32F1
-	//#define NRF_RX
-	#define NRF_TX
+	#define NRF_RX
+	//#define NRF_TX
 	#define NRF_SPI_PRESCALER 32
 	#define NRF_CS	"PB0"
 	#define NRF_CE	"PB2"
 	#define NRF_IRQ	"PB1"	// EXTI1
 #endif
 #ifdef STM32F4
-	//#define NRF_TX
-	#define NRF_RX
+	#define NRF_TX
+	//#define NRF_RX
 	#define NRF_SPI_PRESCALER 64
 	#define NRF_CS	"PA4"
 	#define NRF_CE	"PA3"

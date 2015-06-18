@@ -14,7 +14,7 @@
 void main(void);
 //#include "eeprom.h" 	// 3.3V
 //#if defined STM32F4 || defined STM32F4XX
-#include "baro.h" 	// 5V
+//#include "baro.h" 	// 5V
 //#include "oled_novo.h"
 //#include "oled.h"
 //#endif
@@ -33,19 +33,24 @@ void main(void);
 //#include "wlan.h"
 //#include "rtc_ext.h"
 //#include "rom.h"
-#include "nRF.h"
+//#include "nRF.h"
 //#include "flash.h"
 //#include "pwm.h"
 //#include "src/exti.h"
 //#include "src/compass.h"
 //#include "uid.h"
+
 #if defined STM32F10X_MD || STM32F1
-// samo mali ARM zasad glumi sobu
-#include "soba.h"
+	// samo mali ARM zasad glumi sobu
+	#include "soba.h"
+	#define NRF_RX	// promijenit i u nRF.h
 #endif
+
 #if defined STM32F4 || STM32F4XX
-// veliki ARM
-#endif
+	// veliki ARM
+	#include "sakupljac.h"
+	#define NRF_TX	// promijenit i u nRF.h
+#endif	// F4
 
 #define BLINKY_F1	"PA0"
 
@@ -74,20 +79,24 @@ void main(void)
 	printf("________________________________________________________________________________\n");
 
 
+	/*
 #if (defined STM32F4 || defined STM32F4XX) && defined NRF_H
 		nRF_main();	// RX mora rucno pozvat
 #endif
+		*/
 
-	// mora se promijenit i u nRF.c
+		/*
+	// mora se promijenit i u nRF.h
 #ifdef NRF_H
 	#if defined STM32F4 || defined STM32F4XX
-		#define NRF_RX
+		#define NRF_TX
 	#endif
 	#if defined STM32F1 || defined STM32F10X_MD
-		#define NRF_TX
+		#define NRF_RX
 	#endif
 	//nRF_main();	// soba pozove
 #endif
+		*/
 
 #if defined BARO_H 
 	bmp180_init();
@@ -101,7 +110,12 @@ void main(void)
 	gpio_init(TIPKA, IN_PD);
 #endif
 
-#if defined LAZY_ROOM_H
+
+	// diplomski
+#ifdef SAKUPLJAC_H
+	sakupljac_init();
+#endif
+#ifdef SOBA_H
 	soba_init();
 #endif
 
@@ -114,13 +128,17 @@ void main(void)
 		{
 			delay_ms(200);
 			printf("Tipka je stisnita\n");
+			// TODO promijenit mod, pali/gasi svjetlo/grijac
 		}
 #endif
-#if defined LAZY_ROOM_H
+#if defined SAKUPLJAC_H
+		sakupljac_main();
+#endif
+#ifdef SOBA_H
 		soba_main();
-		delay_ms(500);
 #endif
 
+		/*
 #ifdef NRF_RX
 		//bool data_ready = nRF_read_payload(grf);	// vrati 1 kad payload zapise u polje
 		bool data_ready = nRF_read(grf);	// vrati 1 kad payload zapise u polje
@@ -133,5 +151,6 @@ void main(void)
 		}
 
 #endif	// NRF_RX
+	*/
 	}
 }

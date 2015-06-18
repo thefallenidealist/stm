@@ -130,7 +130,7 @@ void uart_parse(void)
 	}
 	else
 	{
-		printf("Warning: u stringu nije nadjen delimiter, string: %s\n", rx_string_copy);	
+		printf("%s(): Warning: u stringu nije nadjen delimiter, string: %s\n", __func__, rx_string_copy);	
 	}
     DEBUG_END;
 }
