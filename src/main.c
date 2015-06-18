@@ -45,7 +45,6 @@ void main(void);
 #endif
 #if defined STM32F4 || STM32F4XX
 // veliki ARM
-#include "tipka.h"
 #endif
 
 #define BLINKY_F1	"PA0"
@@ -95,6 +94,13 @@ void main(void)
 	//bmp180_example();
 #endif
 
+#if defined STM32F4 || STM32F4XX
+// veliki ARM
+#define TIPKA "PA0"
+	bool tipka;
+	gpio_init(TIPKA, IN_PD);
+#endif
+
 #if defined LAZY_ROOM_H
 	soba_init();
 #endif
@@ -102,9 +108,17 @@ void main(void)
 	printf("sad ide while\n");
 	while (1)
 	{
+#if defined STM32F4 || STM32F4XX
+		tipka = gpio_read(TIPKA);
+		if (tipka == 1)
+		{
+			delay_ms(200);
+			printf("Tipka je stisnita\n");
+		}
+#endif
 #if defined LAZY_ROOM_H
-	soba_main();
-	delay_ms(500);
+		soba_main();
+		delay_ms(500);
 #endif
 
 #ifdef NRF_RX

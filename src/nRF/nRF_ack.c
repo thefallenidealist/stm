@@ -25,6 +25,9 @@ void nRF_write_ack(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 		return ;
 	}
 
+	// 160619 pokusaj
+	nRF_flush_TX(nRF0);
+
 	cs(nRF0, 0);
 	spi_rw(spi_port, (CMD_W_ACK_PAYLOAD | pipe));
 	while (length--)

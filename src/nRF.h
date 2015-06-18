@@ -35,7 +35,7 @@ extern "C"
 	#define NRF_SPI_PRESCALER 64
 	#define NRF_CS	"PA4"
 	#define NRF_CE	"PA3"
-	#define NRF_IRQ	"PA5"	// XXX, NC, treba lemit
+	#define NRF_IRQ	"PA2"	// XXX, NC, treba lemit
 #endif
 
 typedef enum
