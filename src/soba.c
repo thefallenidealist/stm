@@ -3,7 +3,7 @@
 #define SOBA1_SVJETLO	"PA12"
 #define SOBA1_GRIJAC	"PA11"
 	// vec zauzet PB6, PB7
-#define SOBA_PACKET_SIZE	NRF_FIFO_SIZE
+#define PACKET_SIZE	NRF_FIFO_SIZE
 
 /*************************************************************************************************
 				soba_init()
@@ -54,7 +54,7 @@ char *soba_get_status(void)
 	soba_set_svjetlo(1);
 	soba_set_grijac(1);
 
-	static char status[SOBA_PACKET_SIZE] = {};
+	static char status[PACKET_SIZE] = {};
 
 	float temperatura = bmp180_get_temperature();
 	bool svjetlo = soba_get_svjetlo();
@@ -67,7 +67,7 @@ char *soba_get_status(void)
 	*/
 
 	snprintf(status, sizeof(status), "s1_te:%02.1f_gr:%01d_sv:%01d", temperatura, grijac, svjetlo);
-	printf("%s(), status: %s\n", __func__, status);
+	//printf("%s(), status: %s\n", __func__, status);
 	return status;
 }
 
@@ -77,6 +77,9 @@ char *soba_get_status(void)
 void soba_send_status(void)
 {
 	// nastimaj ACK
+	char *buffer = soba_get_status();
+	uint8_t length = PACKET_SIZE;
+	nRF_write_ack(grf, buffer, length);
 }
 /*************************************************************************************************
 				soba_main()
@@ -84,5 +87,5 @@ void soba_send_status(void)
 void soba_main(void)
 {
 	soba_get_status();
-	//soba_send_status();
+	soba_send_status();
 }

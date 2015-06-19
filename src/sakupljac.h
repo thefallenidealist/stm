@@ -11,6 +11,8 @@
 void sakupljac_init(void);
 void sakupljac_main(void);
 void sakupljac_parse(char *cmd, char *arg);
+void sakupljac_send(char *buffer, uint8_t length);
+
 
 
 #endif	// SAKUPLJAC_H

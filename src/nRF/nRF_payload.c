@@ -41,10 +41,17 @@ static inline void nRF_write_TX_FIFO(nRF_hw_t *nRF0, char *buffer, uint8_t lengt
 	}
 	cs(nRF0, 1);
 
+
 	// pulse CE for transmission
+	//printf("\t\t\t\t\t\t\t\tDEBUG %s()\n", __func__);
+	printf("%s() ide togglat CE\n", __func__);
 	ce(nRF0, 1);
-	delay_us(20);	// 10+ us
+	printf("%s() ide pozvat delay_us\n", __func__);
+	//delay_us(11);	// 10+ us
+	delay_ms(1);
 	ce(nRF0, 0);
+
+	printf("%s() kraj\n", __func__);
 }
 
 /*************************************************************************************************
@@ -63,6 +70,7 @@ static inline void nRF_write_payload(nRF_hw_t *nRF0, char *buffer, uint8_t lengt
 		printf("%s(): Zajeb, length (%d) larger than 32, exiting\n", __func__, length);
 		return;
 	}
+
 
 	if (dynamic_payload_enabled == 1)
 	{
@@ -84,7 +92,9 @@ static inline void nRF_write_payload(nRF_hw_t *nRF0, char *buffer, uint8_t lengt
 		}
 	}
 	nRF_write_TX_FIFO(nRF0, buffer, length, dynamic_payload_enabled, empty_payload_length);
+		//printf("\t\t\t\tDEBUG %s()\n", __func__);
 	nRF_clear_bits(nRF0);	// pokusaj 150618
+	printf("\t\t%s() kraj\n", __func__);
 }
 
 /*************************************************************************************************
@@ -194,7 +204,9 @@ nRF_write_status_t nRF_write(nRF_hw_t *nRF0, char *buffer, uint8_t length)
 
 	// pretpostavka da je power_on() i set_mode(TX)
 
+	printf("\t\tDEBUG: %s() ide pozvat write_payload()\n", __func__);
 	nRF_write_payload(nRF0, buffer, length);
+	printf("\t\tDEBUG: %s() nakon write_payload()\n", __func__);
 	sent_at = get_uptime_us();
 
 	do

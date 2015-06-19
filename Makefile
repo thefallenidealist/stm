@@ -18,18 +18,18 @@ ifeq ($(MCU), AVR)
 	AVR = 1
 endif
 
-# promijenit i dolje COMMON_FLAGS
-#CC	= arm-none-eabi-gcc
-
 DIR_TOOLS	= /usr/local/bin
-ifeq ($(ARM), 1)
 TOOLS_PREFIX = arm-none-eabi
 CC  	= clang36
-endif
-ifeq ($(AVR), 1)
-TOOLS_PREFIX = avr
-CC = avr-gcc
-endif
+
+#ifeq ($(ARM), 1)
+#TOOLS_PREFIX = arm-none-eabi
+#CC  	= clang36
+#endif
+#ifeq ($(AVR), 1)
+#TOOLS_PREFIX = avr
+#CC = avr-gcc
+#endif
 LD  		= $(DIR_TOOLS)/$(TOOLS_PREFIX)-ld
 OBJCOPY 	= $(DIR_TOOLS)/$(TOOLS_PREFIX)-objcopy
 SIZE		= $(DIR_TOOLS)/$(TOOLS_PREFIX)-size
@@ -45,9 +45,10 @@ DEFINES	= -DUSE_STDPERIPH_DRIVER
 endif
 
 #OPTS	= -O0 -g
-#OPTS	= -O1 -g 
-#OPTS	= -O2 -g 
-OPTS	= -O2 -g
+#OPTS	= -O1 -g
+OPTS	= -O1
+#OPTS	= -O2 -g
+#OPTS	= -O2 -g
 #OPTS	= -O3 -g
 
 DIRS 	=	-I src \

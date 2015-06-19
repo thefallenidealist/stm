@@ -21,9 +21,11 @@ void uart_cmd(char *cmd, char *arg)
 	}
 
 
+#ifdef SAKUPLJAC_H
 	// diplomski
 	// samo proslijedi 
 	sakupljac_parse(cmd, arg);
+#endif
 
 	/*
 	if (r == 0)
