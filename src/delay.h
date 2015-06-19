@@ -36,8 +36,8 @@ extern "C" {
 typedef enum
 {
 	// djelitelji za SysTick_Config()
-	TICK_EVERY_NS 		= 1000000000,
-	TICK_EVERY_100NS 	= 10000000,
+	//TICK_EVERY_NS 		= 1000000000,
+	//TICK_EVERY_100NS 	= 10000000,
 	TICK_EVERY_US 		= 1000000,
 	TICK_EVERY_MS 		= 1000
 } systick_divider_t;

@@ -44,9 +44,9 @@ CPU		= -mcpu=cortex-m3
 DEFINES	= -DUSE_STDPERIPH_DRIVER 
 endif
 
-#OPTS	= -O0 -g
+OPTS	= -O0 -g
 #OPTS	= -O1 -g
-OPTS	= -O1
+#OPTS	= -O1
 #OPTS	= -O2 -g
 #OPTS	= -O2 -g
 #OPTS	= -O3 -g

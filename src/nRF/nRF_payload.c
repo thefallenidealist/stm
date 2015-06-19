@@ -47,8 +47,7 @@ static inline void nRF_write_TX_FIFO(nRF_hw_t *nRF0, char *buffer, uint8_t lengt
 	printf("%s() ide togglat CE\n", __func__);
 	ce(nRF0, 1);
 	printf("%s() ide pozvat delay_us\n", __func__);
-	//delay_us(11);	// 10+ us
-	delay_ms(1);
+	delay_us(11);	// 10+ us
 	ce(nRF0, 0);
 
 	printf("%s() kraj\n", __func__);
