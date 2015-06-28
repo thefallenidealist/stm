@@ -86,9 +86,12 @@ void uart1_init(uint32_t speed)
 	//USART_ITConfig(USART1, USART_IT_TXE, ENABLE);	// mora bit ispod USART1 ENABLE
 
 	// Enable the USART1 Interrupt
+	// TODO priority veci od SysTickTimera
 	NVIC_InitStructure.NVIC_IRQChannel 						= USART1_IRQn;
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority	= 0;
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority 			= 0;
+	//NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority	= 0;	// izmedju interruptova		0x00..0x0F	
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority	= USART1_IRQ_PRIORITY;
+	//NVIC_InitStructure.NVIC_IRQChannelSubPriority 			= 0;	// za razne USART IRQs		0x00..0x0F
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority 			= USART1_IRQ_SUBPRIORITY;
 	NVIC_InitStructure.NVIC_IRQChannelCmd 					= ENABLE;
 	NVIC_Init(&NVIC_InitStructure);
 }

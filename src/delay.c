@@ -9,7 +9,6 @@
 #include <string.h>
 #include <math.h>
 
-// XXX na F4 ne radi get_uptime_us kako treba
 // TODO get days, hours, minutes
 
 // *************************************** variables **********************************************
@@ -53,6 +52,9 @@ void delay_init(systick_divider_t divider)
 		while(1);	// error
 	}
 #endif
+
+	// postavi IRQ prioritet, da ga USART IRQ ne ubije
+	NVIC_SetPriority(SysTick_IRQn, SYSTICK_IRQ_PRIORITY);
 }
 
 /**************************************************************************************************
@@ -62,12 +64,12 @@ void delay_us(volatile uint32_t us)
 {
 	//printf("%s(): divider: %d\n", __func__, gsystick_divider);
 	//printf("%s(): arg: %d\n", __func__, us);
-	//if (gsystick_divider == TICK_EVERY_US)
+	if (gsystick_divider == TICK_EVERY_US)
 	{
 		delay_var = us;
 		do
 		{
-			printf("%s(): delay_var: %d\n", __func__, delay_var);
+			//printf("%s(): delay_var: %d, uptime_us: %d\n", __func__, delay_var, uptime_us);
 		}
 		while (delay_var != 0);	// delay_var se smanjuje svake 1us
 	}

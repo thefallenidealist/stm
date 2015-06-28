@@ -23,7 +23,7 @@ void main(void);
 //#include "src/visak/oled.h" 	// 5V
 //#include "clock_print.h" 		// isprobano F1
 //#include "glcd.h"
-//#include "mem.h" 				// ne radi na F1 #error
+#include "mem.h" 				// ne radi na F1 #error
 //#include "cmd.h"
 //#include "joystick.h"
 //#include "colors_ansi.h"
@@ -78,6 +78,9 @@ void main(void)
 	printf("Na početku bješe štos.\n");
 	printf("________________________________________________________________________________\n");
 
+#ifdef MEM_H
+	mem_info();
+#endif
 
 	/*
 #if (defined STM32F4 || defined STM32F4XX) && defined NRF_H
@@ -122,6 +125,7 @@ void main(void)
 	printf("sad ide while\n");
 	while (1)
 	{
+		/*
 #if defined STM32F4 || STM32F4XX
 		tipka = gpio_read(TIPKA);
 		if (tipka == 1)
@@ -131,6 +135,7 @@ void main(void)
 			// TODO promijenit mod, pali/gasi svjetlo/grijac
 		}
 #endif
+*/
 #if defined SAKUPLJAC_H
 		sakupljac_main();
 #endif

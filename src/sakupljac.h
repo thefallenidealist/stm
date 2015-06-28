@@ -2,10 +2,12 @@
 #ifndef SAKUPLJAC_H
 #define SAKUPLJAC_H
 
-#include "nRF.h"
+#include <stdio.h>
 #include <stdint.h>
 #include <string.h>		// strncmp()
 #include <stdlib.h>		// atoi()
+//#include "nRF.h"
+#include "mem.h"
 
 // prototipi
 void sakupljac_init(void);

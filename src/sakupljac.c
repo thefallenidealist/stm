@@ -1,13 +1,27 @@
 #include "sakupljac.h"
 
-#define PACKET_SIZE		NRF_FIFO_SIZE
+#ifdef NRF_H
+	#define PACKET_SIZE		NRF_FIFO_SIZE
+#else
+	#define PACKET_SIZE		32
+#endif
 
 /*************************************************************************************************
 				sakupljac_init()
 *************************************************************************************************/
 void sakupljac_init(void)
 {
+#ifdef NRF_H
 	nRF_main();
+#endif
+
+	printf("%s() ovdje\n", __func__);
+	print_remaining_stack();
+
+	uint32_t polje[3] = {};
+
+	print_remaining_stack();
+
 	
 }
 
@@ -53,6 +67,7 @@ void sakupljac_main(void)
 		delay_ms(500);
 	}
 	*/
+	//printf("%s()\n", __func__);
 }
 
 /*************************************************************************************************
@@ -100,6 +115,7 @@ void sakupljac_send(char *buffer, uint8_t length)
 {
 	printf("%s(): dobio buffer: %s, length: %d\n", __func__, buffer, length);
 
+#ifdef NRF_H
 	printf("%s(): Idemo poslat\n", __func__);
 	nRF_write_status_t status = nRF_write(grf, buffer, length);
 	printf("%s(): poslao\n", __func__);
@@ -128,4 +144,5 @@ void sakupljac_send(char *buffer, uint8_t length)
 	{
 		printf("%s(): nRF TX doso do else\n", __func__);
 	}
+#endif
 }

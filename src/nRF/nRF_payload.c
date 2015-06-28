@@ -21,6 +21,7 @@ static inline void nRF_read_RX_FIFO(nRF_hw_t *nRF0, uint8_t payload_size)
 				nRF_write_TX_FIFO()
 *************************************************************************************************/
 static inline void nRF_write_TX_FIFO(nRF_hw_t *nRF0, char *buffer, uint8_t length, bool dynamic_payload, uint8_t empty_payload)
+//static void nRF_write_TX_FIFO(nRF_hw_t *nRF0, char *buffer, uint8_t length, bool dynamic_payload, uint8_t empty_payload)
 {
 	uint8_t spi_port = nRF0->spi_port;
 

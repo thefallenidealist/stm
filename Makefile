@@ -21,6 +21,7 @@ endif
 DIR_TOOLS	= /usr/local/bin
 TOOLS_PREFIX = arm-none-eabi
 CC  	= clang36
+#CC  	= arm-none-eabi-gcc	# TODO
 
 #ifeq ($(ARM), 1)
 #TOOLS_PREFIX = arm-none-eabi
@@ -30,7 +31,8 @@ CC  	= clang36
 #TOOLS_PREFIX = avr
 #CC = avr-gcc
 #endif
-LD  		= $(DIR_TOOLS)/$(TOOLS_PREFIX)-ld
+#LD  		= $(DIR_TOOLS)/$(TOOLS_PREFIX)-ld
+LD  		= $(DIR_TOOLS)/arm-none-eabi-gcc
 OBJCOPY 	= $(DIR_TOOLS)/$(TOOLS_PREFIX)-objcopy
 SIZE		= $(DIR_TOOLS)/$(TOOLS_PREFIX)-size
 
@@ -58,7 +60,8 @@ ifeq ($(MCU), F4)
 	ARCH	= armv7e-m
 	DIRS	+= -I src/lib/f4
 	DEFINES += -DSTM32F4XX -DSTM32F4
-	LINKER_FILE		= src/lib/f4/stm32.ld
+	#LINKER_FILE		= src/lib/f4/stm32.ld
+	LINKER_FILE		= src/lib/f4/novo15.ld
 	SRC_S	= $(wildcard src/lib/f4/*.s)
 	OPENOCD = openocd -f openocd4.cfg -c init -c targets -c "reset halt" -c "flash erase_check 0" -c " flash write_image erase bin/main.bin 0x08000000" -c "reset run" -c "shutdown"
 endif
@@ -125,7 +128,7 @@ OBJS += $(addprefix $(DIR_OBJ)/, $(notdir $(SRC_S:.s=.o)))	# dodaj i assembler s
 $(NAME).elf: $(OBJS)
 	@printf "\t\t kompajler: $(CC)\n"
 	@printf "\t\t Linking to ELF\n"
-	@$(LD) $(LD_FLAGS) -o $(DIR_BIN)/$(NAME).elf
+	$(LD) $(LD_FLAGS) -o $(DIR_BIN)/$(NAME).elf
 	@printf "\t\t size:\n"
 	@$(SIZE) $(DIR_BIN)/$(NAME).elf
 	@printf "\t\t Stripping binary\n"

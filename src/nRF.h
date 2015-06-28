@@ -161,6 +161,7 @@ static inline void nRF_start_listening	(nRF_hw_t *nRF0);
 static inline void nRF_stop_listening	(nRF_hw_t *nRF0);
 static inline void nRF_flush_TX		(nRF_hw_t *nRF0);
 static inline void nRF_flush_RX		(nRF_hw_t *nRF0);
+//static inline void nRF_write_TX_FIFO(nRF_hw_t *nRF0, char *buffer, uint8_t length, bool dynamic_payload, uint8_t empty_payload);
 static inline void nRF_write_TX_FIFO(nRF_hw_t *nRF0, char *buffer, uint8_t length, bool dynamic_payload, uint8_t empty_payload);
 static inline void nRF_read_RX_FIFO	(nRF_hw_t *nRF0, uint8_t payload_size);
 static inline void nRF_write_payload(nRF_hw_t *nRF0, char *buffer, uint8_t length);
