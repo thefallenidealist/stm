@@ -6,51 +6,26 @@
 
 NAME	= main
 
-
-ifeq ($(MCU), F1)
-	ARM = 1
-endif
-ifeq ($(MCU), F4)
-	ARM = 1
-endif
-ifeq ($(MCU), AVR)
-	ARM = 0
-	AVR = 1
-endif
+# promijenit i dolje COMMON_FLAGS
+CC  	= clang39
+#CC	= arm-none-eabi-gcc
 
 DIR_TOOLS	= /usr/local/bin
-TOOLS_PREFIX = arm-none-eabi
-CC  	= clang36
-#CC  	= arm-none-eabi-gcc	# TODO
-
-#ifeq ($(ARM), 1)
-#TOOLS_PREFIX = arm-none-eabi
-#CC  	= clang36
-#endif
-#ifeq ($(AVR), 1)
-#TOOLS_PREFIX = avr
-#CC = avr-gcc
-#endif
-#LD  		= $(DIR_TOOLS)/$(TOOLS_PREFIX)-ld
-LD  		= $(DIR_TOOLS)/arm-none-eabi-gcc
-OBJCOPY 	= $(DIR_TOOLS)/$(TOOLS_PREFIX)-objcopy
-SIZE		= $(DIR_TOOLS)/$(TOOLS_PREFIX)-size
+LD  		= $(DIR_TOOLS)/arm-none-eabi-ld
+OBJCOPY 	= $(DIR_TOOLS)/arm-none-eabi-objcopy
+SIZE		= $(DIR_TOOLS)/arm-none-eabi-size
 
 DIR_OBJ 	= ./obj
 DIR_BIN 	= ./bin
 
-ifeq ($(ARM), 1)
 TARGET	= -target thumb-unknown-eabi	# needed for clang
 CPU		= -mcpu=cortex-m3 
 #CPU	= -mcpu=cortex-m4 	# TODO
 DEFINES	= -DUSE_STDPERIPH_DRIVER 
-endif
-
-OPTS	= -O0 -g
-#OPTS	= -O1 -g
-#OPTS	= -O1
-#OPTS	= -O2 -g
-#OPTS	= -O2 -g
+#OPTS	= -O0 -g	# XXX ne radi
+#OPTS	= -O1 -g 
+#OPTS	= -O2 -g 
+OPTS	= -O2 -g
 #OPTS	= -O3 -g
 
 DIRS 	=	-I src \
@@ -60,8 +35,7 @@ ifeq ($(MCU), F4)
 	ARCH	= armv7e-m
 	DIRS	+= -I src/lib/f4
 	DEFINES += -DSTM32F4XX -DSTM32F4
-	#LINKER_FILE		= src/lib/f4/stm32.ld
-	LINKER_FILE		= src/lib/f4/novo15.ld
+	LINKER_FILE		= src/lib/f4/stm32.ld
 	SRC_S	= $(wildcard src/lib/f4/*.s)
 	OPENOCD = openocd -f openocd4.cfg -c init -c targets -c "reset halt" -c "flash erase_check 0" -c " flash write_image erase bin/main.bin 0x08000000" -c "reset run" -c "shutdown"
 endif
@@ -128,7 +102,7 @@ OBJS += $(addprefix $(DIR_OBJ)/, $(notdir $(SRC_S:.s=.o)))	# dodaj i assembler s
 $(NAME).elf: $(OBJS)
 	@printf "\t\t kompajler: $(CC)\n"
 	@printf "\t\t Linking to ELF\n"
-	$(LD) $(LD_FLAGS) -o $(DIR_BIN)/$(NAME).elf
+	@$(LD) $(LD_FLAGS) -o $(DIR_BIN)/$(NAME).elf
 	@printf "\t\t size:\n"
 	@$(SIZE) $(DIR_BIN)/$(NAME).elf
 	@printf "\t\t Stripping binary\n"

@@ -55,6 +55,8 @@ void delay_init(systick_divider_t divider)
 
 	// postavi IRQ prioritet, da ga USART IRQ ne ubije
 	NVIC_SetPriority(SysTick_IRQn, SYSTICK_IRQ_PRIORITY);
+	// TODO ako ovo gore ne bude radilo:
+	// PriorityGroupConfig()
 }
 
 /**************************************************************************************************

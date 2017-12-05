@@ -26,7 +26,7 @@ else
 	exit
 fi
 
-POPIS=`clang36 $DEFINES $DIRS -MM src/$NAME.c | sed 's/$NAME.o://g' | tr ' ' '\n' | tr -d '\' | sed '/^\s*$/d'`
+POPIS=`clang39 $DEFINES $DIRS -MM src/$NAME.c | sed 's/$NAME.o://g' | tr ' ' '\n' | tr -d '\' | sed '/^\s*$/d'`
 # POPIS: 
 # src/main.c
 # src/newlib_stubs.h

@@ -120,7 +120,7 @@ uint8_t spi_rw(uint8_t spi_port, uint8_t data8)
 
 /*************************************************************************************************
 *************************************************************************************************/
-int8_t spi_init(uint8_t spi_port, uint16_t spi_prescaler)
+int8_t spi_init(uint8_t spi_port, uint16_t spi_prescaler)	// TODO enum npr SPI_PRE{2,4,8,...}
 {
 	// obicni SPI, doradit za DMA TODO
 	GPIO_InitTypeDef GPIO_InitStructure;

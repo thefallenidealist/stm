@@ -59,14 +59,14 @@ void uart1_init(uint32_t speed)
 #if defined STM32F4XX || defined STM32F4
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);
 
-	GPIO_PinAFConfig(UART1_GPIO, UART1_TX_AF, GPIO_AF_USART1);
-	GPIO_PinAFConfig(UART1_GPIO, UART1_RX_AF, GPIO_AF_USART1);
+	GPIO_PinAFConfig(UART1_GPIO, UART1_TX_AF, GPIO_AF_USART1); // AF7 za pin6
+	GPIO_PinAFConfig(UART1_GPIO, UART1_RX_AF, GPIO_AF_USART1); // 7
 
 	GPIO_InitStructure.GPIO_Pin 	= UART1_RX_Pin | UART1_TX_Pin; 
-	GPIO_InitStructure.GPIO_Speed	= GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_AF;
-	GPIO_InitStructure.GPIO_OType	= GPIO_OType_PP;
-	GPIO_InitStructure.GPIO_PuPd 	= GPIO_PuPd_UP;
+	GPIO_InitStructure.GPIO_Speed	= GPIO_Speed_50MHz;	// 0x2
+	GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_AF;		// 0x3
+	GPIO_InitStructure.GPIO_OType	= GPIO_OType_PP;	// 0
+	GPIO_InitStructure.GPIO_PuPd 	= GPIO_PuPd_UP;		// 1
 
 	GPIO_Init(UART1_GPIO, &GPIO_InitStructure);
 
